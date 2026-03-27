@@ -2882,7 +2882,7 @@ title="${q.tag}：第${i+1}題"
 onmouseenter="this.style.transform='scale(1.1)';this.style.borderColor='${typeColor}'" 
 onmouseleave="this.style.transform='';this.style.borderColor='${done?typeColor:'rgba(255,255,255,0.15)'}'">
 ${done?‘⭐’:i+1}
-</button>`; }).join('')} </div> </div> <!-- 成就展示 --> ${(()=>{ const earned=(detectiveState.earnedAchievements||[]); if(earned.length===0) return ''; return '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;">'+ DETECTIVE_ACHIEVEMENTS.filter(a=>earned.includes(a.id)).map(a=> '<div style="background:linear-gradient(135deg,rgba(139,92,246,0.25),rgba(99,102,241,0.15));border:1.5px solid #8b5cf6;border-radius:10px;padding:6px 10px;text-align:center;font-size:0.7rem;font-weight:800;color:#a78bfa;">'+a.icon+' '+a.name+'</div>' ).join('')+'</div>'; })()} <!-- 激勵語 --> <div style="background:rgba(99,102,241,0.15);border-radius:12px;padding:10px 12px;border:1px solid rgba(99,102,241,0.3);font-size:0.8rem;color:#a5b4fc;font-weight:700;text-align:center;"> ${stats.completed===0?'💡 小蛹找bug的能力超強！40道題專門訓練邏輯、推理、謎題和跨科思維！': stats.completed<5?`🌟 已完成 ${stats.completed} 題！繼續挑戰！`: stats.completed<15?`🔥 厲害！完成了 ${stats.completed} 題，邏輯能力越來越強！`: stats.completed<30?`💎 偵探高手！還有 ${DETECTIVE_CHALLENGES.length-stats.completed} 道題等著你！`: stats.completed<45?`👑 快完成了！剩最後 ${DETECTIVE_CHALLENGES.length-stats.completed} 題！`: '🏆 全55題完成！方塊×扯鈴×邏輯全制霸！波比超驕傲！'} </div>`;
+</button>`; }).join('')} </div> </div> <!-- 成就展示 --> ${(()=>{ const earned=(detectiveState.earnedAchievements||[]); if(earned.length===0) return ''; return '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;">'+ DETECTIVE_ACHIEVEMENTS.filter(a=>earned.includes(a.id)).map(a=> '<div style="background:linear-gradient(135deg,rgba(139,92,246,0.25),rgba(99,102,241,0.15));border:1.5px solid #8b5cf6;border-radius:10px;padding:6px 10px;text-align:center;font-size:0.7rem;font-weight:800;color:#a78bfa;">'+a.icon+' '+a.name+'</div>' ).join('')+'</div>'; })()} <!-- 激勵語 --> <div style="background:rgba(99,102,241,0.15);border-radius:12px;padding:10px 12px;border:1px solid rgba(99,102,241,0.3);font-size:0.8rem;color:#a5b4fc;font-weight:700;text-align:center;"> ${stats.completed===0?'💡 小蛹找bug的能力超強！55道題專門訓練邏輯、推理、謎題和跨科思維！': stats.completed<5?`🌟 已完成 ${stats.completed} 題！繼續挑戰！`: stats.completed<15?`🔥 厲害！完成了 ${stats.completed} 題，邏輯能力越來越強！`: stats.completed<30?`💎 偵探高手！還有 ${DETECTIVE_CHALLENGES.length-stats.completed} 道題等著你！`: stats.completed<45?`👑 快完成了！剩最後 ${DETECTIVE_CHALLENGES.length-stats.completed} 題！`: '🏆 全55題完成！方塊×扯鈴×邏輯全制霸！波比超驕傲！'} </div>`;
 }
 
 function openDetectiveQ(id, isReinforce=false){
@@ -2969,7 +2969,9 @@ onmouseleave="if(!this.disabled){this.style.borderColor='rgba(255,255,255,0.15)'
 <span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:${color}33;border:1.5px solid ${color};text-align:center;font-size:0.75rem;line-height:22px;margin-right:9px;flex-shrink:0;">${[‘A’,‘B’,‘C’,‘D’][i]}</span>${ch}
 </button>`).join('')} </div> <div id="dqFeedback" style="margin-top:12px;"></div> ${done?'<div style="text-align:center;margin-top:8px;font-size:0.8rem;color:#86efac;font-weight:700;">✅ 已完成此題</div>':''} </div> </div>`;
 
-document.body.appendChild(overlay);
+// 顯示預置的 overlay
+overlay.style.display = ‘block’;
+document.documentElement.style.overflow = ‘hidden’;
 }
 
 /* 求救系統：漸進式提示 */
