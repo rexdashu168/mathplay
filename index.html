@@ -2813,10 +2813,10 @@ const REINFORCE_BANK = {
 function getDetectiveStats(){
   const completed = detectiveState.completed.length;
   const total = DETECTIVE_CHALLENGES.length;
-  const byType = {contradiction:0, pattern:0, logic:0, bug_hunt:0, crossover:0};
+  const byType = {contradiction:0,pattern:0,logic:0,bug_hunt:0,crossover:0,number_puzzle:0,logic_puzzle:0,cube_logic:0,diabolo_physics:0,teach_boppy:0};
   detectiveState.completed.forEach(id=>{
     const q = DETECTIVE_CHALLENGES.find(c=>c.id===id);
-    if(q) byType[q.type]++;
+    if(q && byType[q.type]!==undefined) byType[q.type]++;
   });
   return {completed, total, byType};
 }
@@ -2858,17 +2858,39 @@ function renderDetectiveRoom(){
     <div style="height:8px;background:rgba(255,255,255,0.1);border-radius:8px;overflow:hidden;margin-bottom:10px;">
     <div style="height:100%;width:${(stats.completed/stats.total)*100}%;background:linear-gradient(90deg,#6366f1,#8b5cf6,#ec4899);border-radius:8px;transition:width 0.5s;"></div>
     </div>
-    <!-- 五種類型進度 -->
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:14px;">
-    ${Object.entries(typeInfo).map(([k,t])=>{
-    const done = stats.byType[k]||0;
-    const allDone = done >= t.total;
-    return `<div style="text-align:center;background:rgba(255,255,255,${allDone?'0.15':'0.07'});border-radius:10px;padding:7px 4px;border:1.5px solid rgba(255,255,255,${allDone?'0.3':'0.1'});">
-    <div style="font-size:1.3rem;">${t.icon}</div>
-    <div style="font-size:0.62rem;font-weight:800;color:${allDone?t.color:'#94a3b8'};margin-top:2px;">${t.name}</div>
-    <div style="font-size:0.75rem;font-weight:900;color:${allDone?'#fbbf24':'#94a3b8'};">${done}/${t.total}</div>
-    </div>`;
+    <!-- 類型分組：邏輯推理組 -->
+    <div style="margin-bottom:8px;">
+    <div style="font-size:0.7rem;font-weight:900;color:#a5b4fc;letter-spacing:1px;margin-bottom:5px;padding-left:2px;">🧩 邏輯推理組</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;">
+    ${['contradiction','pattern','logic','bug_hunt','crossover'].map(k=>{
+      const t=typeInfo[k]; if(!t) return ''; const done=stats.byType[k]||0; const allDone=done>=t.total;
+      return `<div style="text-align:center;background:${allDone?t.color+'33':'rgba(255,255,255,0.07)'};border-radius:10px;padding:7px 3px 6px;border:2px solid ${allDone?t.color:'rgba(255,255,255,0.12)'};">
+      <div style="font-size:1.3rem;margin-bottom:2px;">${t.icon}</div>
+      <div style="font-size:0.6rem;font-weight:900;color:${allDone?t.color:'#94a3b8'};line-height:1.2;margin-bottom:4px;">${t.name}</div>
+      <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;margin:0 3px;">
+      <div style="height:100%;width:${t.total>0?Math.round(done/t.total*100):0}%;background:${t.color};border-radius:4px;"></div>
+      </div>
+      <div style="font-size:0.7rem;font-weight:900;color:${allDone?'#fbbf24':'#64748b'};margin-top:3px;">${done}/${t.total}</div>
+      </div>`;
     }).join('')}
+    </div>
+    </div>
+    <!-- 類型分組：特殊挑戰組 -->
+    <div style="margin-bottom:14px;">
+    <div style="font-size:0.7rem;font-weight:900;color:#fbbf24;letter-spacing:1px;margin-bottom:5px;padding-left:2px;">⚡ 特殊挑戰組</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;">
+    ${['number_puzzle','logic_puzzle','cube_logic','diabolo_physics','teach_boppy'].map(k=>{
+      const t=typeInfo[k]; if(!t) return ''; const done=stats.byType[k]||0; const allDone=done>=t.total;
+      return `<div style="text-align:center;background:${allDone?t.color+'33':'rgba(255,255,255,0.07)'};border-radius:10px;padding:7px 3px 6px;border:2px solid ${allDone?t.color:'rgba(255,255,255,0.12)'};">
+      <div style="font-size:1.3rem;margin-bottom:2px;">${t.icon}</div>
+      <div style="font-size:0.6rem;font-weight:900;color:${allDone?t.color:'#94a3b8'};line-height:1.2;margin-bottom:4px;">${t.name}</div>
+      <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;margin:0 3px;">
+      <div style="height:100%;width:${t.total>0?Math.round(done/t.total*100):0}%;background:${t.color};border-radius:4px;"></div>
+      </div>
+      <div style="font-size:0.7rem;font-weight:900;color:${allDone?'#fbbf24':'#64748b'};margin-top:3px;">${done}/${t.total}</div>
+      </div>`;
+    }).join('')}
+    </div>
     </div>
     <!-- 題目選擇區 -->
     ${unlockedLevel < 3 ? `<div style="background:rgba(251,191,36,0.1);border:1.5px solid rgba(251,191,36,0.3);border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:0.75rem;color:#fbbf24;font-weight:800;">
@@ -2883,10 +2905,11 @@ function renderDetectiveRoom(){
     return `<div style="aspect-ratio:1;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:rgba(255,255,255,0.2);" title="Day 3 解鎖">🔒</div>`;
     }
     return `<button onclick="openDetectiveQ('${q.id}')"
-    style="aspect-ratio:1;border-radius:10px;border:2px solid ${done?typeColor:'rgba(255,255,255,0.15)'};background:${done?typeColor+'33':'rgba(255,255,255,0.07)'};color:${done?'#fbbf24':'#94a3b8'};font-size:0.8rem;font-weight:900;cursor:pointer;transition:all 0.2s;font-family:Nunito,sans-serif;"
+    style="aspect-ratio:1;border-radius:10px;border:2px solid ${done?typeColor:'rgba(255,255,255,0.15)'};background:${done?typeColor+'33':'rgba(255,255,255,0.07)'};color:${done?'#fbbf24':'#94a3b8'};font-size:0.8rem;font-weight:900;cursor:pointer;transition:all 0.2s;font-family:Nunito,sans-serif;position:relative;overflow:hidden;"
     title="${q.tag}：第${i+1}題"
-    onmouseenter="this.style.transform='scale(1.1)';this.style.borderColor='${typeColor}'" 
+    onmouseenter="this.style.transform='scale(1.1)';this.style.borderColor='${typeColor}'"
     onmouseleave="this.style.transform='';this.style.borderColor='${done?typeColor:'rgba(255,255,255,0.15)'}'">
+    <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:${typeColor};opacity:${done?1:0.4};"></div>
     ${done?'⭐':i+1}
     </button>`;
     }).join('')}
