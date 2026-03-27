@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -54,7 +53,7 @@ background-size:200% 100%;animation:rainbowBar 4s linear infinite;
 .welcome-cloud{
 background:rgba(255,252,240,0.98);border-radius:40px;padding:30px 25px;width:100%;max-width:460px;
 box-shadow:0 20px 60px rgba(180,120,30,0.22),0 4px 0 #fbbf24 inset;border:3px solid #fde68a;
-position:relative;overflow:hidden;
+position:relative;;
 }
 .hamster-hero{font-size:0px;display:flex;justify-content:center;align-items:center;min-height:110px;animation:hamsterWelcome 2.5s ease-in-out infinite;filter:drop-shadow(0 8px 20px rgba(180,120,30,0.3));margin-bottom:10px;}
 @keyframes hamsterWelcome{0%,100%{transform:translateY(0) rotate(-6deg) scale(1);}30%{transform:translateY(-22px) rotate(0deg) scale(1.05);}60%{transform:translateY(-10px) rotate(6deg) scale(1.02);}}
@@ -511,7 +510,7 @@ position:relative;overflow:hidden;
       <label class="name-label">⭐ 告訴波比你的名字吧！</label>
       <input type="text" id="nameInput" class="name-input" placeholder="小蛹" maxlength="10">
     </div>
-    <button class="start-btn" id="startBtn" style="-webkit-tap-highlight-color:rgba(0,0,0,0.1);cursor:pointer;">🔍 我準備好了！和波比一起探索！</button>
+    <button class="start-btn" id="startBtn" style="position:relative;z-index:999;-webkit-tap-highlight-color:rgba(255,165,0,0.3);cursor:pointer;touch-action:manipulation;-webkit-appearance:none;appearance:none;">🔍 我準備好了！和波比一起探索！</button>
   </div>
 </div>
 <!-- 主畫面 -->
@@ -682,7 +681,7 @@ position:relative;overflow:hidden;
   <div id="detectiveOverlayInner" style="display:flex;align-items:flex-start;justify-content:center;padding:20px;min-height:100%;"></div>
 </div>
 <!-- 成就彈窗（預置）-->
-<div id="achievementOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;">
+<div id="achievementOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);align-items:center;justify-content:center;z-index:9999;padding:20px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);">
   <div id="achievementOverlayInner"></div>
 </div>
 <!-- 補課彈窗 -->
@@ -2821,10 +2820,6 @@ function getDetectiveStats(){
   });
   return {completed, total, byType};
 }
-function scrollToDetective(){
-  const el=document.getElementById('detectiveRoom');
-  if(el){el.scrollIntoView({behavior:'smooth',block:'start'});sfxClick();}
-}
 function renderDetectiveRoom(){
   const el = document.getElementById('detectiveRoomContent');
   if(!el) return;
@@ -3771,8 +3766,8 @@ function startLesson(subj,makeup=false,targetDate=null){
   }
   currentUnitIdx=0;
   const screen=document.getElementById('learnScreen');
-  screen.className='learn-screen-enter';screen.classList.remove('hidden');
   screen.className=`learn-screen-enter ${subj}-theme`;
+  screen.classList.remove('hidden');
   const titles={chinese:'📚 國語進階課',english:'🔤 英文挑戰課',math:'🔢 數學闖關課'};
   document.getElementById('learnTitle').textContent=titles[subj];
   document.getElementById('sessionBadges').textContent=0;
@@ -4429,287 +4424,294 @@ function initSpot(area){
    🎲 方塊還原遊戲
    ===================================================== */
 function initCube(area){
-
-const puzzles=[
-{
-id:1,
-desc:‘波比把右邊轉了一下，你能還原嗎？’,
-state:[‘🟦’,‘🟦’,‘🟦’,‘🟦’,  ‘🟨’,‘🟥’,‘🟨’,‘🟥’,  ‘🟥’,‘🟨’,‘🟥’,‘🟨’,  ‘🟩’,‘🟩’,‘🟩’,‘🟩’,  ‘🟧’,‘🟧’,‘🟧’,‘🟧’,  ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-solved:[‘🟦’,‘🟦’,‘🟦’,‘🟦’, ‘🟨’,‘🟨’,‘🟨’,‘🟨’, ‘🟥’,‘🟥’,‘🟥’,‘🟥’, ‘🟩’,‘🟩’,‘🟩’,‘🟩’, ‘🟧’,‘🟧’,‘🟧’,‘🟧’, ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-moves:[‘R’,‘R逆’],  correctMoves:[‘R逆’],
-hint:‘右邊被順時針轉了一下，用逆時針轉回去！’
-},
-{
-id:2,
-desc:‘上層被轉了兩次，怎麼還原？’,
-state:[‘🟥’,‘🟥’,‘🟦’,‘🟦’,  ‘🟩’,‘🟩’,‘🟨’,‘🟨’,  ‘⬜’,‘⬜’,‘🟥’,‘🟥’,  ‘🟩’,‘🟩’,‘🟩’,‘🟩’,  ‘🟧’,‘🟧’,‘🟧’,‘🟧’,  ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-solved:[‘🟦’,‘🟦’,‘🟦’,‘🟦’, ‘🟨’,‘🟨’,‘🟨’,‘🟨’, ‘🟥’,‘🟥’,‘🟥’,‘🟥’, ‘🟩’,‘🟩’,‘🟩’,‘🟩’, ‘🟧’,‘🟧’,‘🟧’,‘🟧’, ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-moves:[‘U’,‘U2’,‘U逆’],  correctMoves:[‘U2’],
-hint:‘轉了兩次，再轉兩次就回來了！U2 = 轉兩次’
-},
-{
-id:3,
-desc:‘波比做了 R U，你能做 U逆 R逆 還原嗎？’,
-state:[‘🟩’,‘🟦’,‘🟩’,‘🟦’,  ‘🟧’,‘🟨’,‘🟧’,‘🟨’,  ‘🟥’,‘🟥’,‘🟥’,‘🟥’,  ‘⬜’,‘🟩’,‘⬜’,‘🟩’,  ‘🟧’,‘🟧’,‘⬜’,‘⬜’,  ‘🟦’,‘🟦’,‘🟦’,‘🟦’],
-solved:[‘🟦’,‘🟦’,‘🟦’,‘🟦’, ‘🟨’,‘🟨’,‘🟨’,‘🟨’, ‘🟥’,‘🟥’,‘🟥’,‘🟥’, ‘🟩’,‘🟩’,‘🟩’,‘🟩’, ‘🟧’,‘🟧’,‘🟧’,‘🟧’, ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-moves:[‘R逆 U逆’,‘U逆 R逆’,‘R U’,‘U R’],  correctMoves:[‘U逆 R逆’],
-hint:‘R U 的逆操作是 U逆 R逆，順序要反過來！’
-},
-{
-id:4,
-desc:‘一個角塊位置對但方向錯，波比說：要用幾次 R U R逆 U逆？’,
-state:[‘🟦’,‘🟦’,‘🟦’,‘🟥’,  ‘🟨’,‘🟨’,‘🟥’,‘🟨’,  ‘🟥’,‘⬜’,‘🟥’,‘🟥’,  ‘🟩’,‘🟩’,‘🟩’,‘🟩’,  ‘🟧’,‘🟧’,‘🟧’,‘🟧’,  ‘⬜’,‘🟦’,‘⬜’,‘⬜’],
-solved:[‘🟦’,‘🟦’,‘🟦’,‘🟦’, ‘🟨’,‘🟨’,‘🟨’,‘🟨’, ‘🟥’,‘🟥’,‘🟥’,‘🟥’, ‘🟩’,‘🟩’,‘🟩’,‘🟩’, ‘🟧’,‘🟧’,‘🟧’,‘🟧’, ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-moves:[‘2次’,‘3次’,‘4次（週期！）’,‘6次’],  correctMoves:[‘6次’],
-hint:‘R U R逆 U逆 的週期是6！做6次，角塊轉回原本方向！’
-},
-{
-id:5,
-desc:‘面對這個狀態，波比問：用什麼公式最省步驟？’,
-state:[‘🟦’,‘🟥’,‘🟦’,‘🟦’,  ‘🟨’,‘🟨’,‘🟨’,‘🟩’,  ‘🟥’,‘🟥’,‘🟩’,‘🟥’,  ‘🟩’,‘⬜’,‘🟩’,‘🟩’,  ‘🟧’,‘🟧’,‘🟧’,‘🟧’,  ‘⬜’,‘⬜’,‘🟦’,‘⬜’],
-solved:[‘🟦’,‘🟦’,‘🟦’,‘🟦’, ‘🟨’,‘🟨’,‘🟨’,‘🟨’, ‘🟥’,‘🟥’,‘🟥’,‘🟥’, ‘🟩’,‘🟩’,‘🟩’,‘🟩’, ‘🟧’,‘🟧’,‘🟧’,‘🟧’, ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-moves:[‘先底層十字，再角塊’,‘先整頂層，再底層’,‘隨便轉，碰運氣’,‘先算好再動’],  correctMoves:[‘先算好再動’],
-hint:‘觀察哪些塊已在正確位置，只移動需要移動的！這叫「效率思維」！’
-},
-];
-let pIdx=0, timeLeft=60, score=0;
-
-function renderPuzzle(){
-if(pIdx>=puzzles.length){
-clearInterval(gameTimerInterval);
-gameRunning=false;
-showGameEnd();
-return;
-}
-const p=puzzles[pIdx];
-const faces=[‘前’,‘後’,‘右’,‘左’,‘上’,‘下’];
-const faceColors=[’#e11d48’,’#7c3aed’,’#0ea5e9’,’#059669’,’#f59e0b’,’#6b7280’];
-const stateHtml = [0,1,2,3].map((fi,i)=>` <div style="text-align:center;"> <div style="font-size:0.65rem;font-weight:800;color:${faceColors[fi]};margin-bottom:3px;">${faces[fi]}面</div> <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;width:52px;"> ${p.state.slice(fi*4,fi*4+4).map(c=>`<div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:rgba(255,255,255,0.08);border-radius:5px;">${c}</div>`).join('')} </div> </div>`).join(’’);
-
-```
-area.innerHTML=`
-<div style="padding:4px 8px 0;">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-<span style="font-size:0.85rem;font-weight:800;color:white;">第${pIdx+1}/${puzzles.length}題 &nbsp;⏱<span id="cubeTime">${timeLeft}</span>秒</span>
-<span style="font-size:0.9rem;font-weight:900;color:#fbbf24;">⭐ ${score}</span>
-</div>
-<div style="background:rgba(255,255,255,0.08);border-radius:14px;padding:12px;margin-bottom:10px;">
-<div style="font-size:0.88rem;font-weight:800;color:#fbbf24;margin-bottom:10px;">🎲 ${p.desc}</div>
-<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">${stateHtml}</div>
-</div>
-<div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-weight:700;text-align:center;margin-bottom:8px;">💡 ${p.hint}</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="cubeMoves">
-${p.moves.map(m=>`
-<button onclick="cubeAnswer('${m.replace(/'/g,'\'')}','${p.correctMoves[0].replace(/'/g,'\'')}')"
-style="background:rgba(225,29,72,0.15);border:2px solid rgba(225,29,72,0.4);border-radius:14px;padding:14px 10px;font-size:1rem;font-weight:900;color:white;cursor:pointer;font-family:Nunito,sans-serif;text-align:center;">
-${m}
-</button>`).join('')}
-</div>
-</div>`;
-```
-
-}
-
-window.cubeAnswer=function(chosen, correct){
-document.querySelectorAll(’#cubeMoves button’).forEach(b=>b.disabled=true);
-const isCorrect = chosen===correct;
-document.querySelectorAll(’#cubeMoves button’).forEach(b=>{
-if(b.textContent.trim()===correct){b.style.background=‘rgba(34,197,94,0.3)’;b.style.borderColor=’#22c55e’;}
-else if(b.textContent.trim()===chosen&&!isCorrect){b.style.background=‘rgba(239,68,68,0.3)’;b.style.borderColor=’#ef4444’;}
-});
-if(isCorrect){sfxCorrect();score+=30;addGameScore(30);}
-else{sfxWrong();}
-setTimeout(()=>{pIdx++;renderPuzzle();},1200);
-};
-
-renderPuzzle();
-gameTimerInterval=setInterval(()=>{
-timeLeft–;
-const tw=document.getElementById(‘cubeTime’);
-if(tw)tw.textContent=timeLeft;
-document.getElementById(‘gameTimerBar’).style.width=`${(timeLeft/60)*100}%`;
-if(timeLeft<=0){clearInterval(gameTimerInterval);gameRunning=false;showGameEnd();}
-},1000);
+  
+  const puzzles=[
+    {
+    id:1,
+    desc:'波比把右邊轉了一下，你能還原嗎？',
+    state:['🟦','🟦','🟦','🟦',  '🟨','🟥','🟨','🟥',  '🟥','🟨','🟥','🟨',  '🟩','🟩','🟩','🟩',  '🟧','🟧','🟧','🟧',  '⬜','⬜','⬜','⬜'],
+    solved:['🟦','🟦','🟦','🟦', '🟨','🟨','🟨','🟨', '🟥','🟥','🟥','🟥', '🟩','🟩','🟩','🟩', '🟧','🟧','🟧','🟧', '⬜','⬜','⬜','⬜'],
+    moves:['R','R逆'],  correctMoves:['R逆'],
+    hint:'右邊被順時針轉了一下，用逆時針轉回去！'
+    },
+    {
+    id:2,
+    desc:'上層被轉了兩次，怎麼還原？',
+    state:['🟥','🟥','🟦','🟦',  '🟩','🟩','🟨','🟨',  '⬜','⬜','🟥','🟥',  '🟩','🟩','🟩','🟩',  '🟧','🟧','🟧','🟧',  '⬜','⬜','⬜','⬜'],
+    solved:['🟦','🟦','🟦','🟦', '🟨','🟨','🟨','🟨', '🟥','🟥','🟥','🟥', '🟩','🟩','🟩','🟩', '🟧','🟧','🟧','🟧', '⬜','⬜','⬜','⬜'],
+    moves:['U','U2','U逆'],  correctMoves:['U2'],
+    hint:'轉了兩次，再轉兩次就回來了！U2 = 轉兩次'
+    },
+    {
+    id:3,
+    desc:'波比做了 R U，你能做 U逆 R逆 還原嗎？',
+    state:['🟩','🟦','🟩','🟦',  '🟧','🟨','🟧','🟨',  '🟥','🟥','🟥','🟥',  '⬜','🟩','⬜','🟩',  '🟧','🟧','⬜','⬜',  '🟦','🟦','🟦','🟦'],
+    solved:['🟦','🟦','🟦','🟦', '🟨','🟨','🟨','🟨', '🟥','🟥','🟥','🟥', '🟩','🟩','🟩','🟩', '🟧','🟧','🟧','🟧', '⬜','⬜','⬜','⬜'],
+    moves:['R逆 U逆','U逆 R逆','R U','U R'],  correctMoves:['U逆 R逆'],
+    hint:'R U 的逆操作是 U逆 R逆，順序要反過來！'
+    },
+    {
+    id:4,
+    desc:'一個角塊位置對但方向錯，波比說：要用幾次 R U R逆 U逆？',
+    state:['🟦','🟦','🟦','🟥',  '🟨','🟨','🟥','🟨',  '🟥','⬜','🟥','🟥',  '🟩','🟩','🟩','🟩',  '🟧','🟧','🟧','🟧',  '⬜','🟦','⬜','⬜'],
+    solved:['🟦','🟦','🟦','🟦', '🟨','🟨','🟨','🟨', '🟥','🟥','🟥','🟥', '🟩','🟩','🟩','🟩', '🟧','🟧','🟧','🟧', '⬜','⬜','⬜','⬜'],
+    moves:['2次','3次','4次（週期！）','6次'],  correctMoves:['6次'],
+    hint:'R U R逆 U逆 的週期是6！做6次，角塊轉回原本方向！'
+    },
+    {
+    id:5,
+    desc:'面對這個狀態，波比問：用什麼公式最省步驟？',
+    state:['🟦','🟥','🟦','🟦',  '🟨','🟨','🟨','🟩',  '🟥','🟥','🟩','🟥',  '🟩','⬜','🟩','🟩',  '🟧','🟧','🟧','🟧',  '⬜','⬜','🟦','⬜'],
+    solved:['🟦','🟦','🟦','🟦', '🟨','🟨','🟨','🟨', '🟥','🟥','🟥','🟥', '🟩','🟩','🟩','🟩', '🟧','🟧','🟧','🟧', '⬜','⬜','⬜','⬜'],
+    moves:['先底層十字，再角塊','先整頂層，再底層','隨便轉，碰運氣','先算好再動'],  correctMoves:['先算好再動'],
+    hint:'觀察哪些塊已在正確位置，只移動需要移動的！這叫「效率思維」！'
+    },
+  ];
+  let pIdx=0, timeLeft=60, score=0;
+  
+  function renderPuzzle(){
+    if(pIdx>=puzzles.length){
+    clearInterval(gameTimerInterval);
+    gameRunning=false;
+    showGameEnd();
+    return;
+    }
+    const p=puzzles[pIdx];
+    const faces=['前','後','右','左','上','下'];
+    const faceColors=['#e11d48','#7c3aed','#0ea5e9','#059669','#f59e0b','#6b7280'];
+    const stateHtml = [0,1,2,3].map((fi,i)=>`
+    <div style="text-align:center;">
+    <div style="font-size:0.65rem;font-weight:800;color:${faceColors[fi]};margin-bottom:3px;">${faces[fi]}面</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;width:52px;">
+    ${p.state.slice(fi*4,fi*4+4).map(c=>`<div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:rgba(255,255,255,0.08);border-radius:5px;">${c}</div>`).join('')}
+    </div>
+    </div>`).join('');
+    
+    area.innerHTML=`
+    <div style="padding:4px 8px 0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <span style="font-size:0.85rem;font-weight:800;color:white;">第${pIdx+1}/${puzzles.length}題 &nbsp;⏱<span id="cubeTime">${timeLeft}</span>秒</span>
+    <span style="font-size:0.9rem;font-weight:900;color:#fbbf24;">⭐ ${score}</span>
+    </div>
+    <div style="background:rgba(255,255,255,0.08);border-radius:14px;padding:12px;margin-bottom:10px;">
+    <div style="font-size:0.88rem;font-weight:800;color:#fbbf24;margin-bottom:10px;">🎲 ${p.desc}</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">${stateHtml}</div>
+    </div>
+    <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-weight:700;text-align:center;margin-bottom:8px;">💡 ${p.hint}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="cubeMoves">
+    ${p.moves.map(m=>`
+    <button onclick="cubeAnswer('${m.replace(/'/g,'\'')}','${p.correctMoves[0].replace(/'/g,'\'')}')"
+    style="background:rgba(225,29,72,0.15);border:2px solid rgba(225,29,72,0.4);border-radius:14px;padding:14px 10px;font-size:1rem;font-weight:900;color:white;cursor:pointer;font-family:Nunito,sans-serif;text-align:center;">
+    ${m}
+    </button>`).join('')}
+    </div>
+    </div>`;
+  }
+  
+  window.cubeAnswer=function(chosen, correct){
+    document.querySelectorAll('#cubeMoves button').forEach(b=>b.disabled=true);
+    const isCorrect = chosen===correct;
+    document.querySelectorAll('#cubeMoves button').forEach(b=>{
+    if(b.textContent.trim()===correct){b.style.background='rgba(34,197,94,0.3)';b.style.borderColor='#22c55e';}
+    else if(b.textContent.trim()===chosen&&!isCorrect){b.style.background='rgba(239,68,68,0.3)';b.style.borderColor='#ef4444';}
+    });
+    if(isCorrect){sfxCorrect();score+=30;addGameScore(30);}
+    else{sfxWrong();}
+    setTimeout(()=>{pIdx++;renderPuzzle();},1200);
+  };
+  
+  renderPuzzle();
+  gameTimerInterval=setInterval(()=>{
+    timeLeft--;
+    const tw=document.getElementById('cubeTime');
+    if(tw)tw.textContent=timeLeft;
+    document.getElementById('gameTimerBar').style.width=`${(timeLeft/60)*100}%`;
+    if(timeLeft<=0){clearInterval(gameTimerInterval);gameRunning=false;showGameEnd();}
+  },1000);
 }
 /* =====================================================
-🪀 扯鈴節奏遊戲
-===================================================== */
+   🪀 扯鈴節奏遊戲
+   ===================================================== */
 function initDiabolo(area){
-
-let timeLeft=45, score=0, round=0;
-
-const questions=[
-{
-q:‘扯鈴拋出後向右偏，落下時會落在哪裡？’,
-visual:‘right’,
-opts:[‘偏右（拋物線水平方向保持原速）’,‘正下方’,‘偏左’,‘隨機’],
-ans:0, pts:20,
-explain:‘水平方向：勻速！垂直方向：重力加速。所以偏右拋出→偏右落下！’
-},
-{
-q:‘拋得越高，在空中時間越長還是越短？’,
-visual:‘high’,
-opts:[‘越長（高度越高，飛行時間越長）’,‘越短’,‘一樣長’,‘視重量而定’],
-ans:0, pts:20,
-explain:‘h=½gt²，高度越高，時間t越長！拋3倍高，時間是√3≈1.73倍！’
-},
-{
-q:‘兩顆扯鈴，一顆重一顆輕，同樣高度丟下，哪個先落地？’,
-visual:‘weight’,
-opts:[‘同時落地（重力加速度和質量無關）’,‘重的先落’,‘輕的先落’,‘看形狀’],
-ans:0, pts:25,
-explain:‘伽利略的發現：忽略空氣阻力，所有物體自由落體速度相同！質量不影響落下時間！’
-},
-{
-q:‘扯鈴水平飛出，同時有顆球從同樣高度直接落下，哪個先著地？’,
-visual:‘horizontal’,
-opts:[‘同時著地（水平拋出的垂直速度和自由落體相同）’,‘飛出的先’,‘直接落的先’,‘視速度而定’],
-ans:0, pts:30,
-explain:‘水平分速不影響垂直落體！兩者的垂直加速度都是g，所以同時著地。這是物理最美的結論之一！’
-},
-{
-q:‘小蛹拋扯鈴，波比觀察到扯鈴在最高點時速度方向是？’,
-visual:‘peak’,
-opts:[‘水平方向（最高點垂直速度=0，只剩水平速度）’,‘斜向上’,‘垂直向下’,‘靜止’],
-ans:0, pts:30,
-explain:‘最高點：垂直速度=0（從上升變下降的瞬間），但水平速度還在！所以速度方向是純水平。你能感覺到扯鈴在最高點「停了一下」嗎？’
-},
-];
-
-function renderRound(){
-if(round>=questions.length){
-clearInterval(gameTimerInterval);
-gameRunning=false;
-showGameEnd();
-return;
-}
-const q=questions[round];
-const visuals={
-right:‘🪀 偏右飛出 → 偏右落下’,
-high:‘🪀 拋越高 ↑ 空中時間越長 ↓’,
-weight:‘⚖️ 輕🔵 vs 重🔴 同高度落下’,
-horizontal:‘🪀→→(水平) vs 🔴↓(自由落體)’,
-peak:‘→→→ 🪀 最高點 ←速度純水平→’
-};
-
-```
-area.innerHTML=`
-<div style="padding:4px 8px 0;">
-<div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-<span style="font-size:0.85rem;font-weight:800;color:white;">第${round+1}/${questions.length}題 ⏱<span id="diabTime">${timeLeft}</span>秒</span>
-<span style="font-size:0.9rem;font-weight:900;color:#fbbf24;">⭐ ${score}</span>
-</div>
-<div style="background:rgba(124,58,237,0.2);border:2px solid rgba(124,58,237,0.5);border-radius:14px;padding:14px;margin-bottom:10px;">
-<div style="font-size:0.78rem;font-weight:900;color:#c4b5fd;margin-bottom:6px;">🪀 物理推理：</div>
-<div style="font-size:1rem;font-weight:800;color:white;line-height:1.6;">${q.q}</div>
-<div style="font-family:monospace;font-size:1.2rem;color:#fbbf24;margin-top:8px;white-space:pre;text-align:center;background:rgba(0,0,0,0.2);border-radius:8px;padding:8px;">${visuals[q.visual]||'🪀'}</div>
-</div>
-<div style="display:flex;flex-direction:column;gap:7px;" id="diabOpts">
-${q.opts.map((o,i)=>`
-<button onclick="diaboloAnswer(${i},${q.ans},'${escStr(q.explain)}')"
-style="background:rgba(124,58,237,0.15);border:2px solid rgba(124,58,237,0.35);border-radius:12px;padding:12px 14px;font-size:0.9rem;font-weight:800;color:#e2e8f0;cursor:pointer;font-family:Nunito,sans-serif;text-align:left;width:100%;box-sizing:border-box;">
-${['A','B','C','D'][i]}. ${o}
-</button>`).join('')}
-</div>
-<div id="diabFeedback" style="margin-top:8px;"></div>
-</div>`;
-```
-
-}
-
-window.diaboloAnswer=function(chosen, correct, explain){
-document.querySelectorAll(’#diabOpts button’).forEach(b=>b.disabled=true);
-const isCorrect=chosen===correct;
-document.querySelectorAll(’#diabOpts button’).forEach((b,i)=>{
-if(i===correct){b.style.background=‘rgba(34,197,94,0.25)’;b.style.borderColor=’#22c55e’;b.style.color=’#86efac’;}
-else if(i===chosen&&!isCorrect){b.style.background=‘rgba(239,68,68,0.2)’;b.style.borderColor=’#ef4444’;b.style.color=’#fca5a5’;}
-});
-const pts=questions[round].pts;
-if(isCorrect){sfxCorrect();score+=pts;addGameScore(pts);}
-else{sfxWrong();}
-document.getElementById(‘diabFeedback’).innerHTML=` <div style="background:${isCorrect?'rgba(34,197,94,0.15)':'rgba(255,255,255,0.08)'};border-radius:10px;padding:10px 12px;font-size:0.78rem;font-weight:700;color:${isCorrect?'#86efac':'#cbd5e1'};line-height:1.6;"> ${isCorrect?'✅ 正確！':'💡 '} ${explain} </div>`;
-setTimeout(()=>{round++;renderRound();},2000);
-};
-
-renderRound();
-gameTimerInterval=setInterval(()=>{
-timeLeft–;
-const tw=document.getElementById(‘diabTime’);
-if(tw)tw.textContent=timeLeft;
-document.getElementById(‘gameTimerBar’).style.width=`${(timeLeft/45)*100}%`;
-if(timeLeft<=0){clearInterval(gameTimerInterval);gameRunning=false;showGameEnd();}
-},1000);
+  
+  let timeLeft=45, score=0, round=0;
+  
+  const questions=[
+    {
+    q:'扯鈴拋出後向右偏，落下時會落在哪裡？',
+    visual:'right',
+    opts:['偏右（拋物線水平方向保持原速）','正下方','偏左','隨機'],
+    ans:0, pts:20,
+    explain:'水平方向：勻速！垂直方向：重力加速。所以偏右拋出→偏右落下！'
+    },
+    {
+    q:'拋得越高，在空中時間越長還是越短？',
+    visual:'high',
+    opts:['越長（高度越高，飛行時間越長）','越短','一樣長','視重量而定'],
+    ans:0, pts:20,
+    explain:'h=½gt²，高度越高，時間t越長！拋3倍高，時間是√3≈1.73倍！'
+    },
+    {
+    q:'兩顆扯鈴，一顆重一顆輕，同樣高度丟下，哪個先落地？',
+    visual:'weight',
+    opts:['同時落地（重力加速度和質量無關）','重的先落','輕的先落','看形狀'],
+    ans:0, pts:25,
+    explain:'伽利略的發現：忽略空氣阻力，所有物體自由落體速度相同！質量不影響落下時間！'
+    },
+    {
+    q:'扯鈴水平飛出，同時有顆球從同樣高度直接落下，哪個先著地？',
+    visual:'horizontal',
+    opts:['同時著地（水平拋出的垂直速度和自由落體相同）','飛出的先','直接落的先','視速度而定'],
+    ans:0, pts:30,
+    explain:'水平分速不影響垂直落體！兩者的垂直加速度都是g，所以同時著地。這是物理最美的結論之一！'
+    },
+    {
+    q:'小蛹拋扯鈴，波比觀察到扯鈴在最高點時速度方向是？',
+    visual:'peak',
+    opts:['水平方向（最高點垂直速度=0，只剩水平速度）','斜向上','垂直向下','靜止'],
+    ans:0, pts:30,
+    explain:'最高點：垂直速度=0（從上升變下降的瞬間），但水平速度還在！所以速度方向是純水平。你能感覺到扯鈴在最高點「停了一下」嗎？'
+    },
+  ];
+  
+  function renderRound(){
+    if(round>=questions.length){
+    clearInterval(gameTimerInterval);
+    gameRunning=false;
+    showGameEnd();
+    return;
+    }
+    const q=questions[round];
+    const visuals={
+    right:'🪀 偏右飛出 → 偏右落下',
+    high:'🪀 拋越高 ↑ 空中時間越長 ↓',
+    weight:'⚖️ 輕🔵 vs 重🔴 同高度落下',
+    horizontal:'🪀→→(水平) vs 🔴↓(自由落體)',
+    peak:'→→→ 🪀 最高點 ←速度純水平→'
+    };
+    
+    area.innerHTML=`
+    <div style="padding:4px 8px 0;">
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+    <span style="font-size:0.85rem;font-weight:800;color:white;">第${round+1}/${questions.length}題 ⏱<span id="diabTime">${timeLeft}</span>秒</span>
+    <span style="font-size:0.9rem;font-weight:900;color:#fbbf24;">⭐ ${score}</span>
+    </div>
+    <div style="background:rgba(124,58,237,0.2);border:2px solid rgba(124,58,237,0.5);border-radius:14px;padding:14px;margin-bottom:10px;">
+    <div style="font-size:0.78rem;font-weight:900;color:#c4b5fd;margin-bottom:6px;">🪀 物理推理：</div>
+    <div style="font-size:1rem;font-weight:800;color:white;line-height:1.6;">${q.q}</div>
+    <div style="font-family:monospace;font-size:1.2rem;color:#fbbf24;margin-top:8px;white-space:pre;text-align:center;background:rgba(0,0,0,0.2);border-radius:8px;padding:8px;">${visuals[q.visual]||'🪀'}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:7px;" id="diabOpts">
+    ${q.opts.map((o,i)=>`
+    <button onclick="diaboloAnswer(${i},${q.ans},'${escStr(q.explain)}')"
+    style="background:rgba(124,58,237,0.15);border:2px solid rgba(124,58,237,0.35);border-radius:12px;padding:12px 14px;font-size:0.9rem;font-weight:800;color:#e2e8f0;cursor:pointer;font-family:Nunito,sans-serif;text-align:left;width:100%;box-sizing:border-box;">
+    ${['A','B','C','D'][i]}. ${o}
+    </button>`).join('')}
+    </div>
+    <div id="diabFeedback" style="margin-top:8px;"></div>
+    </div>`;
+  }
+  
+  window.diaboloAnswer=function(chosen, correct, explain){
+    document.querySelectorAll('#diabOpts button').forEach(b=>b.disabled=true);
+    const isCorrect=chosen===correct;
+    document.querySelectorAll('#diabOpts button').forEach((b,i)=>{
+    if(i===correct){b.style.background='rgba(34,197,94,0.25)';b.style.borderColor='#22c55e';b.style.color='#86efac';}
+    else if(i===chosen&&!isCorrect){b.style.background='rgba(239,68,68,0.2)';b.style.borderColor='#ef4444';b.style.color='#fca5a5';}
+    });
+    const pts=questions[round].pts;
+    if(isCorrect){sfxCorrect();score+=pts;addGameScore(pts);}
+    else{sfxWrong();}
+    document.getElementById('diabFeedback').innerHTML=`
+    <div style="background:${isCorrect?'rgba(34,197,94,0.15)':'rgba(255,255,255,0.08)'};border-radius:10px;padding:10px 12px;font-size:0.78rem;font-weight:700;color:${isCorrect?'#86efac':'#cbd5e1'};line-height:1.6;">
+    ${isCorrect?'✅ 正確！':'💡 '} ${explain}
+    </div>`;
+    setTimeout(()=>{round++;renderRound();},2000);
+  };
+  
+  renderRound();
+  gameTimerInterval=setInterval(()=>{
+    timeLeft--;
+    const tw=document.getElementById('diabTime');
+    if(tw)tw.textContent=timeLeft;
+    document.getElementById('gameTimerBar').style.width=`${(timeLeft/45)*100}%`;
+    if(timeLeft<=0){clearInterval(gameTimerInterval);gameRunning=false;showGameEnd();}
+  },1000);
 }
 /* 粒子背景 */
 function initParticles(){
-const c=document.getElementById(‘bgParticles’);
-const items=[‘🍀’,‘⭐’,‘✨’,‘🌸’,‘🦋’,‘🌟’,‘💫’,‘🔍’];
-for(let i=0;i<18;i++){
-const p=document.createElement(‘div’);
-p.style.cssText=`position:absolute;font-size:${1+Math.random()*1.5}rem;left:${Math.random()*100}%;top:${Math.random()*100}%;animation:float${Math.floor(Math.random()*3)+1} ${6+Math.random()*8}s ease-in-out ${Math.random()*5}s infinite;opacity:${0.15+Math.random()*0.2};pointer-events:none;`;
-p.textContent=items[Math.floor(Math.random()*items.length)];c.appendChild(p);
-}
-const style=document.createElement(‘style’);
-style.textContent=`@keyframes float1{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-30px) rotate(15deg)}}@keyframes float2{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-20px) rotate(-10deg)}}@keyframes float3{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-25px) scale(1.1)}}`;
-document.head.appendChild(style);
+  const c=document.getElementById('bgParticles');
+  const items=['🍀','⭐','✨','🌸','🦋','🌟','💫','🔍'];
+  for(let i=0;i<18;i++){
+    const p=document.createElement('div');
+    p.style.cssText=`position:absolute;font-size:${1+Math.random()*1.5}rem;left:${Math.random()*100}%;top:${Math.random()*100}%;animation:float${Math.floor(Math.random()*3)+1} ${6+Math.random()*8}s ease-in-out ${Math.random()*5}s infinite;opacity:${0.15+Math.random()*0.2};pointer-events:none;`;
+    p.textContent=items[Math.floor(Math.random()*items.length)];c.appendChild(p);
+  }
+  const style=document.createElement('style');
+  style.textContent=`@keyframes float1{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-30px) rotate(15deg)}}@keyframes float2{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-20px) rotate(-10deg)}}@keyframes float3{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-25px) scale(1.1)}}`;
+  document.head.appendChild(style);
 }
 /* =====================================================
-初始化
-===================================================== */
+   初始化
+   ===================================================== */
 function startApp(){
-const name=document.getElementById(‘nameInput’).value.trim()||‘小蛹’;
-S.name=name;
-if(!S.startDate){
-S.startDate=‘2025-03-01’; // 小蛹的學習從3月1日開始
+  const name=document.getElementById('nameInput').value.trim()||'小蛹';
+  S.name=name;
+  S.hasVisited=true;
+  if(!S.startDate){
+    S.startDate='2025-03-01';
+  }
+  checkDay();save();
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  document.getElementById('mainScreen').classList.remove('hidden');
+  setBoppyEl('welcomeBoppy',100,'happy','',true);
+  sfxStart();updateUI();
+  setTimeout(()=>{
+    setBoppyEl('playerAvatar',52,'happy',getActiveCostume().badge,false);
+    setBoppyEl('encAvatar',36,'normal','',false);
+  },100);
 }
-checkDay();save();
-document.getElementById(‘welcomeScreen’).classList.add(‘hidden’);
-document.getElementById(‘mainScreen’).classList.remove(‘hidden’);
-setBoppyEl(‘welcomeBoppy’,100,‘happy’,’’,true);
-sfxStart();updateUI();
-}
-window.addEventListener(‘load’,()=>{
-load(); initParticles();
-// 先設 emoji，然後嘗試載入 SVG
-const wb = document.getElementById(‘welcomeBoppy’);
-if(wb) wb.innerHTML = ‘<div style="font-size:80px;line-height:1;">🌸</div>’;
-setTimeout(()=>{
-setBoppyEl(‘welcomeBoppy’,100,‘happy’,’’,true);
-// 如果 SVG 沒有內容，維持 emoji
-const wb2 = document.getElementById(‘welcomeBoppy’);
-if(wb2 && (!wb2.innerHTML || !wb2.innerHTML.includes(’<svg’))) {
-wb2.innerHTML = ‘<div style="font-size:80px;line-height:1;animation:hamsterWelcome 2.5s ease-in-out infinite;">🌸</div>’;
-}
-}, 200);
-const ni=document.getElementById(‘nameInput’);
-if(ni){
-if(S.name&&S.name!==‘小蛹’) ni.value=S.name;
-ni.addEventListener(‘keydown’,e=>{if(e.key===‘Enter’)startApp();});
-}
-const startBtn = document.getElementById(‘startBtn’);
-if(startBtn){
-startBtn.addEventListener(‘click’, function(e){
-e.preventDefault();
-startApp();
-});
-startBtn.addEventListener(‘touchend’, function(e){
-e.preventDefault();
-startApp();
-}, {passive:false});
-}
-if(S.name&&S.lastDate){
-checkDay();
-document.getElementById(‘welcomeScreen’).classList.add(‘hidden’);
-document.getElementById(‘mainScreen’).classList.remove(‘hidden’);
-updateUI();
-// 延遲設定頭像確保 DOM 已更新
-setTimeout(()=>{
-setBoppyEl(‘playerAvatar’,52,‘happy’,getActiveCostume().badge,false);
-setBoppyEl(‘encAvatar’,36,‘normal’,’’,false);
-},100);
-}
+window.addEventListener('load',()=>{
+  load(); initParticles();
+  // 先設 emoji，然後嘗試載入 SVG
+  const wb = document.getElementById('welcomeBoppy');
+  if(wb) wb.innerHTML = '<div style="font-size:80px;line-height:1;">🌸</div>';
+  setTimeout(()=>{
+    setBoppyEl('welcomeBoppy',100,'happy','',true);
+    // 如果 SVG 沒有內容，維持 emoji
+    const wb2 = document.getElementById('welcomeBoppy');
+    if(wb2 && (!wb2.innerHTML || !wb2.innerHTML.includes('<svg'))) {
+      wb2.innerHTML = '<div style="font-size:80px;line-height:1;animation:hamsterWelcome 2.5s ease-in-out infinite;">🌸</div>';
+    }
+  }, 200);
+  const ni=document.getElementById('nameInput');
+  if(ni){
+    if(S.name&&S.name!=='小蛹') ni.value=S.name;
+    ni.addEventListener('keydown',e=>{if(e.key==='Enter')startApp();});
+  }
+  const startBtn = document.getElementById('startBtn');
+  if(startBtn){
+    startBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    startApp();
+    });
+    startBtn.addEventListener('touchend', function(e){
+    e.preventDefault();
+    startApp();
+    }, {passive:false});
+  }
+  if(S.hasVisited && S.name && S.name!=='小蛹'){
+    checkDay();
+    document.getElementById('welcomeScreen').classList.add('hidden');
+    document.getElementById('mainScreen').classList.remove('hidden');
+    updateUI();
+    // 延遲設定頭像確保 DOM 已更新
+    setTimeout(()=>{
+      setBoppyEl('playerAvatar',52,'happy',getActiveCostume().badge,false);
+      setBoppyEl('encAvatar',36,'normal','',false);
+    },100);
+  }
 });
 </script>
-
 </body>
 </html>
