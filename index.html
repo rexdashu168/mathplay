@@ -725,7 +725,7 @@ function boppySVG(size=56,expr='normal',badge='',glowing=false){
   const r=size*0.46,cx=size*0.5,cy=size*0.48;
   // 用穩定 id 避免 iOS Safari SVG gradient 渲染 bug
   // 加上遞增計數器確保同頁多個 SVG 不衝突
-  boppySVG._cnt = (boppySVG._cnt||0)+1;
+  boppySVG._cnt = ((boppySVG._cnt||0)+1) % 9999;
   const gid='bp'+(size|0)+expr.slice(0,2)+boppySVG._cnt;
   const glow=glowing?`<circle cx="${cx}" cy="${cy}" r="${r*1.55}" fill="url(#glow${gid})" />`:'';
   let eyes='';
@@ -772,14 +772,7 @@ function boppySVG(size=56,expr='normal',badge='',glowing=false){
 }
 function setBoppyEl(id,size=56,expr='normal',badge='',glowing=false){
   const el=document.getElementById(id);
-  if(!el) return;
-  const svg = boppySVG(size,expr,badge,glowing);
-  el.innerHTML = svg;
-  // iOS Safari SVG 有時需要 reflow 才會顯示
-  el.style.display='none';
-  // eslint-disable-next-line no-unused-expressions
-  el.offsetHeight; // 強制 reflow
-  el.style.display='flex';
+  if(el) el.innerHTML = boppySVG(size,expr,badge,glowing);
 }
 
 /* =====================================================
@@ -1666,7 +1659,7 @@ html += '<div style="background:'+c.bg+';border:2px solid '+(isDone?'#22c55e':c.
   +'<div style="width:44px;height:44px;border-radius:12px;background:'+c.btn+';display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;box-shadow:0 3px 8px '+c.shadow+';">'+subIcons[s]+'</div>'
   +'<div style="flex:1;min-width:0;">'
   +'<div style="font-size:0.95rem;font-weight:900;color:#1a1a1a;">'+subNames[s]+'</div>'
-  +'<div style="font-size:0.8rem;font-weight:700;color:#555;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">第'+(chIdx+1)+'章：'+chapter.chapter.replace(/^[^\s]*\s/,'')+'</div>'
+  +'<div style="font-size:0.8rem;font-weight:700;color:#555;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+chapter.chapter+'</div>'
   +'</div>'
   +(isDone?'<div style="font-size:1.6rem;">✅</div>':'')
   +'</div>'
@@ -2002,7 +1995,7 @@ name:‘小蛹’,gold:0,exp:0,level:1,
 badges:{mini:0,small:0,medium:0,large:0,super:0},
 activeCostume:‘default’,
 unlockedCostumes:[‘default’],
-streak:0,lastDate:’’,startDate:’’,
+streak:0,lastDate:’’,startDate:’’,dataCleanedV2:false,
 dailyLogs:{},
 emotionLog:{},
 chapterProgress:{chinese:0,english:0,math:0},
@@ -2012,7 +2005,29 @@ function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}
 function load(){
 try{
 const d=localStorage.getItem(SAVE_KEY);
-if(d){const p=JSON.parse(d);S={…S,…p};S.badges=S.badges||{mini:0,small:0,medium:0,large:0,super:0};S.dailyLogs=S.dailyLogs||{};S.chapterProgress=S.chapterProgress||{chinese:0,english:0,math:0};S.unlockedCostumes=S.unlockedCostumes||[‘default’];S.emotionLog=S.emotionLog||{};}
+if(d){
+const p=JSON.parse(d);
+S={…S,…p};
+S.badges=S.badges||{mini:0,small:0,medium:0,large:0,super:0};
+S.dailyLogs=S.dailyLogs||{};
+S.chapterProgress=S.chapterProgress||{chinese:0,english:0,math:0};
+S.unlockedCostumes=S.unlockedCostumes||[‘default’];
+S.emotionLog=S.emotionLog||{};
+// 一次性清除舊版自動填入的假資料（只執行一次，之後標記已清除）
+if(!S.dataCleanedV2){
+const logDays = Object.keys(S.dailyLogs).length;
+const totalProgress = (S.chapterProgress.chinese||0)+(S.chapterProgress.english||0)+(S.chapterProgress.math||0);
+if(logDays > 20 && totalProgress === 0){
+const t = today();
+const todayLog = S.dailyLogs[t];
+S.dailyLogs = {};
+if(todayLog) S.dailyLogs[t] = todayLog;
+S.startDate = t;
+S.streak = 0;
+}
+S.dataCleanedV2 = true; // 標記已清除，之後不再執行
+}
+}
 }catch(e){}
 }
 
@@ -4587,14 +4602,7 @@ function startApp(){
 const name=document.getElementById(‘nameInput’).value.trim()||‘小蛹’;
 S.name=name;
 if(!S.startDate){
-S.startDate=‘2025-03-01’;
-// 把 3/1 到昨天自動標記為完成（三科）
-const t=today();
-for(let d=new Date(‘2025-03-01’);; d.setDate(d.getDate()+1)){
-const ds=d.getFullYear()+’-’+String(d.getMonth()+1).padStart(2,‘0’)+’-’+String(d.getDate()).padStart(2,‘0’);
-if(ds>=t) break;
-if(!S.dailyLogs[ds]) S.dailyLogs[ds]={chinese:true,english:true,math:true};
-}
+S.startDate=today(); // 從今天開始記錄，不自動填滿過去
 }
 checkDay();save();
 document.getElementById(‘welcomeScreen’).classList.add(‘hidden’);
