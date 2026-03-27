@@ -1938,45 +1938,83 @@ const DAILY_CHALLENGES=[
 const GAMES=[
   {
     id:'whack', name:'打波比', emoji:'🌸', color:'#e91e63',
-    desc:'點擊從草叢冒出的波比！',
-    unlock:{desc:'完成第1天學習就開放！', check:()=>(S.streak||0)>=1},
-    hint:'只要學習第一天就能玩！',
-    story:'波比躲在草叢裡，快點擊找到他！'
+    desc:'點擊草叢冒出的波比！',
+    unlock:{desc:'完成找矛盾 d01-d05 全部5題解鎖', check:()=>['d01','d02','d03','d04','d05'].every(id=>(detectiveState||{completed:[]}).completed.includes(id))},
+    hint:'完成偵探挑戰室「找矛盾」5題後解鎖！',
+    story:'波比說：「找矛盾就像找波比躲在哪裡——邏輯很重要！」',
+    typeKey:'contradiction'
   },
   {
     id:'memory', name:'記憶翻牌', emoji:'🎴', color:'#8b5cf6',
-    desc:'翻出相同的圖案對！',
-    unlock:{desc:'連續學習 3 天解鎖', check:()=>(S.streak||0)>=3},
-    hint:'連續學習 3 天後開放！',
-    story:'波比把圖案藏在卡片裡，記住位置翻出來！'
-  },
-  {
-    id:'catch', name:'接水果', emoji:'🍎', color:'#22c55e',
-    desc:'接住波比丟下來的水果！',
-    unlock:{desc:'集滿 5 個✨小波比徽章解鎖', check:()=>(S.badges.small||0)>=5},
-    hint:'集滿 5 個小波比✨徽章後開放！',
-    story:'波比站在樹上丟水果，快用籃子接住！'
+    desc:'翻出相同圖案對！',
+    unlock:{desc:'完成找規律 d06-d10 全部5題解鎖', check:()=>['d06','d07','d08','d09','d10'].every(id=>(detectiveState||{completed:[]}).completed.includes(id))},
+    hint:'完成偵探挑戰室「找規律」5題後解鎖！',
+    story:'波比說：「找規律和記憶翻牌一樣——都要找出重複的模式！」',
+    typeKey:'pattern'
   },
   {
     id:'spot', name:'找不同', emoji:'🔍', color:'#f59e0b',
     desc:'找出和其他三個不同的那個！',
-    unlock:{desc:'三科各完成 3 章以上解鎖', check:()=>['chinese','english','math'].every(s=>(S.chapterProgress[s]||0)>=3)},
-    hint:'三科都完成 3 章以上才開放！',
-    story:'波比說：「小蛹，你的觀察力夠強了，來挑戰吧！」'
+    unlock:{desc:'完成邏輯推理 d11-d15 全部5題解鎖', check:()=>['d11','d12','d13','d14','d15'].every(id=>(detectiveState||{completed:[]}).completed.includes(id))},
+    hint:'完成偵探挑戰室「邏輯推理」5題後解鎖！',
+    story:'波比說：「邏輯推理就是找出不合理的那個——一樣的技能！」',
+    typeKey:'logic'
+  },
+  {
+    id:'catch', name:'接水果', emoji:'🍎', color:'#22c55e',
+    desc:'接住波比丟下來的水果！',
+    unlock:{desc:'完成找錯誤 d16-d20 全部5題解鎖', check:()=>['d16','d17','d18','d19','d20'].every(id=>(detectiveState||{completed:[]}).completed.includes(id))},
+    hint:'完成偵探挑戰室「找錯誤」5題後解鎖！',
+    story:'波比說：「找錯誤要眼明手快——接水果也是！」',
+    typeKey:'bug_hunt'
+  },
+  {
+    id:'fruitninja', name:'切水果', emoji:'🍉', color:'#ef4444',
+    desc:'滑動切斷水果，小心炸彈！',
+    unlock:{desc:'完成跨科整合 d21-d25 全部5題解鎖', check:()=>['d21','d22','d23','d24','d25'].every(id=>(detectiveState||{completed:[]}).completed.includes(id))},
+    hint:'完成偵探挑戰室「跨科整合」5題後解鎖！',
+    story:'波比說：「跨科整合就像切水果——什麼都要懂一點！」',
+    typeKey:'crossover'
+  },
+  {
+    id:'sliding', name:'數字華容道', emoji:'🔢', color:'#0ea5e9',
+    desc:'滑動數字拼回正確順序！',
+    unlock:{desc:'完成數字益智 d26-d30 全部5題解鎖', check:()=>['d26','d27','d28','d29','d30'].every(id=>(detectiveState||{completed:[]}).completed.includes(id))},
+    hint:'完成偵探挑戰室「數字益智」5題後解鎖！',
+    story:'波比說：「數字排列組合，就從這個遊戲開始練習！」',
+    typeKey:'number_puzzle'
   },
   {
     id:'cube', name:'方塊還原', emoji:'🎲', color:'#e11d48',
     desc:'幾步還原2×2迷你方塊！',
-    unlock:{desc:'完成偵探挑戰室3道方塊推理題解鎖', check:()=>['d41','d42','d43'].every(id=>(detectiveState||{completed:[]}).completed.includes(id))},
-    hint:'先完成偵探挑戰室的方塊推理題！',
-    story:'波比說：「你會還原三階，那這個迷你版對你來說⋯⋯是暖身？」'
+    unlock:{desc:'完成邏輯謎題 d31-d35 全部5題解鎖', check:()=>['d31','d32','d33','d34','d35'].every(id=>(detectiveState||{completed:[]}).completed.includes(id))},
+    hint:'完成偵探挑戰室「邏輯謎題」5題後解鎖！',
+    story:'波比說：「邏輯謎題解完了，方塊還原是下一關！」',
+    typeKey:'logic_puzzle'
   },
   {
     id:'diabolo', name:'扯鈴節奏', emoji:'🪀', color:'#7c3aed',
     desc:'掌握節奏接住飛來的扯鈴！',
-    unlock:{desc:'完成偵探挑戰室3道扯鈴物理題解鎖', check:()=>['d46','d47','d48'].every(id=>(detectiveState||{completed:[]}).completed.includes(id))},
-    hint:'先完成偵探挑戰室的扯鈴物理題！',
-    story:'波比說：「你懂了拋物線，那接扯鈴對你來說應該⋯⋯很準？」'
+    unlock:{desc:'完成方塊推理 d41-d45 全部5題解鎖', check:()=>['d41','d42','d43','d44','d45'].every(id=>(detectiveState||{completed:[]}).completed.includes(id))},
+    hint:'完成偵探挑戰室「方塊推理」5題後解鎖！',
+    story:'波比說：「方塊推理練眼力，扯鈴練手眼協調——都是你！」',
+    typeKey:'cube_logic'
+  },
+  {
+    id:'whack2', name:'接扯鈴', emoji:'🎯', color:'#f97316',
+    desc:'精準接住從天而降的扯鈴！',
+    unlock:{desc:'完成扯鈴物理 d46-d50 全部5題解鎖', check:()=>['d46','d47','d48','d49','d50'].every(id=>(detectiveState||{completed:[]}).completed.includes(id))},
+    hint:'完成偵探挑戰室「扯鈴物理」5題後解鎖！',
+    story:'波比說：「你懂了拋物線，那接扯鈴準準的吧！」',
+    typeKey:'diabolo_physics'
+  },
+  {
+    id:'quiz_game', name:'波比問答', emoji:'💬', color:'#059669',
+    desc:'回答波比的問題贏得星星！',
+    unlock:{desc:'完成教學對話 d51-d55 全部5題解鎖', check:()=>['d51','d52','d53','d54','d55'].every(id=>(detectiveState||{completed:[]}).completed.includes(id))},
+    hint:'完成偵探挑戰室「教學對話」5題後解鎖！',
+    story:'波比說：「你學了這麼多，讓我考考你！快速問答開始！」',
+    typeKey:'teach_boppy'
   },
 ];
 function isGameCenterFullyUnlocked(){
@@ -4335,6 +4373,10 @@ function initGame(id){
   else if(id==='spot')initSpot(area);
   else if(id==='cube')initCube(area);
   else if(id==='diabolo')initDiabolo(area);
+  else if(id==='fruitninja')initFruitNinja(area);
+  else if(id==='sliding')initSliding(area);
+  else if(id==='whack2')initWhack2(area);
+  else if(id==='quiz_game')initQuizGame(area);
 }
 /* 打波比 */
 function initWhack(area){
@@ -4660,6 +4702,648 @@ function initDiabolo(area){
     document.getElementById('gameTimerBar').style.width=`${(timeLeft/45)*100}%`;
     if(timeLeft<=0){clearInterval(gameTimerInterval);gameRunning=false;showGameEnd();}
   },1000);
+}
+
+
+/* =====================================================
+   數字華容道 Sliding Puzzle
+   ===================================================== */
+function initSliding(area){
+  clearInterval(gameTimerInterval);
+  gameRunning=true;
+  let moves=0, size=3, solved=false;
+  let totalTime=120, timeLeft=totalTime;
+  // 產生打亂的拼圖
+  function makeBoard(n){
+    let arr=[];
+    for(let i=1;i<n*n;i++) arr.push(i);
+    arr.push(0); // 0 = 空格
+    // Fisher-Yates 打亂並確保可解
+    for(let i=arr.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]]=[arr[j],arr[i]];
+    }
+    // 確保可解：計算逆序數
+    function isSolvable(a){
+      let inv=0;
+      const flat=a.filter(x=>x!==0);
+      for(let i=0;i<flat.length;i++)
+        for(let j=i+1;j<flat.length;j++)
+          if(flat[i]>flat[j]) inv++;
+      const zeroRow=Math.floor(a.indexOf(0)/n);
+      if(n%2===1) return inv%2===0;
+      return (inv+zeroRow)%2===1;
+    }
+    if(!isSolvable(arr)){
+      // 交換前兩個非零元素修正
+      if(arr[0]!==0&&arr[1]!==0)[arr[0],arr[1]]=[arr[1],arr[0]];
+      else if(arr[arr.length-2]!==0&&arr[arr.length-3]!==0)
+        [arr[arr.length-2],arr[arr.length-3]]=[arr[arr.length-3],arr[arr.length-2]];
+    }
+    return arr;
+  }
+  let board=makeBoard(size);
+  function isSolved(b){
+    for(let i=0;i<b.length-1;i++) if(b[i]!==i+1) return false;
+    return b[b.length-1]===0;
+  }
+  function render(){
+    const cell=(canvas.width-16)/size;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    // 背景
+    ctx.fillStyle='#0f172a'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    // 分數
+    ctx.font='bold 16px Nunito,sans-serif';
+    ctx.fillStyle='#94a3b8'; ctx.textAlign='left';
+    ctx.fillText(`移動：${moves}步`,10,22);
+    ctx.textAlign='right';
+    ctx.fillStyle='#fbbf24';
+    ctx.fillText(`⏱ ${timeLeft}s`,canvas.width-10,22);
+    const offsetY=38;
+    board.forEach((val,idx)=>{
+      const row=Math.floor(idx/size), col=idx%size;
+      const x=8+col*cell, y=offsetY+row*cell;
+      if(val===0){
+        ctx.fillStyle='rgba(255,255,255,0.05)';
+        ctx.beginPath();
+        ctx.roundRect(x+3,y+3,cell-6,cell-6,10);
+        ctx.fill();
+        return;
+      }
+      // 漸層色
+      const hue=Math.round((val-1)/(size*size-1)*200+160);
+      const grad=ctx.createLinearGradient(x,y,x+cell,y+cell);
+      grad.addColorStop(0,`hsl(${hue},80%,55%)`);
+      grad.addColorStop(1,`hsl(${hue+30},70%,40%)`);
+      ctx.fillStyle=grad;
+      ctx.beginPath();
+      ctx.roundRect(x+3,y+3,cell-6,cell-6,10);
+      ctx.fill();
+      // 白邊高光
+      ctx.strokeStyle='rgba(255,255,255,0.25)';
+      ctx.lineWidth=1.5;
+      ctx.stroke();
+      // 數字
+      ctx.fillStyle='white';
+      ctx.font=`bold ${cell*0.38}px Nunito,sans-serif`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(val,x+cell/2,y+cell/2);
+      ctx.textBaseline='alphabetic';
+    });
+    if(solved){
+      ctx.fillStyle='rgba(0,0,0,0.7)';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle='#fbbf24';
+      ctx.font='bold 28px Nunito,sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText('🎉 完成！',canvas.width/2,canvas.height/2-20);
+      ctx.font='bold 16px Nunito,sans-serif';
+      ctx.fillStyle='#a5b4fc';
+      ctx.fillText(`共 ${moves} 步`,canvas.width/2,canvas.height/2+14);
+    }
+  }
+  function tryMove(idx){
+    if(solved) return;
+    const zero=board.indexOf(0);
+    const zRow=Math.floor(zero/size), zCol=zero%size;
+    const iRow=Math.floor(idx/size), iCol=idx%size;
+    const dist=Math.abs(zRow-iRow)+Math.abs(zCol-iCol);
+    if(dist===1){
+      [board[zero],board[idx]]=[board[idx],board[zero]];
+      moves++;
+      sfxFlip();
+      if(isSolved(board)){
+        solved=true;
+        gameRunning=false;
+        clearInterval(gameTimerInterval);
+        const bonus=Math.max(0,300-moves*5+(timeLeft*2));
+        addGameScore(bonus);
+        sfxLevelUp();
+        render();
+        setTimeout(showGameEnd,1200);
+      } else {
+        render();
+      }
+    }
+  }
+  area.innerHTML=`<div style="position:relative;width:100%;max-width:400px;margin:0 auto;">
+    <canvas id="slidingCanvas" style="width:100%;border-radius:16px;display:block;touch-action:none;cursor:pointer;"></canvas>
+  </div>`;
+  const canvas=document.getElementById('slidingCanvas');
+  const ctx=canvas.getContext('2d');
+  function resize(){
+    const w=Math.min(canvas.parentElement.clientWidth||320,380);
+    canvas.width=w; canvas.height=w+40;
+  }
+  resize(); render();
+  function handleClick(e){
+    e.preventDefault();
+    const rect=canvas.getBoundingClientRect();
+    const scaleX=canvas.width/rect.width, scaleY=canvas.height/rect.height;
+    let cx,cy;
+    if(e.touches){cx=(e.touches[0].clientX-rect.left)*scaleX;cy=(e.touches[0].clientY-rect.top)*scaleY;}
+    else{cx=(e.clientX-rect.left)*scaleX;cy=(e.clientY-rect.top)*scaleY;}
+    const cell=(canvas.width-16)/size;
+    const offsetY=38;
+    const col=Math.floor((cx-8)/cell), row=Math.floor((cy-offsetY)/cell);
+    if(row>=0&&row<size&&col>=0&&col<size) tryMove(row*size+col);
+  }
+  canvas.addEventListener('click',handleClick);
+  canvas.addEventListener('touchstart',handleClick,{passive:false});
+  gameTimerInterval=setInterval(()=>{
+    if(!gameRunning){clearInterval(gameTimerInterval);return;}
+    timeLeft--;
+    document.getElementById('gameTimerBar').style.width=`${(timeLeft/totalTime)*100}%`;
+    render();
+    if(timeLeft<=0){gameRunning=false;clearInterval(gameTimerInterval);showGameEnd();}
+  },1000);
+}
+
+/* =====================================================
+   接扯鈴 Catch Diabolo
+   ===================================================== */
+function initWhack2(area){
+  clearInterval(gameTimerInterval);
+  gameRunning=true;
+  let score=0, lives=3, totalTime=45, timeLeft=totalTime;
+  let items=[], animFrame=null, spawnTO=null;
+  area.innerHTML=`<div style="position:relative;width:100%;max-width:520px;margin:0 auto;">
+    <div style="display:flex;justify-content:space-between;padding:6px 4px 8px;">
+      <div id="w2Lives" style="font-size:1.3rem;">❤️❤️❤️</div>
+      <div style="font-size:1.4rem;font-weight:900;color:#fbbf24;" id="w2Score">0</div>
+      <div style="font-size:1rem;font-weight:800;color:#94a3b8;">⏱ <span id="w2Time">45</span>s</div>
+    </div>
+    <canvas id="w2Canvas" style="width:100%;border-radius:16px;background:linear-gradient(160deg,#0f172a,#1e1b4b);display:block;touch-action:none;"></canvas>
+  </div>`;
+  const canvas=document.getElementById('w2Canvas');
+  const ctx=canvas.getContext('2d');
+  function resize(){const w=canvas.parentElement.clientWidth||320;canvas.width=w;canvas.height=Math.min(w*0.9,360);}
+  resize();
+  // 接住區 (底部籃子)
+  let basketX=canvas.width/2, basketW=70;
+  function spawnItem(){
+    if(!gameRunning) return;
+    const isBomb=Math.random()<0.15;
+    items.push({
+      x:30+Math.random()*(canvas.width-60),
+      y:-30, vy:2.5+Math.random()*2,
+      emoji:isBomb?'💣':'🪀',
+      isBomb, size:36, caught:false
+    });
+    spawnTO=setTimeout(spawnItem, 900+Math.random()*700);
+  }
+  function updateLives(){
+    document.getElementById('w2Lives').innerHTML=['❤️','❤️','❤️'].slice(0,lives).join('')+['🖤','🖤','🖤'].slice(0,3-lives).join('');
+  }
+  function loop(){
+    if(!gameRunning){cancelAnimationFrame(animFrame);return;}
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const g=ctx.createLinearGradient(0,0,0,canvas.height);
+    g.addColorStop(0,'#0f172a');g.addColorStop(1,'#1e1b4b');
+    ctx.fillStyle=g;ctx.fillRect(0,0,canvas.width,canvas.height);
+    // 籃子
+    ctx.fillStyle='#f97316';
+    ctx.beginPath();ctx.roundRect(basketX-basketW/2,canvas.height-28,basketW,18,6);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.15)';
+    ctx.beginPath();ctx.roundRect(basketX-basketW/2,canvas.height-28,basketW,6,4);ctx.fill();
+    // 物品
+    items=items.filter(it=>{
+      it.y+=it.vy;
+      // 碰到籃子
+      if(it.y+it.size/2>=canvas.height-28 && it.y<canvas.height &&
+         it.x>=basketX-basketW/2-10 && it.x<=basketX+basketW/2+10 && !it.caught){
+        it.caught=true;
+        if(it.isBomb){
+          sfxWrong();
+          lives--;updateLives();
+          canvas.style.filter='brightness(3)';
+          setTimeout(()=>canvas.style.filter='',200);
+          if(lives<=0){endW2();}
+        } else {
+          sfxCorrect();
+          score+=15;addGameScore(15);
+          document.getElementById('w2Score').textContent=score;
+        }
+        return false;
+      }
+      if(it.y>canvas.height+20){
+        if(!it.isBomb&&!it.caught){lives--;updateLives();if(lives<=0)endW2();}
+        return false;
+      }
+      ctx.font=`${it.size}px serif`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(it.emoji,it.x,it.y);
+      return true;
+    });
+    animFrame=requestAnimationFrame(loop);
+  }
+  // 觸控/滑鼠移動籃子
+  function moveBasket(e){
+    e.preventDefault();
+    const rect=canvas.getBoundingClientRect();
+    const scaleX=canvas.width/rect.width;
+    let cx=e.touches?(e.touches[0].clientX-rect.left)*scaleX:(e.clientX-rect.left)*scaleX;
+    basketX=Math.max(basketW/2,Math.min(canvas.width-basketW/2,cx));
+  }
+  canvas.addEventListener('mousemove',moveBasket);
+  canvas.addEventListener('touchmove',moveBasket,{passive:false});
+  spawnItem(); loop();
+  gameTimerInterval=setInterval(()=>{
+    if(!gameRunning)return;
+    timeLeft--;
+    const tw=document.getElementById('w2Time');if(tw)tw.textContent=timeLeft;
+    document.getElementById('gameTimerBar').style.width=`${(timeLeft/totalTime)*100}%`;
+    if(timeLeft<=0)endW2();
+  },1000);
+  function endW2(){
+    gameRunning=false;
+    clearInterval(gameTimerInterval);clearTimeout(spawnTO);cancelAnimationFrame(animFrame);
+    canvas.removeEventListener('mousemove',moveBasket);
+    canvas.removeEventListener('touchmove',moveBasket);
+    showGameEnd();
+  }
+}
+
+/* =====================================================
+   波比問答 Quick Quiz Game
+   ===================================================== */
+function initQuizGame(area){
+  clearInterval(gameTimerInterval);
+  gameRunning=true;
+  let score=0, qIdx=0, totalTime=60, timeLeft=totalTime;
+  // 從偵探題庫隨機抽10題（已完成的）
+  const pool=DETECTIVE_CHALLENGES.filter(q=>
+    q.opts && q.ans !== undefined && detectiveState.completed.includes(q.id)
+  );
+  // 打亂取10題
+  const shuffled=[...pool].sort(()=>Math.random()-0.5).slice(0,Math.min(10,pool.length));
+  if(shuffled.length===0){
+    area.innerHTML=`<div style="text-align:center;padding:30px;color:white;font-size:1rem;font-weight:800;">
+      先完成更多偵探挑戰室的題目再來玩！波比在等你！🔍</div>`;
+    gameRunning=false; setTimeout(showGameEnd,2000); return;
+  }
+  function renderQ(){
+    if(qIdx>=shuffled.length||!gameRunning){endQuizGame();return;}
+    const q=shuffled[qIdx];
+    const opts=[...q.opts].sort(()=>Math.random()-0.5);
+    area.innerHTML=`<div style="padding:4px 8px 0;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:0.85rem;font-weight:800;color:white;">${qIdx+1}/${shuffled.length}題</span>
+        <span style="font-size:0.9rem;font-weight:900;color:#fbbf24;">⭐ ${score}</span>
+        <span style="font-size:0.85rem;color:#94a3b8;">⏱ <span id="qgTime">${timeLeft}</span>s</span>
+      </div>
+      <div style="background:rgba(5,150,105,0.2);border:2px solid rgba(5,150,105,0.5);border-radius:14px;padding:14px;margin-bottom:10px;">
+        <div style="font-size:0.75rem;font-weight:900;color:#6ee7b7;margin-bottom:5px;">${q.tag||'💬 波比問答'}</div>
+        <div style="font-size:0.95rem;font-weight:800;color:white;line-height:1.6;">${q.q}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        ${opts.map((o,i)=>`
+        <button onclick="qgAnswer('${escStr(o)}','${escStr(q.ans)}')"
+          style="background:rgba(5,150,105,0.12);border:2px solid rgba(5,150,105,0.3);border-radius:12px;padding:11px 14px;font-size:0.88rem;font-weight:800;color:#e2e8f0;cursor:pointer;font-family:Nunito,sans-serif;text-align:left;width:100%;box-sizing:border-box;">
+          ${['A','B','C','D'][i]}. ${o}
+        </button>`).join('')}
+      </div>
+      <div id="qgFeedback" style="margin-top:8px;"></div>
+    </div>`;
+  }
+  window.qgAnswer=function(chosen,correct){
+    document.querySelectorAll('#gameArea button').forEach(b=>b.disabled=true);
+    const ok=chosen===correct;
+    if(ok){sfxCorrect();score+=20;addGameScore(20);}
+    else sfxWrong();
+    document.getElementById('qgFeedback').innerHTML=`
+      <div style="background:${ok?'rgba(34,197,94,0.15)':'rgba(239,68,68,0.1)'};border-radius:10px;padding:8px 12px;font-size:0.8rem;font-weight:700;color:${ok?'#86efac':'#fca5a5'};">
+        ${ok?'✅ 答對了！+20分':'❌ 答錯了！正確是：'+correct}
+      </div>`;
+    setTimeout(()=>{qIdx++;renderQ();},1600);
+  };
+  renderQ();
+  gameTimerInterval=setInterval(()=>{
+    if(!gameRunning)return;
+    timeLeft--;
+    const tw=document.getElementById('qgTime');if(tw)tw.textContent=timeLeft;
+    document.getElementById('gameTimerBar').style.width=`${(timeLeft/totalTime)*100}%`;
+    if(timeLeft<=0)endQuizGame();
+  },1000);
+  function endQuizGame(){
+    gameRunning=false;clearInterval(gameTimerInterval);showGameEnd();
+  }
+}
+
+/* =====================================================
+   切水果遊戲 Fruit Ninja 風格
+   ===================================================== */
+function initFruitNinja(area){
+  clearInterval(gameTimerInterval);
+  gameRunning=true;
+  let score=0, lives=3, combo=0, comboTimer=null;
+  let fruits=[], slashTrail=[], animFrame=null;
+  let spawnInterval=null, diffInterval=null;
+  let spawnDelay=2200, maxFruitsPerSpawn=1;
+  let totalTime=90, timeLeft=totalTime;
+
+  const FRUIT_TYPES=[
+    {emoji:'🍎',pts:10,color:'#ef4444'},
+    {emoji:'🍊',pts:10,color:'#f97316'},
+    {emoji:'🍋',pts:15,color:'#eab308'},
+    {emoji:'🍇',pts:20,color:'#a855f7'},
+    {emoji:'🍓',pts:15,color:'#ec4899'},
+    {emoji:'🍑',pts:15,color:'#fb923c'},
+    {emoji:'🥝',pts:20,color:'#22c55e'},
+    {emoji:'🍍',pts:25,color:'#f59e0b'},
+    {emoji:'🍉',pts:30,color:'#10b981'},
+    {emoji:'🫐',pts:20,color:'#6366f1'},
+  ];
+
+  area.innerHTML=`
+  <div style="position:relative;width:100%;max-width:520px;margin:0 auto;user-select:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 4px 8px;flex-shrink:0;">
+      <div style="display:flex;gap:4px;" id="fnLives">
+        <span style="font-size:1.3rem;">❤️</span><span style="font-size:1.3rem;">❤️</span><span style="font-size:1.3rem;">❤️</span>
+      </div>
+      <div style="font-size:1.4rem;font-weight:900;color:#fbbf24;" id="fnScore">0</div>
+      <div style="font-size:1rem;font-weight:800;color:#94a3b8;">⏱ <span id="fnTime">60</span>s</div>
+    </div>
+    <div id="fnCombo" style="text-align:center;height:22px;font-size:0.85rem;font-weight:900;color:#fbbf24;"></div>
+    <canvas id="fnCanvas" style="width:100%;border-radius:16px;background:linear-gradient(160deg,#0f172a,#1e1b4b,#0f172a);display:block;touch-action:none;cursor:crosshair;"></canvas>
+  </div>`;
+
+  const canvas=document.getElementById('fnCanvas');
+  const ctx=canvas.getContext('2d');
+
+  // canvas 尺寸自適應
+  function resize(){
+    const w=canvas.parentElement.clientWidth||320;
+    canvas.width=w;
+    canvas.height=Math.min(w*1.1, 400);
+  }
+  resize();
+
+  // 水果物件
+  function spawnFruit(){
+    if(!gameRunning) return;
+    const count=1+Math.floor(Math.random()*maxFruitsPerSpawn);
+    for(let i=0;i<count;i++){
+      const isBomb=Math.random()<0.12;
+      const ft=FRUIT_TYPES[Math.floor(Math.random()*FRUIT_TYPES.length)];
+      const x=50+Math.random()*(canvas.width-100);
+      const vy=-(canvas.height*0.032+Math.random()*canvas.height*0.018);
+      const vx=(Math.random()-0.5)*4;
+      fruits.push({
+        x, y:canvas.height+30,
+        vx, vy,
+        size:isBomb?38:34+Math.random()*10,
+        emoji:isBomb?'💣':ft.emoji,
+        pts:ft.pts, color:ft.color,
+        isBomb, sliced:false,
+        opacity:1,
+        rot:Math.random()*Math.PI*2,
+        rotV:(Math.random()-0.5)*0.12,
+        // 切片效果
+        halfL:null, halfR:null,
+      });
+    }
+  }
+
+  // 切片軌跡
+  let isSlicing=false, sliceX=0, sliceY=0, prevSliceX=0, prevSliceY=0;
+
+  function getPos(e, canvas){
+    const rect=canvas.getBoundingClientRect();
+    const scaleX=canvas.width/rect.width;
+    const scaleY=canvas.height/rect.height;
+    if(e.touches){
+      return {x:(e.touches[0].clientX-rect.left)*scaleX, y:(e.touches[0].clientY-rect.top)*scaleY};
+    }
+    return {x:(e.clientX-rect.left)*scaleX, y:(e.clientY-rect.top)*scaleY};
+  }
+
+  function checkSlice(x1,y1,x2,y2){
+    if(!gameRunning) return;
+    fruits.forEach(f=>{
+      if(f.sliced) return;
+      const dx=x2-x1, dy=y2-y1;
+      const fx=f.x-x1, fy=f.y-y1;
+      const len2=dx*dx+dy*dy;
+      const t=len2>0?Math.max(0,Math.min(1,(fx*dx+fy*dy)/len2)):0;
+      const nx=x1+t*dx-f.x, ny=y1+t*dy-f.y;
+      const dist=Math.sqrt(nx*nx+ny*ny);
+      if(dist<f.size*0.7){
+        f.sliced=true;
+        if(f.isBomb){
+          sfxWrong();
+          lives--;
+          updateLives();
+          // 炸彈閃屏
+          canvas.style.background='rgba(239,68,68,0.5)';
+          setTimeout(()=>canvas.style.background='linear-gradient(160deg,#0f172a,#1e1b4b,#0f172a)',300);
+          if(lives<=0){endFruitNinja();}
+        } else {
+          sfxCorrect();
+          combo++;
+          clearTimeout(comboTimer);
+          comboTimer=setTimeout(()=>combo=0, 1200);
+          const pts=f.pts*(combo>=3?2:1);
+          score+=pts;
+          addGameScore(pts);
+          document.getElementById('fnScore').textContent=score;
+          if(combo>=3){
+            const el=document.getElementById('fnCombo');
+            el.textContent=`🔥 ${combo} 連斬！×2分！`;
+            setTimeout(()=>{if(el)el.textContent='';},900);
+          }
+          // 產生切片半體
+          f.halfL={x:f.x,y:f.y,vx:f.vx-2,vy:f.vy-1,rot:f.rot,emoji:f.emoji,opacity:1,size:f.size};
+          f.halfR={x:f.x,y:f.y,vx:f.vx+2,vy:f.vy-1,rot:f.rot,emoji:f.emoji,opacity:1,size:f.size};
+          // 分數飄字
+          spawnScoreText(f.x, f.y, `+${pts}`, f.color);
+        }
+      }
+    });
+  }
+
+  // 飄字效果
+  const scoreTexts=[];
+  function spawnScoreText(x,y,txt,color){
+    scoreTexts.push({x,y,txt,color,opacity:1,vy:-2});
+  }
+
+  function updateLives(){
+    const el=document.getElementById('fnLives');
+    if(el) el.innerHTML=['❤️','❤️','❤️'].slice(0,lives).join('')+['🖤','🖤','🖤'].slice(0,3-lives).join('');
+  }
+
+  // 主迴圈
+  function loop(){
+    if(!gameRunning){cancelAnimationFrame(animFrame);return;}
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    const g=ctx.createLinearGradient(0,0,0,canvas.height);
+    g.addColorStop(0,'#0f172a');g.addColorStop(0.5,'#1e1b4b');g.addColorStop(1,'#0f172a');
+    ctx.fillStyle=g; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    const gravity=0.45;
+
+    // 更新水果
+    fruits=fruits.filter(f=>{
+      if(f.sliced){
+        // 切片半體
+        if(f.halfL){
+          f.halfL.vy+=gravity; f.halfL.x+=f.halfL.vx; f.halfL.y+=f.halfL.vy;
+          f.halfL.rot+=0.1; f.halfL.opacity-=0.04;
+          f.halfR.vy+=gravity; f.halfR.x+=f.halfR.vx; f.halfR.y+=f.halfR.vy;
+          f.halfR.rot-=0.1; f.halfR.opacity-=0.04;
+          if(f.halfL.opacity>0){
+            // 左半
+            ctx.save(); ctx.globalAlpha=f.halfL.opacity;
+            ctx.translate(f.halfL.x,f.halfL.y); ctx.rotate(f.halfL.rot);
+            ctx.font=`${f.halfL.size}px serif`;
+            ctx.textAlign='center'; ctx.textBaseline='middle';
+            // 裁切左半
+            ctx.beginPath(); ctx.rect(-f.halfL.size,-f.halfL.size,f.halfL.size,f.halfL.size*2);
+            ctx.clip();
+            ctx.fillText(f.halfL.emoji,0,0);
+            ctx.restore();
+            // 右半
+            ctx.save(); ctx.globalAlpha=f.halfR.opacity;
+            ctx.translate(f.halfR.x,f.halfR.y); ctx.rotate(f.halfR.rot);
+            ctx.font=`${f.halfR.size}px serif`;
+            ctx.textAlign='center'; ctx.textBaseline='middle';
+            ctx.beginPath(); ctx.rect(0,-f.halfR.size,f.halfR.size,f.halfR.size*2);
+            ctx.clip();
+            ctx.fillText(f.halfR.emoji,0,0);
+            ctx.restore();
+            return true;
+          }
+          return false;
+        }
+        return false;
+      }
+      f.vy+=gravity; f.x+=f.vx; f.y+=f.vy; f.rot+=f.rotV;
+      // 未切到掉出畫面
+      if(f.y>canvas.height+60){
+        if(!f.isBomb){
+          lives--;
+          updateLives();
+          if(lives<=0){endFruitNinja();}
+        }
+        return false;
+      }
+      // 繪製水果
+      ctx.save();
+      ctx.translate(f.x,f.y); ctx.rotate(f.rot);
+      ctx.font=`${f.size}px serif`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(f.emoji,0,0);
+      ctx.restore();
+      return true;
+    });
+
+    // 飄分數字
+    for(let i=scoreTexts.length-1;i>=0;i--){
+      const st=scoreTexts[i];
+      st.y+=st.vy; st.opacity-=0.03;
+      if(st.opacity<=0){scoreTexts.splice(i,1);continue;}
+      ctx.save();
+      ctx.globalAlpha=st.opacity;
+      ctx.font='bold 20px Nunito,sans-serif';
+      ctx.fillStyle=st.color||'#fbbf24';
+      ctx.textAlign='center';
+      ctx.fillText(st.txt,st.x,st.y);
+      ctx.restore();
+    }
+
+    // 繪製切割軌跡
+    if(isSlicing && slashTrail.length>1){
+      ctx.save();
+      ctx.strokeStyle='rgba(255,255,255,0.85)';
+      ctx.lineWidth=3;
+      ctx.lineCap='round';
+      ctx.lineJoin='round';
+      ctx.shadowColor='rgba(200,220,255,0.8)';
+      ctx.shadowBlur=12;
+      ctx.beginPath();
+      ctx.moveTo(slashTrail[0].x,slashTrail[0].y);
+      for(let i=1;i<slashTrail.length;i++){
+        ctx.lineTo(slashTrail[i].x,slashTrail[i].y);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+    slashTrail=slashTrail.slice(-12);
+
+    animFrame=requestAnimationFrame(loop);
+  }
+
+  // 事件監聽
+  function onStart(e){
+    e.preventDefault();
+    isSlicing=true;
+    const p=getPos(e,canvas);
+    sliceX=p.x; sliceY=p.y;
+    slashTrail=[{x:sliceX,y:sliceY}];
+  }
+  function onMove(e){
+    e.preventDefault();
+    if(!isSlicing) return;
+    const p=getPos(e,canvas);
+    prevSliceX=sliceX; prevSliceY=sliceY;
+    sliceX=p.x; sliceY=p.y;
+    slashTrail.push({x:sliceX,y:sliceY});
+    checkSlice(prevSliceX,prevSliceY,sliceX,sliceY);
+  }
+  function onEnd(e){
+    e.preventDefault();
+    isSlicing=false; slashTrail=[];
+  }
+
+  canvas.addEventListener('mousedown',onStart);
+  canvas.addEventListener('mousemove',onMove);
+  canvas.addEventListener('mouseup',onEnd);
+  canvas.addEventListener('touchstart',onStart,{passive:false});
+  canvas.addEventListener('touchmove',onMove,{passive:false});
+  canvas.addEventListener('touchend',onEnd,{passive:false});
+
+  // 計時器
+  gameTimerInterval=setInterval(()=>{
+    if(!gameRunning) return;
+    timeLeft--;
+    const tw=document.getElementById('fnTime');
+    if(tw) tw.textContent=timeLeft;
+    document.getElementById('gameTimerBar').style.width=`${(timeLeft/totalTime)*100}%`;
+    if(timeLeft<=0){endFruitNinja();}
+  },1000);
+
+  // 難度遞增
+  diffInterval=setInterval(()=>{
+    if(!gameRunning){clearInterval(diffInterval);return;}
+    if(spawnDelay>1000) spawnDelay-=120;
+    if(maxFruitsPerSpawn<3) maxFruitsPerSpawn++;
+  },18000);
+
+  // 生成水果
+  function scheduleSpawn(){
+    if(!gameRunning) return;
+    spawnFruit();
+    spawnInterval=setTimeout(scheduleSpawn, spawnDelay+Math.random()*400);
+  }
+  scheduleSpawn();
+  loop();
+
+  function endFruitNinja(){
+    gameRunning=false;
+    clearInterval(gameTimerInterval);
+    clearInterval(diffInterval);
+    clearTimeout(spawnInterval);
+    cancelAnimationFrame(animFrame);
+    canvas.removeEventListener('mousedown',onStart);
+    canvas.removeEventListener('mousemove',onMove);
+    canvas.removeEventListener('mouseup',onEnd);
+    canvas.removeEventListener('touchstart',onStart);
+    canvas.removeEventListener('touchmove',onMove);
+    canvas.removeEventListener('touchend',onEnd);
+    showGameEnd();
+  }
 }
 /* 粒子背景 */
 function initParticles(){
