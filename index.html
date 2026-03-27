@@ -493,7 +493,7 @@ position:relative;overflow:hidden;
 <!-- 歡迎畫面 -->
 <div id="welcomeScreen">
   <div class="welcome-cloud card">
-    <div id="welcomeBoppy" class="hamster-hero"></div>
+    <div id="welcomeBoppy" class="hamster-hero">🌸</div>
     <div class="welcome-title">🌟 波比魔法學院</div>
     <div class="welcome-sub">✨ 小蛹的三年級大冒險 ✨</div>
     <div class="story-box">
@@ -1037,26 +1037,48 @@ chinese:[
   ]},
 ],
 english:[
-  {chapter:'🔤 第1章：字母 A-D',story:'自然拼音第一關！學A、B、C、D的真實發音，波比陪你一起！',
+    {chapter:'🔤 第1章：字母 A-D',story:'自然拼音第一關！每個字母先看中文意思，再練習，慢慢來！',
    units:[
     {type:'phonics_teach',letter:'a',sound:'/æ/',soundZh:'短促的「阿」',emoji:'🍎',word:'apple',wordBreak:'a-p-p-l-e',color:'vowel',
-     talk:['<span class="eng-big">a</span> 的聲音是短促的<span class="hl">「阿」/æ/</span>！','嘴巴張大張快！a…a…a！','<span class="eng-big">apple</span> 蘋果🍎！'],audio:'a',audioWord:'apple'},
-    {type:'phonics_blend',q:'哪個字從 <b>a</b>「阿」開始？',hint:'「阿」的聲音，嘴巴張大～',
-     opts:[{t:'🍎 apple',w:'apple',c:true},{t:'🐝 bee',w:'bee',c:false},{t:'🐱 cat',w:'cat',c:false},{t:'🐶 dog',w:'dog',c:false}],
-     okMsg:'Apple！a 的聲音「阿」！',failMsg:'Apple 才是 a 開頭！',audio:'apple'},
+     talk:[
+       '第一個字母：<span class="eng-big">A a</span>',
+       '發音：短促的「阿」/æ/，嘴巴張大！',
+       '<span class="eng-big">apple</span> = 蘋果 🍎<br><span class="eng-big">ant</span> = 螞蟻 🐜<br><span class="eng-big">arm</span> = 手臂 💪',
+       '練習：a…a…a！apple！'
+     ],audio:'a',audioWord:'apple'},
     {type:'phonics_teach',letter:'b',sound:'/b/',soundZh:'嘴唇彈開的「逼」',emoji:'🐝',word:'bee',wordBreak:'b-ee',color:'consonant',
-     talk:['<span class="eng-big">b</span> 的聲音是<span class="hl">「逼」/b/</span>！','嘴唇先閉再彈開！b…b…b！','<span class="eng-big">bee</span> 蜜蜂🐝！'],audio:'b',audioWord:'bee'},
+     talk:[
+       '第二個字母：<span class="eng-big">B b</span>',
+       '發音：嘴唇先閉再彈開「逼」/b/',
+       '<span class="eng-big">bee</span> = 蜜蜂 🐝<br><span class="eng-big">ball</span> = 球 🏀<br><span class="eng-big">book</span> = 書 📚',
+       '練習：b…b…b！bee！'
+     ],audio:'b',audioWord:'bee'},
     {type:'phonics_teach',letter:'c',sound:'/k/',soundZh:'喉嚨的「克」',emoji:'🐱',word:'cat',wordBreak:'c-a-t',color:'consonant',
-     talk:['<span class="eng-big">c</span> 的聲音是<span class="hl">「克」/k/</span>！','從喉嚨發「克」！c-a-t 拼起來是 cat 貓咪🐱！'],audio:'c',audioWord:'cat'},
-    {type:'phonics_blend',q:'<b>c</b>「克」+<b>a</b>「阿」+<b>t</b>「特」= ？',hint:'克…阿…特，拼在一起！',
-     opts:[{t:'🐱 cat',w:'cat',c:true},{t:'🦇 bat',w:'bat',c:false},{t:'🎩 hat',w:'hat',c:false},{t:'🐀 rat',w:'rat',c:false}],
-     okMsg:'Cat！c-a-t！克阿特！',failMsg:'c+a+t = cat 貓咪！',audio:'cat'},
+     talk:[
+       '第三個字母：<span class="eng-big">C c</span>',
+       '發音：喉嚨發「克」/k/',
+       '<span class="eng-big">cat</span> = 貓 🐱<br><span class="eng-big">cup</span> = 杯子 ☕<br><span class="eng-big">car</span> = 車 🚗',
+       '拼拼看：c-a-t = cat 貓！'
+     ],audio:'c',audioWord:'cat'},
     {type:'phonics_teach',letter:'d',sound:'/d/',soundZh:'舌尖彈的「得」',emoji:'🐶',word:'dog',wordBreak:'d-o-g',color:'consonant',
-     talk:['<span class="eng-big">d</span> 的聲音是<span class="hl">「得」/d/</span>！','舌尖輕碰牙齦彈開！<span class="eng-big">dog</span> 狗狗🐶！'],audio:'d',audioWord:'dog'},
+     talk:[
+       '第四個字母：<span class="eng-big">D d</span>',
+       '發音：舌尖輕碰牙齦「得」/d/',
+       '<span class="eng-big">dog</span> = 狗 🐶<br><span class="eng-big">desk</span> = 桌子 🪑<br><span class="eng-big">door</span> = 門 🚪',
+       '拼拼看：d-o-g = dog 狗！'
+     ],audio:'d',audioWord:'dog'},
+    {type:'practice',q:'"apple" 是什麼意思？',hint:'a 是第一個字母，apple 是 a 開頭的單字',
+     opts:[{t:'🍎 蘋果',c:true},{t:'🍌 香蕉',c:false},{t:'🍊 橘子',c:false},{t:'🍇 葡萄',c:false}],
+     okMsg:'apple = 蘋果！a-p-p-l-e！',failMsg:'apple = 蘋果 🍎！a 開頭的單字！'},
+    {type:'practice',q:'"dog" 是什麼動物？',hint:'d 是「得」的聲音，dog 是 d 開頭的單字',
+     opts:[{t:'🐶 狗',c:true},{t:'🐱 貓',c:false},{t:'🐝 蜜蜂',c:false},{t:'🐟 魚',c:false}],
+     okMsg:'dog = 狗！d-o-g！',failMsg:'dog = 狗 🐶！d 開頭的單字！'},
+    {type:'phonics_blend',q:'哪個字從 <b>a</b>「阿」開始？',hint:'嘴巴張大的「阿」',
+     opts:[{t:'🍎 apple',w:'apple',c:true},{t:'🐝 bee',w:'bee',c:false},{t:'🐱 cat',w:'cat',c:false},{t:'🐶 dog',w:'dog',c:false}],
+     okMsg:'apple！a 的聲音「阿」！',failMsg:'apple 才是 a 開頭！',audio:'apple'},
     {type:'phonics_test',q:'哪個字是 🐱 貓咪？',opts:['cat','bat','hat','rat'],ans:'cat',hint:'克-阿-特⋯⋯',audio:'cat'},
-    {type:'phonics_test',q:'哪個字是 🐶 狗狗？',opts:['dog','log','fog','hog'],ans:'dog',hint:'得-喔-格⋯⋯',audio:'dog'},
   ]},
-  {chapter:'🔤 第2章：字母 E-H',story:'繼續探險！今天學E、F、G、H，波比一起來！',
+{chapter:'🔤 第2章：字母 E-H',story:'繼續探險！今天學E、F、G、H，波比一起來！',
    units:[
     {type:'phonics_teach',letter:'e',sound:'/ɛ/',soundZh:'短促的「欸」',emoji:'🥚',word:'egg',wordBreak:'e-gg',color:'vowel',
      talk:['<span class="eng-big">e</span> 的聲音是短促的<span class="hl">「欸」/ɛ/</span>！','嘴巴微開，快快說「欸」！<span class="eng-big">egg</span> 雞蛋🥚！'],audio:'e',audioWord:'egg'},
@@ -1214,39 +1236,70 @@ english:[
     {type:'phonics_test',q:'哪個句子是正確的？',opts:['She likes reading.','She like reading.','She liking reading.','She liked reading now.'],
      ans:'She likes reading.',hint:'She 後面動詞要加 s！',audio:'She likes reading'},
   ]},
-{chapter:'🔤 第9章：常用單字和句型！',story:'學了字母和規律，今天練習常用單字和句型！',
+  {chapter:'🔤 第9章：常用單字和句型！',story:'今天學生活裡最常用到的單字！每個都有中文說明，慢慢記！',
    units:[
-    {type:'phonics_teach',letter:'color',sound:'colors',soundZh:'顏色單字',emoji:'🌈',word:'red blue green yellow',wordBreak:'col-ors',color:'consonant',
-     talk:['顏色單字！','red 紅，blue 藍，green 綠，yellow 黃','white 白，black 黑，pink 粉紅！'],audioWord:'red blue green yellow white'},
-    {type:'phonics_test',q:'Red 是什麼顏色？',opts:['紅色','藍色','黃色','綠色'],ans:'紅色',hint:'像草莓🍓一樣！',audio:'red'},
-    {type:'phonics_blend',q:'「我的書包是藍色的」英文是？',hint:'My bag is + 顏色',
-     opts:[{t:'My bag is blue.',c:true,w:'My bag is blue'},{t:'Blue is my bag.',c:false},{t:'My bag blue is.',c:false}],audio:'My bag is blue',
-     okMsg:'My bag is blue! 我的書包是藍色的！',failMsg:'我的...是...說法：My + 名詞 + is + 顏色！'},
-    {type:'phonics_teach',letter:'number',sound:'numbers',soundZh:'數字 1-20',emoji:'🔢',word:'one to twenty',wordBreak:'num-bers',color:'consonant',
-     talk:['數字 11-20！','11:eleven, 12:twelve, 13:thirteen','14:fourteen, 15:fifteen, 16-19: sixteen~nineteen','20:twenty！'],audioWord:'eleven twelve thirteen fourteen fifteen'},
-    {type:'phonics_test',q:'「13」的英文是？',opts:['thirteen','thirty','fourteen','eleven'],ans:'thirteen',hint:'13 = thir + teen',audio:'thirteen'},
-    {type:'phonics_blend',q:'🔍 找不同：哪個數字英文是「錯誤」的拼法？',hint:'注意拼字',
-     opts:[{t:'fiften（正確應是 fifteen）',c:true,w:'fifteen'},{t:'thirteen',c:false},{t:'twelve',c:false},{t:'twenty',c:false}],audio:'fifteen',
-     okMsg:'找到拼錯的了！fiften 應該是 fifteen！',failMsg:'fifteen 才是正確的拼法！fi-f-teen！'},
-    {type:'phonics_test',q:'「今天是星期五」英文是？',opts:['Today is Friday.','Friday is today.','It is today Friday.','Friday today is.'],ans:'Today is Friday.',hint:'Today is + 星期',audio:'Today is Friday'},
-    {type:'phonics_blend',q:'「我最喜歡的顏色是紫色」英文是？',hint:'My favorite color is...',
-     opts:[{t:'My favorite color is purple.',c:true,w:'My favorite color is purple'},{t:'I like best purple color.',c:false},{t:'Purple my favorite.',c:false}],audio:'My favorite color is purple',
-     okMsg:'My favorite color is purple! 最喜歡紫色！',failMsg:'最喜歡的...是...說法：My favorite + 名詞 + is + 答案！'},
+    {type:'phonics_teach',letter:'colors',sound:'colors',soundZh:'顏色單字',emoji:'🌈',word:'red blue green yellow',wordBreak:'col-ors',color:'vowel',
+     talk:[
+       '今天先學顏色！',
+       '<span class="eng-big">red</span> = 紅色 🔴<br><span class="eng-big">blue</span> = 藍色 🔵<br><span class="eng-big">green</span> = 綠色 💚',
+       '<span class="eng-big">yellow</span> = 黃色 💛<br><span class="eng-big">white</span> = 白色 ⬜<br><span class="eng-big">black</span> = 黑色 ⬛',
+       '顏色句型：<span class="hl">This is + 顏色</span><br>例：This is red. 這是紅色。'
+     ],audioWord:'red blue green yellow white black'},
+    {type:'practice',q:'"blue" 是什麼顏色？',hint:'藍天、藍海是什麼顏色？',
+     opts:[{t:'🔵 藍色',c:true},{t:'🔴 紅色',c:false},{t:'💛 黃色',c:false},{t:'💚 綠色',c:false}],
+     okMsg:'blue = 藍色！像天空一樣！',failMsg:'blue = 藍色 🔵！藍天、藍海、藍色的海！'},
+    {type:'practice',q:'"green" 是什麼顏色？',hint:'草地、樹葉是什麼顏色？',
+     opts:[{t:'💚 綠色',c:true},{t:'🔴 紅色',c:false},{t:'🔵 藍色',c:false},{t:'💛 黃色',c:false}],
+     okMsg:'green = 綠色！像草地一樣！',failMsg:'green = 綠色 💚！草是綠色的！'},
+    {type:'phonics_teach',letter:'numbers',sound:'numbers',soundZh:'數字 11-20',emoji:'🔢',word:'eleven to twenty',wordBreak:'num-bers',color:'consonant',
+     talk:[
+       '數字 11-20！',
+       '<span class="eng-big">11</span> = eleven（伊勒文）<br><span class="eng-big">12</span> = twelve（特威夫）<br><span class="eng-big">13</span> = thirteen（瑟爾鐵）',
+       '<span class="eng-big">14</span> = fourteen<br><span class="eng-big">15</span> = fifteen<br><span class="eng-big">16</span> = sixteen',
+       '<span class="eng-big">17</span> = seventeen<br><span class="eng-big">18</span> = eighteen<br><span class="eng-big">19</span> = nineteen<br><span class="eng-big">20</span> = twenty',
+       '記憶技巧：13-19 結尾都是 <span class="hl">-teen</span>！'
+     ],audioWord:'eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty'},
+    {type:'practice',q:'"thirteen" 是數字幾？',hint:'thir + teen，13 還是 30？',
+     opts:[{t:'13',c:true},{t:'30',c:false},{t:'14',c:false},{t:'12',c:false}],
+     okMsg:'thirteen = 13！-teen 結尾的都是 10 幾喔！',failMsg:'thirteen = 13！注意 -teen 結尾是 10 幾，不是幾十！'},
+    {type:'phonics_teach',letter:'classroom',sound:'classroom',soundZh:'教室單字',emoji:'🏫',word:'book pen desk chair',wordBreak:'class-room',color:'consonant',
+     talk:[
+       '教室裡的東西！',
+       '<span class="eng-big">book</span> = 書 📚<br><span class="eng-big">pen</span> = 筆 ✏️<br><span class="eng-big">desk</span> = 桌子 🪑',
+       '<span class="eng-big">chair</span> = 椅子 🪑<br><span class="eng-big">bag</span> = 書包 🎒<br><span class="eng-big">ruler</span> = 尺 📏',
+       '句型：<span class="hl">This is my ___.</span><br>例：This is my book. 這是我的書。'
+     ],audioWord:'book pen desk chair bag ruler'},
+    {type:'practice',q:'"bag" 是什麼意思？',hint:'上學每天都要背的是什麼？',
+     opts:[{t:'🎒 書包／袋子',c:true},{t:'📚 書',c:false},{t:'✏️ 筆',c:false},{t:'📏 尺',c:false}],
+     okMsg:'bag = 書包！This is my bag. 這是我的書包！',failMsg:'bag = 書包 🎒！背在背上的那個！'},
+    {type:'phonics_test',q:'"Red" 是什麼顏色？',opts:['紅色','藍色','黃色','綠色'],ans:'紅色',hint:'像草莓🍓一樣！',audio:'red'},
   ]},
-  {chapter:'🏆 第10章：英文大挑戰！',story:'學了26個字母和句型！最後一關全面挑戰！',
+  {chapter:'🏆 第10章：英文大挑戰！',story:'先複習所有學過的單字，再來大挑戰！',
    units:[
-    {type:'phonics_test',q:'Cat 是什麼動物？',opts:['貓','狗','鳥','魚'],ans:'貓',hint:'c-a-t！喵喵叫！',audio:'cat'},
-    {type:'phonics_test',q:'Red 是什麼顏色？',opts:['紅色','藍色','黃色','綠色'],ans:'紅色',hint:'像草莓一樣！',audio:'red'},
-    {type:'phonics_blend',q:'🔍 找不同：哪個句子動詞用法正確？',hint:'She 後面動詞加 s',
-     opts:[{t:'She likes butterflies.',c:true,w:'She likes butterflies'},{t:'She like butterflies.',c:false},{t:'She liking butterflies.',c:false}],audio:'She likes butterflies',
-     okMsg:'She likes butterflies! 對了！',failMsg:'She 後面動詞要加 s！'},
-    {type:'phonics_blend',q:'🔍 找規律：疑問詞「在哪裡」的英文是？',hint:'問地點的疑問詞',
-     opts:[{t:'Where',c:true,w:'Where is it'},{t:'When',c:false},{t:'What',c:false},{t:'Who',c:false}],audio:'Where is it',
-     okMsg:'Where！問地點！Where=哪裡！',failMsg:'Where=哪裡（地點）！'},
-    {type:'phonics_test',q:'「我的興趣是閱讀」英文是？',opts:['My hobby is reading.','I hobby reading.','Reading my hobby.','My hobby reading is.'],ans:'My hobby is reading.',hint:'My hobby is + 動詞ing',audio:'My hobby is reading'},
-    {type:'phonics_blend',q:'🔍 找不同：下面哪個不是完整句子？',hint:'完整句子要有主語和動詞',
-     opts:[{t:'Beautiful butterfly.（沒有動詞）',c:true,w:'The butterfly is beautiful'},{t:'The butterfly is beautiful.',c:false},{t:'I like insects.',c:false},{t:'She observes carefully.',c:false}],audio:'The butterfly is beautiful',
-     okMsg:'找到了！Beautiful butterfly 沒有動詞，不完整！',failMsg:'主語+動詞才是完整句子！Beautiful butterfly 沒有動詞！'},
+    {type:'phonics_teach',letter:'review',sound:'review',soundZh:'總複習',emoji:'🌟',word:'all words',wordBreak:'re-view',color:'vowel',
+     talk:[
+       '大挑戰前，先快速複習！',
+       '動物：<span class="eng-big">cat</span>=貓 <span class="eng-big">dog</span>=狗 <span class="eng-big">bee</span>=蜜蜂<br>顏色：<span class="eng-big">red</span>=紅 <span class="eng-big">blue</span>=藍 <span class="eng-big">green</span>=綠',
+       '句型：<span class="eng-big">My name is ___</span>（我的名字是）<br><span class="eng-big">How are you?</span>（你好嗎？）<br><span class="eng-big">I am fine!</span>（我很好！）',
+       '規律：She/He/It 後面動詞加 s！<br>She <span class="hl">likes</span> ✓ &nbsp; She <span class="hl">like</span> ✗',
+       '準備好了嗎？開始大挑戰！🏆'
+     ],audioWord:'cat dog bee red blue green'},
+    {type:'phonics_test',q:'"cat" 是什麼動物？',opts:['🐱 貓','🐶 狗','🐝 蜜蜂','🐟 魚'],ans:'🐱 貓',hint:'c-a-t！',audio:'cat'},
+    {type:'phonics_test',q:'"blue" 是什麼顏色？',opts:['🔵 藍色','🔴 紅色','💛 黃色','💚 綠色'],ans:'🔵 藍色',hint:'像天空一樣！',audio:'blue'},
+    {type:'phonics_blend',q:'「我的名字是小蛹」英文是？',hint:'My name is ___',
+     opts:[{t:'My name is Xiao Yong.',c:true,w:'My name is Xiao Yong'},{t:'Name my is Xiao Yong.',c:false},{t:'I am Xiao Yong name.',c:false}],
+     audio:'My name is Xiao Yong',okMsg:'My name is！完美！',failMsg:'My name is + 名字！語序：我的名字是...'},
+    {type:'phonics_blend',q:'哪個句子動詞用法是正確的？',hint:'She 後面動詞要加 s！',
+     opts:[{t:'She likes butterflies. ✓',c:true,w:'She likes butterflies'},{t:'She like butterflies. ✗',c:false},{t:'She liking butterflies. ✗',c:false}],
+     audio:'She likes butterflies',okMsg:'She likes！第三人稱加 s！',failMsg:'She 後面動詞要加 s！like → likes！'},
+    {type:'phonics_test',q:'「你好嗎？」英文是哪句？',opts:['How are you?','What is your name?','I am fine.','Good morning!'],
+     ans:'How are you?',hint:'問候的句子！',audio:'How are you'},
+    {type:'practice',q:'"I am fine" 的中文意思是？',hint:'I = 我，am = 是，fine = 好',
+     opts:[{t:'我很好',c:true},{t:'我很累',c:false},{t:'謝謝你',c:false},{t:'再見',c:false}],
+     okMsg:'I am fine = 我很好！',failMsg:'fine = 好！I am fine = 我很好！'},
+    {type:'phonics_blend',q:'「問地點」的疑問詞是？',hint:'Where = 哪裡',
+     opts:[{t:'Where（哪裡）',c:true,w:'Where is it'},{t:'When（什麼時候）',c:false},{t:'What（什麼）',c:false},{t:'Who（誰）',c:false}],
+     audio:'Where is it',okMsg:'Where！問地點！',failMsg:'Where = 哪裡！問地點用 Where！'},
   ]},
 ],
 math:[
@@ -1985,9 +2038,17 @@ function load(){
    ===================================================== */
 function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function getDayNumber(){
-  if(!S.startDate)return 1;
-  const s=new Date(S.startDate),n=new Date(today());
-  return Math.floor((n-s)/(1000*60*60*24))+1;
+  if(!S.startDate) return 1;
+  // 永遠用 startDate 所在的年份來算，避免跨年問題
+  const startYear = parseInt(S.startDate.slice(0,4));
+  const todayStr = today();
+  const todayYear = parseInt(todayStr.slice(0,4));
+  // 用同一年的同月同日計算
+  const realToday = startYear + todayStr.slice(4); // 強制用 startDate 的年份
+  const s = new Date(S.startDate + 'T00:00:00');
+  const n = new Date(realToday + 'T00:00:00');
+  const diff = Math.floor((n - s) / (1000*60*60*24)) + 1;
+  return Math.max(1, Math.min(diff, 366)); // 最多一年
 }
 function getDailyCourse(dayNum){
   const subjs=['chinese','english','math'];
@@ -2079,6 +2140,9 @@ function updateUI(){
     }
   });
   renderMissions();renderStreakMilestones();renderCostumes();renderCalendar();updateGameCenter();renderDetectiveRoom();
+  // 確保主畫面頭像正確顯示
+  setBoppyEl('playerAvatar',52,'happy',getActiveCostume().badge,false);
+  setBoppyEl('encAvatar',36,'normal','',false);
   const wEl=document.getElementById('wisdomContent');
   if(wEl){
     const w=getTodayWisdom();
@@ -4606,7 +4670,17 @@ sfxStart();updateUI();
 }
 window.addEventListener(‘load’,()=>{
 load(); initParticles();
-setTimeout(()=>setBoppyEl(‘welcomeBoppy’,100,‘happy’,’’,true), 50);
+// 先設 emoji，然後嘗試載入 SVG
+const wb = document.getElementById(‘welcomeBoppy’);
+if(wb) wb.innerHTML = ‘<div style="font-size:80px;line-height:1;">🌸</div>’;
+setTimeout(()=>{
+setBoppyEl(‘welcomeBoppy’,100,‘happy’,’’,true);
+// 如果 SVG 沒有內容，維持 emoji
+const wb2 = document.getElementById(‘welcomeBoppy’);
+if(wb2 && (!wb2.innerHTML || !wb2.innerHTML.includes(’<svg’))) {
+wb2.innerHTML = ‘<div style="font-size:80px;line-height:1;animation:hamsterWelcome 2.5s ease-in-out infinite;">🌸</div>’;
+}
+}, 200);
 const ni=document.getElementById(‘nameInput’);
 if(ni){
 if(S.name&&S.name!==‘小蛹’) ni.value=S.name;
@@ -4628,6 +4702,11 @@ checkDay();
 document.getElementById(‘welcomeScreen’).classList.add(‘hidden’);
 document.getElementById(‘mainScreen’).classList.remove(‘hidden’);
 updateUI();
+// 延遲設定頭像確保 DOM 已更新
+setTimeout(()=>{
+setBoppyEl(‘playerAvatar’,52,‘happy’,getActiveCostume().badge,false);
+setBoppyEl(‘encAvatar’,36,‘normal’,’’,false);
+},100);
 }
 });
 </script>
