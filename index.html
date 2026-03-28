@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -622,6 +621,10 @@ position:relative;;
   </div>
   <div id="quizReadyArea"></div>
   <!-- 偵探挑戰室 -->
+  <!-- Grammar Picnic 獨立區塊 -->
+  <div class="card" id="grammarPicnicCard" style="background:linear-gradient(135deg,rgba(30,58,138,0.97),rgba(17,24,39,0.97));border:2.5px solid #3b82f6;padding:20px;">
+    <div id="grammarPicnicContent"></div>
+  </div>
   <div class="card" id="detectiveRoom" style="background:linear-gradient(135deg,rgba(15,23,42,0.97),rgba(30,27,75,0.97));border:2.5px solid #6366f1;padding:20px;">
     <div id="detectiveRoomContent"></div>
   </div>
@@ -719,6 +722,36 @@ position:relative;;
 </div>
 <script>
 /* =====================================================
+   全局錯誤捕捉器（除錯用）
+   ===================================================== */
+window.onerror = function(msg, src, line, col, err){
+  // 在頁面底部顯示錯誤詳情，方便 iOS Safari 除錯
+  var box = document.getElementById('_debugErrorBox');
+  if(!box){
+    box = document.createElement('div');
+    box.id = '_debugErrorBox';
+    box.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#ff6b6b;font-size:11px;font-family:monospace;padding:8px;z-index:99999;max-height:120px;overflow-y:auto;border-top:2px solid #ff4444;';
+    document.body && document.body.appendChild(box);
+  }
+  var entry = document.createElement('div');
+  entry.style.cssText = 'margin-bottom:4px;border-bottom:1px solid #333;padding-bottom:4px;';
+  entry.textContent = '❌ ' + msg + ' | line:' + line + ' col:' + col + (err ? ' | ' + (err.stack||'').split('\n')[0] : '');
+  box.insertBefore(entry, box.firstChild);
+  return false; // 不阻止預設錯誤處理
+};
+window.addEventListener('unhandledrejection', function(e){
+  var box = document.getElementById('_debugErrorBox');
+  if(!box){
+    box = document.createElement('div');
+    box.id = '_debugErrorBox';
+    box.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#ff6b6b;font-size:11px;font-family:monospace;padding:8px;z-index:99999;max-height:120px;overflow-y:auto;border-top:2px solid #ff4444;';
+    document.body && document.body.appendChild(box);
+  }
+  var entry = document.createElement('div');
+  entry.textContent = '⚠️ Promise rejection: ' + (e.reason||'unknown');
+  box.insertBefore(entry, box.firstChild);
+});
+/* =====================================================
    波比 SVG 吉祥物
    ===================================================== */
 function boppySVG(size=56,expr='normal',badge='',glowing=false){
@@ -776,10 +809,18 @@ function setBoppyEl(id,size=56,expr='normal',badge='',glowing=false){
    音效引擎
    ===================================================== */
 let audioCtx=null,soundOn=true;
-function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function getCtx(){
+  try{
+    if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    // iOS Safari 需要 resume（有時 state 為 suspended）
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    return audioCtx;
+  }catch(e){return null;}
+}
 function playTone(freq,type,duration,vol=0.3,delay=0){
   if(!soundOn)return;
-  try{const ctx=getCtx(),o=ctx.createOscillator(),g=ctx.createGain();
+  try{const ctx=getCtx();if(!ctx)return;
+    const o=ctx.createOscillator(),g=ctx.createGain();
     o.connect(g);g.connect(ctx.destination);o.type=type;
     o.frequency.setValueAtTime(freq,ctx.currentTime+delay);
     g.gain.setValueAtTime(0,ctx.currentTime+delay);
@@ -1301,6 +1342,582 @@ english:[
      opts:[{t:'Where（哪裡）',c:true,w:'Where is it'},{t:'When（什麼時候）',c:false},{t:'What（什麼）',c:false},{t:'Who（誰）',c:false}],
      audio:'Where is it',okMsg:'Where！問地點！',failMsg:'Where = 哪裡！問地點用 Where！'},
   ]},
+  {chapter:'📖 Unit 1：Nouns 名詞！',
+   story:'Grammar Picnic帶你認識英文名詞！人物Person、物品Thing、動物Animal、地方Place——小蛹學了就能分辨所有名詞！',
+   units:[
+    {type:'teach',char:'Nouns 名詞',emoji:'📚',
+     talk:[
+       '今天學 <b>Nouns（名詞）</b>！名詞就是「人、事、物、地方」的名字！',
+       '英文名詞分4大類：<b>Person（人）、Thing（物品）、Animal（動物）、Place（地方）</b>！',
+       '舉例：boy是Person，book是Thing，dog是Animal，park是Place！'
+     ],
+     meaning:'名詞是人、事、物、地方的名稱',
+     example:'boy / book / dog / park 都是 Nouns！'},
+    {type:'teach',char:'Person 人物名詞',emoji:'👦',
+     talk:[
+       '<b>Person（人物）</b>：boy, girl, father, mother, teacher！',
+       '只要是「人」就是 Person！',
+       '記住：boy男孩、girl女孩、father爸爸、mother媽媽、teacher老師！'
+     ],
+     meaning:'Person = 人物類名詞',
+     example:'The <b>boy</b> is happy. The <b>teacher</b> is kind.'},
+    {type:'practice',char:'Person',
+     q:'Which one is a Person（人物）？',
+     opts:[{t:'👦 boy（男孩）',c:true},{t:'📚 book（書）',c:false},{t:'🐕 dog（狗）',c:false},{t:'🏫 school（學校）',c:false}],
+     okMsg:'Yes! Boy is a Person! 👦',failMsg:'Boy is a Person! Person = 人物！'},
+    {type:'teach',char:'Thing 物品名詞',emoji:'📖',
+     talk:[
+       '<b>Thing（物品）</b>：book, pencil, tree, hat, bag！',
+       '你能摸到、拿到的「東西」大多是Thing！',
+       'book書、pencil鉛筆、tree樹、hat帽子、bag袋子！'
+     ],
+     meaning:'Thing = 物品類名詞',
+     example:'I have a <b>book</b> and a <b>bag</b>.'},
+    {type:'practice',char:'Thing',
+     q:'Which one is a Thing（物品）？',
+     opts:[{t:'🎩 hat（帽子）',c:true},{t:'👩 girl（女孩）',c:false},{t:'🦁 lion（獅子）',c:false},{t:'🏦 bank（銀行）',c:false}],
+     okMsg:'Yes! Hat is a Thing! 🎩',failMsg:'Hat is a Thing! 帽子是物品！'},
+    {type:'teach',char:'Animal 動物名詞',emoji:'🐕',
+     talk:[
+       '<b>Animal（動物）</b>：dog, cat, lion, monkey, bear！',
+       '所有動物都歸 Animal 類！',
+       'dog狗、cat貓、lion獅子、monkey猴子、bear熊！'
+     ],
+     meaning:'Animal = 動物類名詞',
+     example:'The <b>dog</b> and the <b>cat</b> are friends.'},
+    {type:'practice',char:'Animal',
+     q:'Which one is an Animal（動物）？',
+     opts:[{t:'🐒 monkey（猴子）',c:true},{t:'👨 father（爸爸）',c:false},{t:'✏️ pencil（鉛筆）',c:false},{t:'🦁 zoo（動物園）',c:false}],
+     okMsg:'Yes! Monkey is an Animal! 🐒',failMsg:'Monkey is an Animal! 猴子是動物！'},
+    {type:'teach',char:'Place 地方名詞',emoji:'🏫',
+     talk:[
+       '<b>Place（地方）</b>：park, zoo, school, airport, bank！',
+       '你「去」某個地方，那個地方就是 Place！',
+       'park公園、zoo動物園、school學校、airport機場、bank銀行！'
+     ],
+     meaning:'Place = 地方類名詞',
+     example:'We go to the <b>park</b> and the <b>zoo</b>.'},
+    {type:'practice',char:'Place',
+     q:'Which one is a Place（地方）？',
+     opts:[{t:'🏫 school（學校）',c:true},{t:'🐱 cat（貓）',c:false},{t:'👧 girl（女孩）',c:false},{t:'📚 book（書）',c:false}],
+     okMsg:'Yes! School is a Place! 🏫',failMsg:'School is a Place! 學校是地方！'},
+    {type:'test',q:'「tree」是哪一類名詞？',hint:'tree=樹，樹是一種東西還是動物？',
+     opts:[{txt:'Thing（物品）',correct:true},{txt:'Animal（動物）',correct:false},{txt:'Person（人物）',correct:false},{txt:'Place（地方）',correct:false}]},
+    {type:'test',q:'「zoo」是哪一類名詞？',hint:'zoo=動物園，你要「去」的地方！',
+     opts:[{txt:'Place（地方）',correct:true},{txt:'Animal（動物）',correct:false},{txt:'Thing（物品）',correct:false},{txt:'Person（人物）',correct:false}]},
+    {type:'test',q:'「mother」是哪一類名詞？',hint:'mother=媽媽，她是一個人！',
+     opts:[{txt:'Person（人物）',correct:true},{txt:'Thing（物品）',correct:false},{txt:'Place（地方）',correct:false},{txt:'Animal（動物）',correct:false}]},
+    {type:'test',q:'「lion」是哪一類名詞？',hint:'lion=獅子，獅子是什麼？',
+     opts:[{txt:'Animal（動物）',correct:true},{txt:'Person（人物）',correct:false},{txt:'Thing（物品）',correct:false},{txt:'Place（地方）',correct:false}]},
+    {type:'observe',q:'🔍 找規律：「park, zoo, school, airport, bank」這些名詞有什麼共同點？',
+     hint:'想想你平常去這些地方的感覺——你是去「某個地方」！',
+     opts:[{t:'都是Place（地方類名詞）',c:true},{t:'都是Animal（動物）',c:false},{t:'都是Thing（物品）',c:false},{t:'都是Person（人）',c:false}],
+     okMsg:'對！park、zoo、school都是Place！你去的地方！',
+     failMsg:'它們都是你可以「去」的地方，所以是Place！'},
+   ]},
+  {chapter:'📖 Unit 2：A & An 冠詞！',
+   story:'什麼時候用「a」、什麼時候用「an」？規則很簡單——看第一個音是子音還是母音！小蛹一學就會！',
+   units:[
+    {type:'teach',char:'A & An',emoji:'🔤',
+     talk:[
+       '今天學 <b>a</b> 和 <b>an</b>！這兩個都表示「一個」！',
+       '子音（Consonants）開頭用 <b>a</b>：a book, a dog, a king！',
+       '母音（Vowels: a, e, i, o, u）開頭用 <b>an</b>：an apple, an egg, an igloo！'
+     ],
+     meaning:'a + 子音開頭；an + 母音開頭',
+     example:'a desk ✅ / an apple ✅ / a egg ❌'},
+    {type:'teach',char:'母音 Vowels',emoji:'🔡',
+     talk:[
+       '記住這5個母音：<b>A, E, I, O, U</b>！',
+       '單字第一個字母是這5個之一，就用 <b>an</b>！',
+       'apple→A開頭用an，egg→E開頭用an，igloo→I開頭用an，orange→O開頭用an，umbrella→U開頭用an！'
+     ],
+     meaning:'Vowels = a, e, i, o, u → 用 an',
+     example:'an apple 🍎 / an egg 🥚 / an igloo 🏔 / an orange 🍊 / an umbrella ☂️'},
+    {type:'practice',char:'a or an?',
+     q:'「egg」前面要用 a 還是 an？',
+     opts:[{t:'an egg（egg 用 e 開頭，是母音）',c:true},{t:'a egg（錯誤）',c:false},{t:'兩個都可以',c:false},{t:'都不用',c:false}],
+     okMsg:'Yes! an egg! E是母音，用an！🥚',failMsg:'Egg的e是母音(Vowel)！母音開頭用an！'},
+    {type:'practice',char:'a or an?',
+     q:'「desk」前面要用 a 還是 an？',
+     opts:[{t:'a desk（desk 用 d 開頭，是子音）',c:true},{t:'an desk（錯誤）',c:false},{t:'兩個都可以',c:false},{t:'不需要）',c:false}],
+     okMsg:'Yes! a desk! D是子音，用a！🪑',failMsg:'Desk的d是子音(Consonant)！子音開頭用a！'},
+    {type:'practice',char:'a or an?',
+     q:'「umbrella」前面要用 a 還是 an？',
+     opts:[{t:'an umbrella（u 是母音）',c:true},{t:'a umbrella（錯誤）',c:false},{t:'都可以',c:false},{t:'不確定',c:false}],
+     okMsg:'Yes! an umbrella! U是母音，用an！☂️',failMsg:'Umbrella的u是母音！記住：a,e,i,o,u開頭用an！'},
+    {type:'test',q:'「___ apple」— 填入正確的冠詞：',hint:'apple的第一個字母是什麼？是母音嗎？',
+     opts:[{txt:'an apple ✅',correct:true},{txt:'a apple ❌',correct:false},{txt:'the apple',correct:false},{txt:'不需要冠詞',correct:false}]},
+    {type:'test',q:'「___ king」— 填入正確的冠詞：',hint:'king的k是子音還是母音？',
+     opts:[{txt:'a king ✅',correct:true},{txt:'an king ❌',correct:false},{txt:'the king',correct:false},{txt:'不需要',correct:false}]},
+    {type:'test',q:'「___ ostrich」— 填入正確的冠詞：',hint:'ostrich的o是子音還是母音？',
+     opts:[{txt:'an ostrich ✅',correct:true},{txt:'a ostrich ❌',correct:false},{txt:'the ostrich',correct:false},{txt:'不需要',correct:false}]},
+    {type:'test',q:'「___ crayon」— 填入正確的冠詞：',hint:'crayon的c是子音！',
+     opts:[{txt:'a crayon ✅',correct:true},{txt:'an crayon ❌',correct:false},{txt:'the crayon',correct:false},{txt:'不需要',correct:false}]},
+    {type:'observe',q:'🔍 找規律：an egg / an apple / an igloo / an orange / an umbrella — 這些用 an 的單字，開頭字母有什麼規律？',
+     hint:'把開頭字母列出來：e, a, i, o, u — 這就是...',
+     opts:[{t:'開頭都是母音（a, e, i, o, u）',c:true},{t:'開頭都是子音',c:false},{t:'都是動物的名字',c:false},{t:'都是物品',c:false}],
+     okMsg:'完全正確！母音開頭→用an！這個規律記住就永遠不會錯！',
+     failMsg:'注意開頭字母：e, a, i, o, u 都是母音（Vowels）！母音前用an！'},
+   ]},
+  {chapter:'📖 Unit 3：Plural Nouns 複數名詞！',
+   story:'一個變成很多個，英文怎麼說？加s或es！規則只要學一次，小蛹就能舉一反三！',
+   units:[
+    {type:'teach',char:'Plural Nouns',emoji:'🐝',
+     talk:[
+       '今天學複數名詞！一個→很多個，英文要在字尾加 <b>-s</b> 或 <b>-es</b>！',
+       '一般單字直接加 <b>-s</b>：bee→bees, cow→cows, melon→melons！',
+       '字尾是 ch, sh, x, ss, s 的加 <b>-es</b>：peach→peaches, dish→dishes, fox→foxes！'
+     ],
+     meaning:'複數 = 字尾加 -s 或 -es',
+     example:'1 bee → 2 bees 🐝🐝 / 1 fox → 3 foxes 🦊🦊🦊'},
+    {type:'teach',char:'加 -s 的規則',emoji:'➕',
+     talk:[
+       '大部分名詞直接加 <b>-s</b>！',
+       'bee→bees / cow→cows / melon→melons / sock→socks！',
+       '記憶法：普通的字直接 +s，很簡單！'
+     ],
+     meaning:'一般名詞 + s',
+     example:'book→books 📚 / dog→dogs 🐕 / hat→hats 🎩'},
+    {type:'practice',char:'-s 複數',
+     q:'「cow」的複數是什麼？',
+     opts:[{t:'cows（直接加s）',c:true},{t:'cowes（錯誤）',c:false},{t:'cowss（錯誤）',c:false},{t:'cow（不變）',c:false}],
+     okMsg:'Yes! cow→cows! 直接加s！🐄🐄',failMsg:'Cow是一般名詞，直接加s變cows！'},
+    {type:'teach',char:'加 -es 的規則',emoji:'📏',
+     talk:[
+       '字尾是 <b>ch, sh, x, s, ss</b> 的名詞要加 <b>-es</b>！',
+       'peach→peach<b>es</b> / dish→dish<b>es</b> / fox→fox<b>es</b> / kiss→kiss<b>es</b>！',
+       '記憶法：嘴巴發音很費力的字尾（ch/sh/x/ss）要多加 e！'
+     ],
+     meaning:'ch/sh/x/ss/s 結尾 + es',
+     example:'fox→foxes 🦊 / peach→peaches 🍑 / dish→dishes 🍽'},
+    {type:'practice',char:'-es 複數',
+     q:'「fox」的複數是什麼？',
+     opts:[{t:'foxes（fox以x結尾，加es）',c:true},{t:'foxs（錯誤）',c:false},{t:'fox（不變）',c:false},{t:'foxies（錯誤）',c:false}],
+     okMsg:'Yes! fox→foxes! x結尾加es！🦊🦊',failMsg:'Fox以x結尾，要加es！fox→foxes！'},
+    {type:'practice',char:'-es 複數',
+     q:'「watch」的複數是什麼？',
+     opts:[{t:'watches（watch以ch結尾，加es）',c:true},{t:'watchs（錯誤）',c:false},{t:'watch（不變）',c:false},{t:'watchies（錯誤）',c:false}],
+     okMsg:'Yes! watch→watches! ch結尾加es！⌚⌚',failMsg:'Watch以ch結尾，要加es！watch→watches！'},
+    {type:'test',q:'「dish」的複數是？',hint:'dish以sh結尾，應該加s還是es？',
+     opts:[{txt:'dishes ✅（sh→加es）',correct:true},{txt:'dishs ❌',correct:false},{txt:'dish（不變）',correct:false},{txt:'dishies ❌',correct:false}]},
+    {type:'test',q:'「melon」的複數是？',hint:'melon結尾是n，是一般字！',
+     opts:[{txt:'melons ✅（一般加s）',correct:true},{txt:'melones ❌',correct:false},{txt:'melon（不變）',correct:false},{txt:'melonses ❌',correct:false}]},
+    {type:'test',q:'「kiss」的複數是？',hint:'kiss以ss結尾，加s還是加es？',
+     opts:[{txt:'kisses ✅（ss→加es）',correct:true},{txt:'kisss ❌',correct:false},{txt:'kiss（不變）',correct:false},{txt:'kissies ❌',correct:false}]},
+    {type:'observe',q:'🔍 找規律：peach→peaches / dish→dishes / fox→foxes / kiss→kisses — 這些字有什麼共同的字尾？',
+     hint:'把每個字的最後1-2個字母寫出來：ch, sh, x, ss...',
+     opts:[{t:'字尾都是 ch/sh/x/ss，所以加 -es',c:true},{t:'字尾都是母音，加-es',c:false},{t:'字尾都是子音，加-es',c:false},{t:'沒有規律，隨機的',c:false}],
+     okMsg:'超棒！ch/sh/x/ss結尾→加es！這個規則你掌握了！',
+     failMsg:'看字尾：ch, sh, x, ss — 這些特殊字尾才加es，其他一般加s！'},
+   ]},
+  {chapter:'📖 Unit 4：Personal Pronouns 人稱代名詞！',
+   story:'He, She, It, They... 說話時不用一直重複名字，用代名詞就好！小蛹學會後英文說起來更自然！',
+   units:[
+    {type:'teach',char:'Personal Pronouns',emoji:'👤',
+     talk:[
+       '今天學 <b>Personal Pronouns（人稱代名詞）</b>！',
+       '說話時，不用一直重複名字，用代名詞代替！',
+       '人物用：<b>I, You, He, She, We, They</b>！動物/物品/地方用：<b>It, They</b>！'
+     ],
+     meaning:'代名詞代替名詞，避免重複',
+     example:'Tom is tall. <b>He</b> is tall. / The dog is cute. <b>It</b> is cute.'},
+    {type:'teach',char:'I / You / He / She',emoji:'🧍',
+     talk:[
+       '<b>I</b> = 我（說話的人）！<b>You</b> = 你（聽話的人）！',
+       '<b>He</b> = 他（男生）！<b>She</b> = 她（女生）！',
+       '記憶法：He男She女，看到男生說He，看到女生說She！'
+     ],
+     meaning:'I你 You你 He他 She她',
+     example:'I am happy. You are kind. He is tall. She is pretty.'},
+    {type:'practice',char:'He / She',
+     q:'圖片是一個女老師（female teacher）— 用哪個代名詞？',
+     opts:[{t:'She（女生用She）',c:true},{t:'He（男生才用He）',c:false},{t:'It（物品才用It）',c:false},{t:'They（多人才用They）',c:false}],
+     okMsg:'Yes! She! 女生用She！👩',failMsg:'女生用She！He是男生，It是物品，They是多人！'},
+    {type:'teach',char:'It / They',emoji:'🐕',
+     talk:[
+       '<b>It</b> = 它（一個動物、物品或地方）！',
+       '<b>They</b> = 他們/它們（多個人、動物或物品）！',
+       'The dog is cute → <b>It</b> is cute! / The dogs are cute → <b>They</b> are cute!'
+     ],
+     meaning:'It一個動物物品 They多個',
+     example:'The cat is small. <b>It</b> is small. / The cats are small. <b>They</b> are small.'},
+    {type:'practice',char:'It / They',
+     q:'「兩隻狗在公園玩」— 用哪個代名詞？',
+     opts:[{t:'They（多個動物用They）',c:true},{t:'It（只有一個才用It）',c:false},{t:'He（狗不是男生）',c:false},{t:'She（狗不是女生）',c:false}],
+     okMsg:'Yes! They! 多個動物用They！🐕🐕',failMsg:'兩隻狗是多個，用They！一隻狗才用It！'},
+    {type:'teach',char:'We / You / They',emoji:'👨‍👩‍👧‍👦',
+     talk:[
+       '<b>We</b> = 我們（包含自己在內的多人）！',
+       '<b>You</b> = 你們（多個聽話的人）！',
+       '<b>They</b> = 他們（多個第三者）！',
+       'You can be singular（一人）or plural（多人）！'
+     ],
+     meaning:'We我們 You你/你們 They他們',
+     example:'Tom and I are friends. <b>We</b> are friends.'},
+    {type:'practice',char:'We / They',
+     q:'「Tom和我一起去學校」— 主詞用哪個代名詞？',
+     opts:[{t:'We（Tom和我=我們）',c:true},{t:'They（They不包含自己）',c:false},{t:'You（You是對方）',c:false},{t:'I（I是單數）',c:false}],
+     okMsg:'Yes! We! Tom和我 = We！包含自己用We！',failMsg:'Tom和我 = 我們 = We！包含自己在內用We！'},
+    {type:'test',q:'「一把雨傘」用哪個代名詞代替？',hint:'雨傘是物品，一個物品用什麼？',
+     opts:[{txt:'It ✅（一個物品）',correct:true},{txt:'They ❌',correct:false},{txt:'She ❌',correct:false},{txt:'He ❌',correct:false}]},
+    {type:'test',q:'「三個男孩在踢球」用哪個代名詞？',hint:'多個人用什麼？',
+     opts:[{txt:'They ✅（多個人）',correct:true},{txt:'He ❌（He是單數）',correct:false},{txt:'It ❌（It是物品）',correct:false},{txt:'We ❌（We包含自己）',correct:false}]},
+    {type:'test',q:'「我和爸爸媽媽去動物園」，主詞用？',hint:'「我」在其中，用包含自己的代名詞！',
+     opts:[{txt:'We ✅（包含自己的多人）',correct:true},{txt:'They ❌（They不含自己）',correct:false},{txt:'I ❌（I是單數）',correct:false},{txt:'You ❌（You是對方）',correct:false}]},
+    {type:'observe',q:'🔍 找規律：He, She → 人物單數 / It → 動物物品單數 / We, You, They → 複數。這個規律叫什麼？',
+     hint:'試著想想：單數和複數，人和物品，有什麼不同的代名詞？',
+     opts:[{t:'代名詞依「人物/非人物」和「單數/複數」來分類',c:true},{t:'全部都用They就好',c:false},{t:'只有He和She是代名詞',c:false},{t:'代名詞不需要分類',c:false}],
+     okMsg:'完全正確！人物單數He/She，非人物It，複數They/We — 規律清楚！',
+     failMsg:'代名詞要看兩件事：①是人還是物品 ②是單數還是複數！'},
+   ]},
+  {chapter:'📝 Review 1：Units 1-4 總複習！',
+   story:'學完Nouns、A/An、Plural Nouns、Pronouns，現在來大複習！波比出題考考小蛹，準備好了嗎？',
+   units:[
+    {type:'teach',char:'Review 總複習',emoji:'📝',
+     talk:[
+       '今天來複習 Unit 1~4 的所有重點！',
+       'Unit 1：名詞分 Person、Thing、Animal、Place！',
+       'Unit 2：母音開頭用 an，其他用 a！Unit 3：複數加 s 或 es！Unit 4：代名詞 He/She/It/They！'
+     ],
+     meaning:'Units 1-4 重點總整理',
+     example:'a boy（Person）/ an apple（母音）/ foxes（x+es）/ She is a girl'},
+    {type:'test',q:'「zoo」是哪一類名詞？',hint:'你去的地方是什麼類？',
+     opts:[{txt:'Place ✅',correct:true},{txt:'Animal ❌',correct:false},{txt:'Thing ❌',correct:false},{txt:'Person ❌',correct:false}]},
+    {type:'test',q:'「___ eraser」填入正確冠詞：',hint:'eraser的e是什麼音？',
+     opts:[{txt:'an eraser ✅（e是母音）',correct:true},{txt:'a eraser ❌',correct:false},{txt:'the eraser',correct:false},{txt:'不需要',correct:false}]},
+    {type:'test',q:'「___ pencil」填入正確冠詞：',hint:'pencil的p是子音還是母音？',
+     opts:[{txt:'a pencil ✅（p是子音）',correct:true},{txt:'an pencil ❌',correct:false},{txt:'the pencil',correct:false},{txt:'不需要',correct:false}]},
+    {type:'test',q:'「___ igloo」填入正確冠詞：',hint:'igloo的i是母音！',
+     opts:[{txt:'an igloo ✅（i是母音）',correct:true},{txt:'a igloo ❌',correct:false},{txt:'the igloo',correct:false},{txt:'不需要',correct:false}]},
+    {type:'test',q:'「banana」的複數是？',hint:'banana結尾是a，是一般字！',
+     opts:[{txt:'bananas ✅（一般加s）',correct:true},{txt:'bananaes ❌',correct:false},{txt:'banana ❌',correct:false},{txt:'bananass ❌',correct:false}]},
+    {type:'test',q:'「watch」的複數是？',hint:'watch以ch結尾！',
+     opts:[{txt:'watches ✅（ch→加es）',correct:true},{txt:'watchs ❌',correct:false},{txt:'watch ❌',correct:false},{txt:'watchies ❌',correct:false}]},
+    {type:'test',q:'「cup」的複數是？',hint:'cup結尾是p，一般字！',
+     opts:[{txt:'cups ✅（一般加s）',correct:true},{txt:'cupes ❌',correct:false},{txt:'cup ❌',correct:false},{txt:'cupses ❌',correct:false}]},
+    {type:'test',q:'「一個禮物盒」用哪個代名詞？',hint:'一個物品用什麼？',
+     opts:[{txt:'It ✅（一個物品）',correct:true},{txt:'They ❌',correct:false},{txt:'He ❌',correct:false},{txt:'She ❌',correct:false}]},
+    {type:'test',q:'「(I / We) am a king.」選哪個？',hint:'am a king，是一個人說話，用I還是We？',
+     opts:[{txt:'I ✅（單數第一人稱）',correct:true},{txt:'We ❌（We是複數）',correct:false},{txt:'He ❌',correct:false},{txt:'They ❌',correct:false}]},
+    {type:'test',q:'「(They / You) are dogs.」多隻狗用哪個？',hint:'多個動物，不是人，用什麼？',
+     opts:[{txt:'They ✅（多個動物）',correct:true},{txt:'You ❌（You是對人說）',correct:false},{txt:'It ❌（It是單數）',correct:false},{txt:'We ❌',correct:false}]},
+    {type:'test',q:'「(He / She) is a queen.」女王用哪個？',hint:'queen是女性！',
+     opts:[{txt:'She ✅（女性用She）',correct:true},{txt:'He ❌（He是男性）',correct:false},{txt:'It ❌',correct:false},{txt:'They ❌',correct:false}]},
+    {type:'observe',q:'🔍 總複習找規律：以下哪組全部正確？',
+     hint:'每個選項都檢查：名詞類別、冠詞、複數、代名詞',
+     opts:[{t:'an orange（母音）、foxes（x+es）、She is a girl（女性）— 全對！',c:true},
+           {t:'a apple（錯，a→apple母音應用an）',c:false},
+           {t:'watchs（錯，ch結尾應加es）',c:false},
+           {t:'It are dogs（錯，多個用They）',c:false}],
+     okMsg:'完美！Units 1-4 全部掌握了！波比超驕傲！🎉',
+     failMsg:'再看看：母音用an、ch/sh/x結尾加es、多個動物用They！'},
+   ]}
+  ,{chapter:'📖 Unit 5：Pronoun + Be 動詞！',
+   story:'I am、You are、He is... Be動詞是英文句子的靈魂！學會配對，小蛹說英文就會超流暢！',
+   units:[
+    {type:'teach',char:'Be Verbs',emoji:'⚡',
+     talk:[
+       '今天學 <b>Be動詞</b>！I am / You are / He is / She is / It is！',
+       '單數：<b>I am</b>、<b>You are</b>、<b>He is</b>、<b>She is</b>、<b>It is</b>！',
+       '複數：<b>We are</b>、<b>You are</b>、<b>They are</b>！'
+     ],
+     meaning:'Be動詞：am/is/are 搭配不同代名詞',
+     example:'I am a student. / He is a boy. / They are singers.'},
+    {type:'teach',char:'縮寫 Contractions',emoji:'✂️',
+     talk:[
+       'Be動詞可以和代名詞縮寫！',
+       'I am → <b>I&#39;m</b> / You are → <b>You&#39;re</b> / He is → <b>He&#39;s</b>！',
+       'She is → <b>She&#39;s</b> / It is → <b>It&#39;s</b> / We are → <b>We&#39;re</b> / They are → <b>They&#39;re</b>！'
+     ],
+     meaning:'縮寫更口語自然',
+     example:'I&#39;m a cook. / She&#39;s a dancer. / They&#39;re students.'},
+    {type:'practice',char:'am/is/are',
+     q:'「I ___ a cook.」填入正確 Be 動詞：',
+     opts:[{t:'am（I 用 am）',c:true},{t:'is（is 用於 He/She/It）',c:false},{t:'are（are 用於 You/We/They）',c:false},{t:'be',c:false}],
+     okMsg:'Yes! I am a cook! I 永遠用 am！👨‍🍳',failMsg:'I 搭配 am！I am a cook！'},
+    {type:'practice',char:'am/is/are',
+     q:'「He ___ a singer.」填入正確 Be 動詞：',
+     opts:[{t:'is（He/She/It 用 is）',c:true},{t:'am（am 只給 I 用）',c:false},{t:'are（are 給複數用）',c:false},{t:'be',c:false}],
+     okMsg:'Yes! He is a singer! He 用 is！🎤',failMsg:'He/She/It 搭配 is！He is a singer！'},
+    {type:'practice',char:'am/is/are',
+     q:'「They ___ singers.」填入正確 Be 動詞：',
+     opts:[{t:'are（We/You/They 用 are）',c:true},{t:'is（is 是單數）',c:false},{t:'am（am 只給 I 用）',c:false},{t:'be',c:false}],
+     okMsg:'Yes! They are singers! 複數用 are！🎵🎵',failMsg:'We/You/They 搭配 are！They are singers！'},
+    {type:'test',q:'「We ___ students.」正確答案：',hint:'We 是複數，用哪個 Be 動詞？',
+     opts:[{txt:'We are students ✅',correct:true},{txt:'We is students ❌',correct:false},{txt:'We am students ❌',correct:false},{txt:'We be students ❌',correct:false}]},
+    {type:'test',q:'「She ___ a dancer.」正確答案：',hint:'She 是單數女性，用哪個？',
+     opts:[{txt:'She is a dancer ✅',correct:true},{txt:'She are a dancer ❌',correct:false},{txt:'She am a dancer ❌',correct:false},{txt:'She be a dancer ❌',correct:false}]},
+    {type:'test',q:'「I am a student.」縮寫是？',hint:'I am 縮寫在一起！',
+     opts:[{txt:'I&#39;m a student ✅',correct:true},{txt:'I&#39;s a student ❌',correct:false},{txt:'I&#39;re a student ❌',correct:false},{txt:'Im a student ❌',correct:false}]},
+    {type:'test',q:'「They are birds.」縮寫是？',hint:'They are 縮寫！',
+     opts:[{txt:'They&#39;re birds ✅',correct:true},{txt:'They&#39;s birds ❌',correct:false},{txt:'They&#39;m birds ❌',correct:false},{txt:'Theyre birds ❌',correct:false}]},
+    {type:'observe',q:'🔍 找規律：I→am / He,She,It→is / We,You,They→are。這個規律怎麼記？',
+     hint:'想想人數：一個我、單數第三者、複數...',
+     opts:[{t:'I 用 am，單數第三者用 is，複數都用 are！',c:true},{t:'全部用 is 就好',c:false},{t:'隨便用都行',c:false},{t:'只有 am 是正確的',c:false}],
+     okMsg:'完全正確！am/is/are 各有主人，記住就永遠不會錯！⚡',
+     failMsg:'I→am，He/She/It→is，We/You/They→are！每個代名詞有固定搭配！'},
+   ]}
+  ,{chapter:'📖 Unit 6：Be + Not 否定句！',
+   story:'學會說「不是」！I am not、He isn&#39;t、They aren&#39;t... 英文否定句原來這麼簡單！',
+   units:[
+    {type:'teach',char:'Be + Not',emoji:'🚫',
+     talk:[
+       '今天學否定句！在 Be 動詞後面加 <b>not</b> 就變成否定！',
+       'I am not a teacher. / He is not a singer. / They are not doctors.',
+       '意思是：「我不是老師」「他不是歌手」「他們不是醫生」！'
+     ],
+     meaning:'Be + not = 否定「不是」',
+     example:'I am not a girl. I am a boy! / It is not a cat. It is a dog!'},
+    {type:'teach',char:'縮寫否定',emoji:'✂️',
+     talk:[
+       'not 也可以縮寫！',
+       'is not → <b>isn&#39;t</b> / are not → <b>aren&#39;t</b>！',
+       'He isn&#39;t a cook. / We aren&#39;t teachers. / They aren&#39;t birds.',
+       '注意：I am not 不能縮寫成 I amn&#39;t，只能說 I&#39;m not！'
+     ],
+     meaning:'isn&#39;t / aren&#39;t 是常用縮寫',
+     example:'He isn&#39;t a doctor. / She isn&#39;t a vet. / They aren&#39;t cats.'},
+    {type:'practice',char:'Be + Not',
+     q:'「It is ___ a cat. It is a dog.」填入：',
+     opts:[{t:'not（It is not a cat）',c:true},{t:'no（用法不同）',c:false},{t:'don&#39;t（don&#39;t不用在Be動詞）',c:false},{t:'很（不是英文）',c:false}],
+     okMsg:'Yes! It is not a cat! Be動詞後加not！🐕',failMsg:'Be動詞後面直接加not！It is not a cat.'},
+    {type:'practice',char:'否定縮寫',
+     q:'「He is not a singer.」縮寫是？',
+     opts:[{t:'He isn&#39;t a singer.（is not→isn&#39;t）',c:true},{t:'He aren&#39;t a singer.（aren&#39;t是are not）',c:false},{t:'He not a singer.（少了be動詞）',c:false},{t:'He isn a singer.（少了&#39;t）',c:false}],
+     okMsg:'Yes! He isn&#39;t a singer! is not → isn&#39;t！',failMsg:'is not 縮寫成 isn&#39;t！He isn&#39;t a singer.'},
+    {type:'practice',char:'否定縮寫',
+     q:'「They are not doctors.」縮寫是？',
+     opts:[{t:'They aren&#39;t doctors.（are not→aren&#39;t）',c:true},{t:'They isn&#39;t doctors.（isn&#39;t是is not）',c:false},{t:'They not doctors.（少了be動詞）',c:false},{t:'They are&#39;nt doctors.（縮寫位置錯）',c:false}],
+     okMsg:'Yes! They aren&#39;t doctors! are not → aren&#39;t！',failMsg:'are not 縮寫成 aren&#39;t！They aren&#39;t doctors.'},
+    {type:'test',q:'「You are not a cook. You are a doctor.」縮寫否定：',hint:'are not 縮寫是什麼？',
+     opts:[{txt:'You aren&#39;t a cook. ✅',correct:true},{txt:'You isn&#39;t a cook. ❌',correct:false},{txt:'You not a cook. ❌',correct:false},{txt:'You&#39;re not a cook. ✅（也對！）',correct:true}]},
+    {type:'test',q:'「We are not nurses. We are dancers.」否定縮寫：',hint:'We are not → ?',
+     opts:[{txt:'We aren&#39;t nurses. ✅',correct:true},{txt:'We isn&#39;t nurses. ❌',correct:false},{txt:'We not nurses. ❌',correct:false},{txt:'We amn&#39;t nurses. ❌',correct:false}]},
+    {type:'test',q:'「She is not a vet. She is a singer.」縮寫：',hint:'She is not → isn&#39;t！',
+     opts:[{txt:'She isn&#39;t a vet. ✅',correct:true},{txt:'She aren&#39;t a vet. ❌',correct:false},{txt:'She not a vet. ❌',correct:false},{txt:'She&#39;s not a vet. ✅（也對！）',correct:true}]},
+    {type:'observe',q:'🔍 找規律：is not→isn&#39;t / are not→aren&#39;t。為什麼 I am not 沒有縮寫 amn&#39;t？',
+     hint:'試試看說 amn&#39;t 很難發音吧？英文縮寫規則也考慮發音！',
+     opts:[{t:'因為 amn&#39;t 太難發音，英文規定 I am not 不縮寫 be 動詞，只能說 I&#39;m not！',c:true},{t:'I am not 可以縮寫成 I amn&#39;t',c:false},{t:'I am not 可以縮寫成 I&#39;m not&#39;t',c:false},{t:'所有否定都不能縮寫',c:false}],
+     okMsg:'完全正確！I&#39;m not 是唯一正確的縮寫！英文有時也要考慮好不好說！',
+     failMsg:'I am not 特殊！只能說 I&#39;m not，不能說 amn&#39;t！記住這個例外！'},
+   ]}
+  ,{chapter:'📖 Unit 7：Yes/No Questions！',
+   story:'Be動詞放到句首，就變成問句！Am I? Are you? Is he? 學會問問題，英文對話就更生動了！',
+   units:[
+    {type:'teach',char:'Yes/No Questions',emoji:'❓',
+     talk:[
+       '今天學用 Be 動詞問問題！把 Be 動詞移到句首就是問句！',
+       'You are a nurse. → <b>Are you</b> a nurse?（Yes/No問句）',
+       'He is a cook. → <b>Is he</b> a cook?'
+     ],
+     meaning:'Be動詞移到句首 = Yes/No問句',
+     example:'Are you a student? / Is she a doctor? / Are they teachers?'},
+    {type:'teach',char:'Short Answers',emoji:'💬',
+     talk:[
+       '回答 Yes/No 問句，用短答！',
+       'Are you a nurse? → Yes, <b>I am.</b> / No, <b>I&#39;m not.</b>',
+       'Is he a cook? → Yes, <b>he is.</b> / No, <b>he isn&#39;t.</b>',
+       'Are they teachers? → Yes, <b>they are.</b> / No, <b>they aren&#39;t.</b>'
+     ],
+     meaning:'短答：Yes, 代名詞+be. / No, 代名詞+be+not.',
+     example:'Is it a box? Yes, it is. / No, it isn&#39;t.'},
+    {type:'practice',char:'問句形成',
+     q:'「You are a student.」改成問句是？',
+     opts:[{t:'Are you a student?（be動詞移到句首）',c:true},{t:'You are a student?（只加問號不夠）',c:false},{t:'Is you a student?（you用are不用is）',c:false},{t:'Am you a student?（am只給I用）',c:false}],
+     okMsg:'Yes! Are you a student? Be動詞移到最前面！',failMsg:'把are移到you前面！Are you a student?'},
+    {type:'practice',char:'問句形成',
+     q:'「She is a doctor.」改成問句是？',
+     opts:[{t:'Is she a doctor?（is移到she前）',c:true},{t:'Are she a doctor?（she用is不用are）',c:false},{t:'She is a doctor?（只加問號不夠）',c:false},{t:'Am she a doctor?（am只給I用）',c:false}],
+     okMsg:'Yes! Is she a doctor? is移到she前面！',failMsg:'She is → Is she？把is移到最前！Is she a doctor?'},
+    {type:'practice',char:'短答Yes',
+     q:'「Is it a box?」肯定短答是？',
+     opts:[{t:'Yes, it is.（it is的短答）',c:true},{t:'Yes, it are.（it用is不用are）',c:false},{t:'Yes, is it.（語序錯誤）',c:false},{t:'Yes, they are.（they不對）',c:false}],
+     okMsg:'Yes, it is! 短答用 it is！📦',failMsg:'It is a box → Yes, it is. 代名詞+be動詞！'},
+    {type:'practice',char:'短答No',
+     q:'「Is he a painter?」否定短答是？',
+     opts:[{t:'No, he isn&#39;t.（he isn&#39;t的縮寫）',c:true},{t:'No, he aren&#39;t.（aren&#39;t是are not）',c:false},{t:'No, isn&#39;t he.（語序錯誤）',c:false},{t:'No, he not.（少了be動詞）',c:false}],
+     okMsg:'No, he isn&#39;t! 否定短答用縮寫！',failMsg:'He is → No, he isn&#39;t. is not縮寫成isn&#39;t！'},
+    {type:'test',q:'「Am I a doctor?」正確問句結構：',hint:'Am I... 是用 I 問自己的問句！',
+     opts:[{txt:'Am I a doctor? ✅（I用am）',correct:true},{txt:'Are I a doctor? ❌',correct:false},{txt:'Is I a doctor? ❌',correct:false},{txt:'I am a doctor? ❌（只加問號）',correct:false}]},
+    {type:'test',q:'「Are they queens?」的肯定短答：',hint:'they用are，短答也用are！',
+     opts:[{txt:'Yes, they are. ✅',correct:true},{txt:'Yes, they is. ❌',correct:false},{txt:'Yes, they am. ❌',correct:false},{txt:'Yes, are they. ❌（語序錯）',correct:false}]},
+    {type:'test',q:'「Are you singers?」的否定短答（問多人）：',hint:'you複數用are，否定縮寫？',
+     opts:[{txt:'No, we aren&#39;t. ✅（你問我們，我們回答we）',correct:true},{txt:'No, you aren&#39;t. ❌（不回答you）',correct:false},{txt:'No, we isn&#39;t. ❌（我們用aren&#39;t）',correct:false},{txt:'No, aren&#39;t we. ❌（語序錯）',correct:false}]},
+    {type:'observe',q:'🔍 找規律：Am I? / Are you? / Is he/she/it? / Are we/you/they? — 問句的Be動詞和直述句一樣嗎？',
+     hint:'比較 He is. → Is he? / They are. → Are they?',
+     opts:[{t:'完全一樣！只是把Be動詞移到句首，其他不變！',c:true},{t:'問句要換成不同的Be動詞',c:false},{t:'問句不需要Be動詞',c:false},{t:'問句的Be動詞都用is',c:false}],
+     okMsg:'對！Be動詞種類不變，只是移到最前面就變問句！超簡單的規律！',
+     failMsg:'直述句的Be動詞是什麼，問句就用同一個，只是移到句首！'},
+  {chapter:'📖 Unit 8：What/Who Questions！',
+   story:'What 問東西，Who 問人！學會這兩個問句，你就能用英文問任何問題了！',
+   units:[
+    {type:'teach',char:'What vs Who',emoji:'❓',
+     talk:[
+       '<b>What</b> 用來問「東西/物品/動物」！',
+       '<b>Who</b> 用來問「人」！',
+       'What is it? → It is a doll.（問東西）',
+       'Who is she? → She is Jane. She is a singer.（問人）'
+     ],
+     meaning:'What問物 / Who問人',
+     example:'What is it? It is a parrot. / Who is he? He is Bob.'},
+    {type:'teach',char:'單複數問句',emoji:'🔢',
+     talk:[
+       '一個用 is，多個用 are！',
+       '<b>What is it?</b> → It is a doll.（一個東西）',
+       '<b>What are they?</b> → They are dolls.（多個東西）',
+       '<b>Who is she?</b> → She is Jane.（一個人）',
+       '<b>Who are they?</b> → They are Andy and Jack.（多個人）'
+     ],
+     meaning:'is=單數 / are=複數',
+     example:'What are they? They are hats. / Who are they? They are doctors.'},
+    {type:'practice',char:'What/Who',
+     q:'看到一隻鸚鵡，要問「牠是什麼？」應該用？',
+     opts:[{t:'What is it?（問動物用What）',c:true},{t:'Who is it?（Who問人，鸚鵡不是人）',c:false},{t:'What are they?（只有一隻用is）',c:false},{t:'Who are they?（兩個都錯）',c:false}],
+     okMsg:'Yes! What is it? 鸚鵡是動物，用What！🦜',failMsg:'問動物/物品用What！What is it? It is a parrot.'},
+    {type:'practice',char:'What/Who',
+     q:'看到老師 Bob，要問「他是誰？」應該用？',
+     opts:[{t:'Who is he?（問人用Who）',c:true},{t:'What is he?（What問東西，不問人）',c:false},{t:'Who are they?（只有一個人用is）',c:false},{t:'What are they?（兩個都錯）',c:false}],
+     okMsg:'Yes! Who is he? 問人用Who！👨‍🏫',failMsg:'問人用Who！Who is he? He is Bob. He is a teacher.'},
+    {type:'practice',char:'單複數',
+     q:'看到兩輛腳踏車，要問「它們是什麼？」用？',
+     opts:[{t:'What are they?（多個用are）',c:true},{t:'What is it?（一個才用is）',c:false},{t:'Who are they?（腳踏車不是人）',c:false},{t:'Who is it?（兩個都錯）',c:false}],
+     okMsg:'Yes! What are they? 多個東西用are！🚲🚲',failMsg:'多個東西！What are they? They are bikes.'},
+    {type:'test',q:'「It is a yo-yo.」對應的問句是？',hint:'一個東西，用What還是Who？',
+     opts:[{txt:'What is it? ✅（yo-yo是東西）',correct:true},{txt:'Who is it? ❌（Who問人）',correct:false},{txt:'What are they? ❌（一個用is）',correct:false},{txt:'Who are they? ❌',correct:false}]},
+    {type:'test',q:'「They are Tom and Amy. They are painters.」對應的問句是？',hint:'多個人，用Who還是What？',
+     opts:[{txt:'Who are they? ✅（多個人用are）',correct:true},{txt:'What are they? ❌（What問東西）',correct:false},{txt:'Who is she? ❌（多個用are）',correct:false},{txt:'What is it? ❌',correct:false}]},
+    {type:'test',q:'「She is Julie. She is a teacher.」對應的問句是？',hint:'一個女生，問她是誰！',
+     opts:[{txt:'Who is she? ✅（一個人用is）',correct:true},{txt:'What is she? ❌（What問東西不問人）',correct:false},{txt:'Who are they? ❌（一個人用is）',correct:false},{txt:'What are they? ❌',correct:false}]},
+    {type:'test',q:'看到一個陀螺（yo-yo），正確的問答是？',hint:'一個東西，問和答都要一致！',
+     opts:[{txt:'What is it? It is a yo-yo. ✅',correct:true},{txt:'Who is it? It is a yo-yo. ❌（Who問人）',correct:false},{txt:'What are they? They are yo-yos. ❌（一個用is）',correct:false},{txt:'What is it? They are yo-yos. ❌（答案主詞錯）',correct:false}]},
+    {type:'observe',q:'🔍 找規律：What問東西/動物，Who問人。如果看到一隻熊，應該問 Who 還是 What？',
+     hint:'熊是動物還是人？動物用什麼問？',
+     opts:[{t:'What！熊是動物，用What is it?',c:true},{t:'Who！熊也算生命',c:false},{t:'都可以',c:false},{t:'不用問句',c:false}],
+     okMsg:'正確！動物用What！只有人才用Who！這個規則永遠不變！',
+     failMsg:'只有「人」才用Who！動物和物品都用What！What is it? It is a bear.'},
+   ]}
+  ,{chapter:'📝 Review 2：Units 5-8 總複習！',
+   story:'Be動詞、否定句、Yes/No問句、What/Who問句——來一次大複習！',
+   units:[
+    {type:'teach',char:'Review 2',emoji:'📝',
+     talk:['Unit 5：I am / He is / They are（Be動詞搭配）','Unit 6：isn&#39;t / aren&#39;t（否定）','Unit 7：Are you...? Yes, I am.（問句）','Unit 8：What問東西 / Who問人'],
+     meaning:'Units 5-8 重點',
+     example:'Is she a nurse? No, she isn&#39;t. She is a doctor.'},
+    {type:'test',q:'「She ___ a nurse.」填入Be動詞：',hint:'She用哪個？',
+     opts:[{txt:'She is a nurse. ✅',correct:true},{txt:'She are a nurse. ❌',correct:false},{txt:'She am a nurse. ❌',correct:false},{txt:'She be a nurse. ❌',correct:false}]},
+    {type:'test',q:'「We ___ students.」填入Be動詞：',hint:'We用哪個？',
+     opts:[{txt:'We are students. ✅',correct:true},{txt:'We is students. ❌',correct:false},{txt:'We am students. ❌',correct:false},{txt:'We be students. ❌',correct:false}]},
+    {type:'test',q:'「He ___ a singer.」否定，縮寫是？',hint:'He is not縮寫',
+     opts:[{txt:'He isn&#39;t a singer. ✅',correct:true},{txt:'He aren&#39;t a singer. ❌',correct:false},{txt:'He not a singer. ❌',correct:false},{txt:'He isn a singer. ❌',correct:false}]},
+    {type:'test',q:'「You ___ doctors.」否定縮寫：',hint:'You are not縮寫',
+     opts:[{txt:'You aren&#39;t doctors. ✅',correct:true},{txt:'You isn&#39;t doctors. ❌',correct:false},{txt:'You not doctors. ❌',correct:false},{txt:'You aren doctors. ❌',correct:false}]},
+    {type:'test',q:'「Is he a king?」肯定短答：',hint:'he is的短答',
+     opts:[{txt:'Yes, he is. ✅',correct:true},{txt:'Yes, he are. ❌',correct:false},{txt:'Yes, I am. ❌',correct:false},{txt:'Yes, it is. ❌',correct:false}]},
+    {type:'test',q:'「Are you dancers?」否定短答：',hint:'we還是you回答？',
+     opts:[{txt:'No, we aren&#39;t. ✅',correct:true},{txt:'No, you aren&#39;t. ❌',correct:false},{txt:'No, we isn&#39;t. ❌',correct:false},{txt:'No, I am not. ❌',correct:false}]},
+    {type:'test',q:'看到一隻青蛙，問句應該是？',hint:'動物用What還是Who？',
+     opts:[{txt:'What is it? ✅',correct:true},{txt:'Who is it? ❌',correct:false},{txt:'What are they? ❌',correct:false},{txt:'Who are they? ❌',correct:false}]},
+    {type:'test',q:'「They are Rob and Grace. They are singers.」對應問句：',hint:'多個人問Who！',
+     opts:[{txt:'Who are they? ✅',correct:true},{txt:'What are they? ❌',correct:false},{txt:'Who is she? ❌',correct:false},{txt:'What is it? ❌',correct:false}]},
+    {type:'observe',q:'🔍 複習規律：am/is/are 分別配哪些代名詞？',
+     hint:'I用am，He/She/It用is，We/You/They用are！',
+     opts:[{t:'I→am，He/She/It→is，We/You/They→are！完全記住了！',c:true},{t:'都用is就好',c:false},{t:'複數用am',c:false},{t:'I用are',c:false}],
+     okMsg:'完美！am/is/are三個都記住了！Review 2完成！',
+     failMsg:'I→am，He/She/It→is，We/You/They→are！再背一遍！'},
+   ]}
+  ,{chapter:'📖 Unit 9：Demonstrative Pronouns 指示代名詞！',
+   story:'This、That、These、Those — 用手指著說「這個」「那個」！近的說This/These，遠的說That/Those！',
+   units:[
+    {type:'teach',char:'This vs That',emoji:'👉',
+     talk:['<b>This</b> = 這個（近的、一個）/ <b>That</b> = 那個（遠的、一個）！','This is a chair.（你旁邊的椅子）/ That is a clock.（遠處的時鐘）','記憶法：This和near都有i！'],
+     meaning:'This近單 / That遠單',
+     example:'This is a hat. / That is a bag.'},
+    {type:'teach',char:'These vs Those',emoji:'👐',
+     talk:['<b>These</b> = 這些（近的、多個）/ <b>Those</b> = 那些（遠的、多個）！','These are ants.（你腳邊的螞蟻）/ Those are doors.（遠處的門）','口訣：This→These，That→Those，單數變複數！'],
+     meaning:'These近複 / Those遠複',
+     example:'These are hats. / Those are bags.'},
+    {type:'practice',char:'This/That',
+     q:'手指著旁邊的椅子說「這是一把椅子」：',
+     opts:[{t:'This is a chair.（近的用This）',c:true},{t:'That is a chair.（That是遠的）',c:false},{t:'These are chairs.（複數）',c:false},{t:'Those are chairs.（遠+複數）',c:false}],
+     okMsg:'Yes! This is a chair! 近的用This！🪑',failMsg:'近的東西用This！This is a chair.'},
+    {type:'practice',char:'These/Those',
+     q:'指著遠處的鑰匙們說「那些是鑰匙」：',
+     opts:[{t:'Those are keys.（遠+複數用Those）',c:true},{t:'These are keys.（These是近的）',c:false},{t:'That is a key.（單數）',c:false},{t:'This is a key.（近+單數）',c:false}],
+     okMsg:'Yes! Those are keys! 遠+複數用Those！🔑🔑',failMsg:'遠的+多個用Those！Those are keys.'},
+    {type:'practice',char:'否定句',
+     q:'「This is a pencil.」的否定句：',
+     opts:[{t:'This isn&#39;t a pencil.（is not縮寫）',c:true},{t:'This aren&#39;t a pencil.（aren&#39;t是are not）',c:false},{t:'These aren&#39;t pencils.（複數）',c:false},{t:'Not this a pencil.（語序錯）',c:false}],
+     okMsg:'Yes! This isn&#39;t a pencil! is not→isn&#39;t！',failMsg:'This is → This isn&#39;t！'},
+    {type:'test',q:'「___ is a window.」（旁邊的一扇窗）',hint:'近的+單數=？',
+     opts:[{txt:'This is a window. ✅',correct:true},{txt:'That is a window. ❌',correct:false},{txt:'These are windows. ❌',correct:false},{txt:'Those are windows. ❌',correct:false}]},
+    {type:'test',q:'「___ are sandwiches.」（眼前桌上的多個三明治）',hint:'近的+複數=？',
+     opts:[{txt:'These are sandwiches. ✅',correct:true},{txt:'Those are sandwiches. ❌',correct:false},{txt:'This is a sandwich. ❌',correct:false},{txt:'That is a sandwich. ❌',correct:false}]},
+    {type:'test',q:'「___ are pencil cases.」（遠處多個鉛筆盒）',hint:'遠的+複數=？',
+     opts:[{txt:'Those are pencil cases. ✅',correct:true},{txt:'These are pencil cases. ❌',correct:false},{txt:'That is a pencil case. ❌',correct:false},{txt:'This is a pencil case. ❌',correct:false}]},
+    {type:'test',q:'「Is that a frog?」（遠處池塘的青蛙）回答是：',hint:'That → it is/isn&#39;t',
+     opts:[{txt:'Yes, it is. ✅',correct:true},{txt:'Yes, that is. ❌',correct:false},{txt:'Yes, they are. ❌',correct:false},{txt:'Yes, this is. ❌',correct:false}]},
+    {type:'observe',q:'🔍 找規律：This/These 和 That/Those 各自怎麼變複數？',
+     hint:'This→These，That→Those，有什麼相似的地方？',
+     opts:[{t:'This→These（加e+s），That→Those（加se），都是在字尾加料變複數！',c:true},{t:'This和That都變成Those',c:false},{t:'複數全用These',c:false},{t:'沒有規律',c:false}],
+     okMsg:'完美！This⟷These、That⟷Those，成對記憶最方便！',
+     failMsg:'This→These（近），That→Those（遠）！成對記憶！'},
+   ]}  ,{chapter:'📖 Unit 10：Adjectives 形容詞！',
+   story:'形容詞讓句子更生動！紅色的筆、大的房子、圓形的時鐘——學會用形容詞，描述什麼都難不倒你！',
+   units:[
+    {type:'teach',char:'Adjectives 形容詞',emoji:'🎨',
+     talk:[
+       '今天學 <b>Adjectives（形容詞）</b>！形容詞放在名詞前面，描述它的樣子！',
+       '<b>顏色</b>：red / blue / green / yellow / black！',
+       '<b>大小</b>：big / small / tall / short / long！',
+       '<b>形狀</b>：round / square！'
+     ],
+     meaning:'形容詞放在名詞之前',
+     example:'It is a red pen. / She is a tall girl. / They are round clocks.'},
+    {type:'teach',char:'顏色形容詞',emoji:'🌈',
+     talk:[
+       '顏色形容詞放在名詞前面！',
+       'It is a <b>black</b> cat. / They are <b>green</b> hats.',
+       'It is a <b>blue</b> T-shirt. / They are <b>yellow</b> gloves.',
+       '記憶法：先說顏色，再說名詞，就像「紅色的筆」！'
+     ],
+     meaning:'顏色+名詞',
+     example:'a red pen / blue socks / yellow shoes / green hats'},
+    {type:'practice',char:'顏色形容詞',
+     q:'「那是一隻黑色的貓」英文怎麼說？',
+     opts:[{t:'It is a black cat.（顏色放名詞前）',c:true},{t:'It is a cat black.（形容詞不能放後面）',c:false},{t:'It is black.（少了名詞）',c:false},{t:'Black is a cat.（語序錯誤）',c:false}],
+     okMsg:'Yes! It is a black cat! 形容詞black放在cat前面！🐱',failMsg:'形容詞放在名詞前面！It is a black cat.'},
+    {type:'teach',char:'大小和形狀形容詞',emoji:'📐',
+     talk:[
+       '<b>大小</b>：big大 / small小 / tall高 / short矮/短 / long長！',
+       '<b>形狀</b>：round圓形 / square正方形！',
+       'It is a big house. / She is a short girl. / They are round clocks.',
+       'It is a square clock.（方形時鐘）/ It is a round table.（圓桌）'
+     ],
+     meaning:'大小形狀+名詞',
+     example:'a big gorilla / small car / round clocks / square table'},
+    {type:'practice',char:'大小形容詞',
+     q:'「It is a ___ gorilla.」圖片是一隻大猩猩，填入：',
+     opts:[{t:'big（大猩猩 = big gorilla）',c:true},{t:'small（small是小的）',c:false},{t:'round（round是圓形）',c:false},{t:'short（short是矮的）',c:false}],
+     okMsg:'Yes! It is a big gorilla! 大猩猩用big！🦍',failMsg:'大猩猩用big！It is a big gorilla.'},
+    {type:'practice',char:'形狀形容詞',
+     q:'「No, it isn&#39;t. It is a ___ table.」（桌子是方形的）',
+     opts:[{t:'square（方形的）',c:true},{t:'round（圓形的）',c:false},{t:'big（大的）',c:false},{t:'long（長的）',c:false}],
+     okMsg:'Yes! It is a square table! 方形用square！📐',failMsg:'方形用square！It is a square table.'},
+    {type:'test',q:'「She is a ___ girl.」（她很高）填入：',hint:'高的用什麼形容詞？',
+     opts:[{txt:'She is a tall girl. ✅',correct:true},{txt:'She is a long girl. ❌（long是長的）',correct:false},{txt:'She is a big girl. ❌（big是大的）',correct:false},{txt:'She is a round girl. ❌',correct:false}]},
+    {type:'test',q:'「They are ___ clocks.」（多個圓形時鐘）',hint:'圓形用什麼？',
+     opts:[{txt:'They are round clocks. ✅',correct:true},{txt:'They are square clocks. ❌',correct:false},{txt:'They are small clocks. ❌',correct:false},{txt:'They are big clocks. ❌',correct:false}]},
+    {type:'test',q:'「Are they ___ birds?」「No, they aren&#39;t. They are ___ birds.」（不是黃色，是藍色）',hint:'yellow和blue，哪個對哪個？',
+     opts:[{txt:'Are they yellow birds? They are blue birds. ✅',correct:true},{txt:'Are they blue birds? They are yellow birds. ❌',correct:false},{txt:'Are they big birds? They are small birds. ❌',correct:false},{txt:'Are they round birds? They are square birds. ❌',correct:false}]},
+    {type:'test',q:'「gorilla / a / is / big / It」排列成正確句子：',hint:'It + is + a + 形容詞 + 名詞！',
+     opts:[{txt:'It is a big gorilla. ✅',correct:true},{txt:'It is a gorilla big. ❌（形容詞在名詞後）',correct:false},{txt:'Big it is a gorilla. ❌',correct:false},{txt:'It big is a gorilla. ❌',correct:false}]},
+    {type:'observe',q:'🔍 找規律：It is a black cat. / She is a tall girl. / They are round clocks. 形容詞在哪裡？',
+     hint:'每個句子的形容詞和名詞，位置關係是什麼？',
+     opts:[{t:'形容詞永遠在名詞前面！（形容詞+名詞）',c:true},{t:'形容詞在名詞後面',c:false},{t:'形容詞在句尾',c:false},{t:'形容詞位置不固定',c:false}],
+     okMsg:'完全正確！形容詞永遠放在名詞前面！black cat、tall girl、round clocks！',
+     failMsg:'形容詞+名詞！black放在cat前、tall放在girl前、round放在clocks前！'},
+   ]}   ]},
 ],
 math:[
   {chapter:'✖️ 第1章：乘法的祕密！',story:'乘法是加法的快速版！小蛹你能發現乘法的規律嗎？',
@@ -2038,8 +2655,21 @@ let S={
   dailyLogs:{},
   emotionLog:{},
   chapterProgress:{chinese:0,english:0,math:0},
+  lessonScores:{},  // {subject_chapterIdx: {score:85, total:10, date:'2025-03-01'}}
 };
-function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
+function save(){
+  try{
+    localStorage.setItem(SAVE_KEY,JSON.stringify(S));
+    // 偵探進度獨立儲存，確保不被版本更新覆蓋
+    const ds={
+      completed:detectiveState.completed,
+      stars:detectiveState.stars,
+      earnedAchievements:detectiveState.earnedAchievements||[],
+      thinkingRecord:detectiveState.thinkingRecord||{}
+    };
+    localStorage.setItem(SAVE_KEY+'_detective',JSON.stringify(ds));
+  }catch(e){}
+}
 const DATA_VERSION = 'v5'; // 改這個號碼會清除 dailyLogs 但保留名字和徽章
 function load(){
   try{
@@ -2069,6 +2699,17 @@ function load(){
         save();
       }
     }
+    // 讀取偵探進度（獨立儲存，不受版本更新影響）
+    try{
+      const dd=localStorage.getItem(SAVE_KEY+'_detective');
+      if(dd){
+        const dp=JSON.parse(dd);
+        detectiveState.completed=dp.completed||[];
+        detectiveState.stars=dp.stars||0;
+        detectiveState.earnedAchievements=dp.earnedAchievements||[];
+        detectiveState.thinkingRecord=dp.thinkingRecord||{};
+      }
+    }catch(e){}
   }catch(e){}
 }
 /* =====================================================
@@ -2177,7 +2818,7 @@ function updateUI(){
     else{card.classList.remove('next-up');}
     }
   });
-  renderMissions();renderStreakMilestones();renderCostumes();renderCalendar();updateGameCenter();renderDetectiveRoom();
+  renderMissions();renderStreakMilestones();renderCostumes();renderCalendar();updateGameCenter();renderDetectiveRoom();renderGrammarPicnic();
   // 確保主畫面頭像正確顯示
   setBoppyEl('playerAvatar',52,'happy',getActiveCostume().badge,false);
   setBoppyEl('encAvatar',36,'normal','',false);
@@ -2313,18 +2954,135 @@ const DYNAMIC_GENERATORS = {
     explain:`「${item.cat}→${item.prop}」成立，但「${item.prop}→${item.cat}」不一定！${other}${item.prop}，但不代表是${item.cat}。這叫逆命題謬誤！`};
   },
 };
+// 新增動態生成器：找錯誤、跨科整合、邏輯謎題、bug_hunt 隨機題
+Object.assign(DYNAMIC_GENERATORS, {
+  bug_hunt_dyn: ()=>{
+    const templates=[
+      ()=>{const words=[['一條魚','一棵魚'],['一朵雲','一個雲'],['一頭牛','一尾牛'],['一本書','一張書']];
+        const w=words[Math.floor(Math.random()*words.length)];
+        return {q:`哪個量詞用法是「錯誤」的？`,
+        choices:[w[1]+'（錯誤）',w[0]+'（正確）','兩個都對','兩個都錯'],
+        ans:0, explain:`「${w[0]}」才是正確的量詞！`}; },
+      ()=>{const errs=[
+        {wrong:'She go to school.',right:'She goes to school.','tip':'She/He後面動詞要加s！'},
+        {wrong:'I am goes home.',right:'I am going home.','tip':'am/is/are後面用動詞ing！'},
+        {wrong:'They is happy.',right:'They are happy.','tip':'They後面用are不用is！'},
+      ]; const e=errs[Math.floor(Math.random()*errs.length)];
+        return {q:`哪個英文句子有「文法錯誤」？`,
+        choices:[e.wrong,e.right,'兩句都對','看情況'],
+        ans:0, explain:e.tip}; },
+    ];
+    const t=templates[Math.floor(Math.random()*templates.length)]();
+    return {id:'dyn_bug', type:'bug_hunt', level:1, tag:'🐛 找錯誤', tagColor:'#f59e0b',
+    q:t.q, choices:t.choices, ans:t.ans, explain:t.explain};
+  },
+  crossover_dyn: ()=>{
+    const templates=[
+      ()=>{const a=2+Math.floor(Math.random()*4),b=2+Math.floor(Math.random()*4);
+        return {q:`英文：「${a} apples and ${b} oranges」，總共幾個水果？`,
+        choices:[String(a+b),String(a*b),String(a-b),String(a+b+1)],
+        ans:0, explain:`${a}+${b}=${a+b}！英文數字和數學計算結合！`}; },
+      ()=>{const words=['cat','dog','bird','fish','lion'];
+        const w=words[Math.floor(Math.random()*words.length)];
+        return {q:`「${w}」是哪一類名詞（Noun）？`,
+        choices:['Animal（動物）','Person（人）','Thing（物品）','Place（地方）'],
+        ans:0, explain:`${w}是動物！英文Nouns分：Person人、Thing物、Animal動物、Place地方！`}; },
+    ];
+    const t=templates[Math.floor(Math.random()*templates.length)]();
+    return {id:'dyn_cross', type:'crossover', level:1, tag:'🌈 跨科整合', tagColor:'#ec4899',
+    q:t.q, choices:t.choices, ans:t.ans, explain:t.explain};
+  },
+  logic_puzzle_dyn: ()=>{
+    const templates=[
+      ()=>{const n=2+Math.floor(Math.random()*5),m=n+1+Math.floor(Math.random()*3);
+        return {q:`${n}個人站一排，從左數第${n}個是誰？從右數第${m-n+1}個呢？是同一個人嗎？（共${m}人）`,
+        choices:['是同一個人','不是同一個人','不確定','需要更多資訊'],
+        ans: (n + (m-n+1) - 1 === m) ? 0 : 1,
+        explain:`從左數第${n}，從右數第${m-n+1}，相加${n}+${m-n+1}-1=${m}人，${n+(m-n+1)-1===m?'剛好是同一個':'不是同一個'}！`}; },
+      ()=>{const a=1+Math.floor(Math.random()*5),b=a+1+Math.floor(Math.random()*4),c=b+1+Math.floor(Math.random()*3);
+        return {q:`小明比小華高，小華比小強高。三人由高到低排列是？`,
+        choices:['小明→小華→小強','小強→小華→小明','小華→小明→小強','小明→小強→小華'],
+        ans:0, explain:`小明>小華>小強，所以由高到低是小明、小華、小強！這叫傳遞性推理。`}; },
+    ];
+    const t=templates[Math.floor(Math.random()*templates.length)]();
+    return {id:'dyn_lpuzzle', type:'logic_puzzle', level:1, tag:'🗝️ 邏輯謎題', tagColor:'#f97316',
+    q:t.q, choices:t.choices, ans:t.ans, explain:t.explain};
+  },
+  noun_english_dyn: ()=>{
+    const categories={
+      Person:['boy','girl','father','mother','teacher','king','doctor','student'],
+      Thing:['book','pencil','tree','hat','bag','pen','ball','desk'],
+      Animal:['dog','cat','lion','monkey','bear','bird','fish','rabbit'],
+      Place:['park','zoo','school','airport','bank','hospital','playground','market'],
+    };
+    const cats=Object.keys(categories);
+    const correctCat=cats[Math.floor(Math.random()*cats.length)];
+    const word=categories[correctCat][Math.floor(Math.random()*categories[correctCat].length)];
+    const wrongCats=cats.filter(c=>c!==correctCat).sort(()=>Math.random()-0.5).slice(0,3);
+    return {id:'dyn_noun', type:'crossover', level:1, tag:'🌈 英文名詞', tagColor:'#ec4899',
+    q:`「${word}」是哪一類英文名詞（Noun）？`,
+    choices:[correctCat,...wrongCats].sort(()=>Math.random()-0.5),
+    ans:0, // 注意：這裡 ans 需要指向正確選項的位置，buildQuestion 會處理
+    explain:`「${word}」是${correctCat}（${{'Person':'人','Thing':'物品','Animal':'動物','Place':'地方'}[correctCat]}）！英文名詞分4類！`};
+    // 修正：重新計算 ans 索引
+  },
+});
+
+// 修正 noun_english_dyn 的 ans 索引問題
+const _origNoun = DYNAMIC_GENERATORS.noun_english_dyn;
+DYNAMIC_GENERATORS.noun_english_dyn = ()=>{
+  const categories={
+    Person:['boy','girl','father','mother','teacher','king','doctor','student'],
+    Thing:['book','pencil','tree','hat','bag','pen','ball','desk'],
+    Animal:['dog','cat','lion','monkey','bear','bird','fish','rabbit'],
+    Place:['park','zoo','school','airport','bank','hospital','playground','market'],
+  };
+  const cats=Object.keys(categories);
+  const correctCat=cats[Math.floor(Math.random()*cats.length)];
+  const word=categories[correctCat][Math.floor(Math.random()*categories[correctCat].length)];
+  const wrongCats=cats.filter(c=>c!==correctCat).sort(()=>Math.random()-0.5).slice(0,3);
+  const opts=[correctCat,...wrongCats];
+  // Fisher-Yates 打亂並追蹤正確答案位置
+  for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
+  const ansIdx=opts.indexOf(correctCat);
+  return {id:'dyn_noun', type:'crossover', level:1, tag:'🌈 英文名詞', tagColor:'#3b82f6',
+  q:`「${word}」是哪一類英文名詞（Noun）？`,
+  choices:opts, ans:ansIdx,
+  explain:`「${word}」是${correctCat}（${{'Person':'人','Thing':'物品','Animal':'動物','Place':'地方'}[correctCat]}）！Grammar Picnic Unit 1：名詞分Person、Thing、Animal、Place四大類！`};
+};
+
 const DYNAMIC_SLOTS = {
-  'd06': 'pattern_seq',   // 數列規律
-  'd10': 'pattern_seq',   // 數列規律
-  'd27': 'math_word',     // 數學應用
-  'd28': 'math_word',     // 數學應用
-  'd29': 'math_word',     // 數學應用
-  'd01': 'contradiction_story', // 找矛盾
+  // 找矛盾（隨機）
+  'd01': 'contradiction_story',
   'd02': 'contradiction_story',
-  'd17': 'fraction_compare',    // 分數
-  'd18': 'fraction_compare',
-  'd11': 'logic_simple',        // 邏輯
+  'd03': 'contradiction_story',
+  // 找規律（隨機）
+  'd06': 'pattern_seq',
+  'd07': 'pattern_seq',
+  'd10': 'pattern_seq',
+  // 邏輯推理（隨機）
+  'd11': 'logic_simple',
   'd12': 'logic_simple',
+  'd13': 'logic_simple',
+  // 找錯誤（隨機）
+  'd16': 'bug_hunt_dyn',
+  'd17': 'bug_hunt_dyn',
+  'd18': 'bug_hunt_dyn',
+  // 跨科整合（隨機） — 含英文名詞題
+  'd21': 'crossover_dyn',
+  'd22': 'noun_english_dyn',
+  'd23': 'crossover_dyn',
+  'd24': 'noun_english_dyn',
+  // 數字益智（隨機）
+  'd27': 'math_word',
+  'd28': 'math_word',
+  'd29': 'math_word',
+  'd26': 'fraction_compare',
+  'd30': 'fraction_compare',
+  // 邏輯謎題（隨機）
+  'd31': 'logic_puzzle_dyn',
+  'd32': 'logic_puzzle_dyn',
+  'd33': 'logic_puzzle_dyn',
 };
 const DETECTIVE_CHALLENGES = [
   /* ── 類型1：找矛盾 ── */
@@ -2939,7 +3697,7 @@ function renderDetectiveRoom(){
     ${DETECTIVE_CHALLENGES.map((q,i)=>{
     const done = detectiveState.completed.includes(q.id);
     const isAvail = availableChallenges.includes(q);
-    const typeColor = typeInfo[q.type]?.color || '#6366f1';
+    const typeColor = (typeInfo[q.type] ? typeInfo[q.type].color : '#6366f1');
     if(!isAvail){
     return `<div style="aspect-ratio:1;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:rgba(255,255,255,0.2);" title="Day 3 解鎖">🔒</div>`;
     }
@@ -3243,7 +4001,7 @@ function recordThinking(method){
   if(q && q.id && detectiveState.thinkingRecord[q.id]){
     detectiveState.thinkingRecord[q.id].method = method;
   }
-  const thinkDiv = document.querySelector('[onclick^="recordThinking"]')?.closest('div[style*="rgba(99,102,241"]');
+  const thinkDiv = document.querySelector('[onclick^="recordThinking"]');;
   if(thinkDiv) thinkDiv.innerHTML =
     '<div style="font-size:0.85rem;color:#86efac;font-weight:800;line-height:1.7;">'
     + boppySVG(22,'happy','',false) + ' ' + responses[method]
@@ -3664,22 +4422,48 @@ function renderCalendar(){
   }
   el.innerHTML=html;
   // 移除舊的事件，重新綁定（避免 iOS 事件重複綁定問題）
-  const newEl = el.cloneNode(false);
-  newEl.innerHTML = el.innerHTML;
-  el.parentNode && el.parentNode.replaceChild(newEl, el);
-  newEl.addEventListener('click', function(e){
-    const cell = e.target.closest('[data-makeup]');
-    if(cell && cell.dataset && cell.dataset.makeup){
-      openMakeupPopup(cell.dataset.makeup);
-    }
-  });
-  newEl.addEventListener('touchend', function(e){
-    const cell = e.target.closest('[data-makeup]');
-    if(cell && cell.dataset && cell.dataset.makeup){
-      e.preventDefault();
-      openMakeupPopup(cell.dataset.makeup);
-    }
-  }, {passive:false});
+  // 防呆：確認 parentNode 存在再做 replaceChild
+  if(el.parentNode){
+    const newEl = el.cloneNode(false);
+    newEl.innerHTML = el.innerHTML;
+    el.parentNode.replaceChild(newEl, el);
+    newEl.addEventListener('click', function(e){
+      try{
+        const cell = e.target && e.target.closest ? e.target.closest('[data-makeup]') : null;
+        if(cell && cell.dataset && cell.dataset.makeup){
+          openMakeupPopup(cell.dataset.makeup);
+        }
+      }catch(err){}
+    });
+    newEl.addEventListener('touchend', function(e){
+      try{
+        const cell = e.target && e.target.closest ? e.target.closest('[data-makeup]') : null;
+        if(cell && cell.dataset && cell.dataset.makeup){
+          e.preventDefault();
+          openMakeupPopup(cell.dataset.makeup);
+        }
+      }catch(err){}
+    }, {passive:false});
+  } else {
+    // fallback：直接在 el 上綁定
+    el.addEventListener('click', function(e){
+      try{
+        const cell = e.target && e.target.closest ? e.target.closest('[data-makeup]') : null;
+        if(cell && cell.dataset && cell.dataset.makeup){
+          openMakeupPopup(cell.dataset.makeup);
+        }
+      }catch(err){}
+    });
+    el.addEventListener('touchend', function(e){
+      try{
+        const cell = e.target && e.target.closest ? e.target.closest('[data-makeup]') : null;
+        if(cell && cell.dataset && cell.dataset.makeup){
+          e.preventDefault();
+          openMakeupPopup(cell.dataset.makeup);
+        }
+      }catch(err){}
+    }, {passive:false});
+  }
 }
 function updateGameCenter(){
   const el=document.getElementById('gameCenterGrid');
@@ -3779,9 +4563,9 @@ function openMakeupPopup(dateStr){
     return COURSES_ALL[subj][chIdx];
   }
   const sbjs=[
-    {id:'chinese',name:'國語進階課',ch:getMakeupChapter('chinese',dateStr)?.chapter||'成語、修辭、閱讀',color:'chinese',icon:'📚'},
-    {id:'english',name:'英文挑戰課',ch:getMakeupChapter('english',dateStr)?.chapter||'字母、句型、觀察',color:'english',icon:'🔤'},
-    {id:'math',name:'數學闖關課',ch:getMakeupChapter('math',dateStr)?.chapter||'乘除、分數、圖形',color:'math',icon:'🔢'}
+    {id:'chinese',name:'國語進階課',ch:(getMakeupChapter('chinese',dateStr)||{}).chapter||'成語、修辭、閱讀',color:'chinese',icon:'📚'},
+    {id:'english',name:'英文挑戰課',ch:(getMakeupChapter('english',dateStr)||{}).chapter||'字母、句型、觀察',color:'english',icon:'🔤'},
+    {id:'math',name:'數學闖關課',ch:(getMakeupChapter('math',dateStr)||{}).chapter||'乘除、分數、圖形',color:'math',icon:'🔢'}
   ];
   let html=sbjs.map(s=>{
     const done=makeupLog[s.id];
@@ -3812,11 +4596,13 @@ function startMakeupLesson(subj){
    學習流程
    ===================================================== */
 let currentSubject='',currentChapterIdx=0,currentUnitIdx=0,sessionBadges=0,wrongCount=0,isMakeupMode=false;
+let sessionCorrect=0, sessionTotal=0;  // 本次課程答題統計
 let retryMode=false,retryUnits=[];
 function startLesson(subj,makeup=false,targetDate=null){
   sfxClick();
   const log=getTodayLog();if(log[subj]&&!makeup){return;}
   currentSubject=subj;isMakeupMode=makeup;sessionBadges=0;wrongCount=0;retryMode=false;retryUnits=[];
+  sessionCorrect=0;sessionTotal=0;
   if(makeup && targetDate && S.startDate){
     const startD = new Date(S.startDate+'T00:00:00');
     const targetD = new Date(targetDate+'T00:00:00');
@@ -4209,9 +4995,63 @@ function nextUnit(){
    完成畫面
    ===================================================== */
 function showComplete(){
+  // 先計算本次分數（GP模式和一般模式都需要）
+  const scoreKey0 = currentSubject+'_'+currentChapterIdx;
+  const scorePct0 = sessionTotal>0 ? Math.round(sessionCorrect/sessionTotal*100) : 100;
+  const scoreColor0 = scorePct0>=90?'#22c55e':scorePct0>=70?'#f59e0b':'#ef4444';
+  const scoreEmoji0 = scorePct0>=90?'🏆':scorePct0>=70?'⭐':'💪';
+  function buildScoreHTML(){
+    if(!sessionTotal) return '';
+    var lv = scorePct0>=90
+      ? '<div style="margin-top:8px;font-size:0.85rem;font-weight:800;color:#22c55e;">✅ 優秀！</div>'
+      : scorePct0>=70
+      ? '<div style="margin-top:8px;font-size:0.85rem;font-weight:800;color:#f59e0b;">📖 建議再複習！</div>'
+      : '<div style="margin-top:8px;font-size:0.85rem;font-weight:800;color:#ef4444;">🔄 需要補課！</div>';
+    return '<div style="border:2.5px solid '+scoreColor0+';border-radius:14px;padding:12px;margin:10px 0;text-align:center;">'
+      +'<div style="font-size:0.78rem;color:#94a3b8;margin-bottom:4px;">📊 本次成績</div>'
+      +'<div style="font-size:2.2rem;font-weight:900;color:'+scoreColor0+';">'+scoreEmoji0+' '+scorePct0+'分</div>'
+      +'<div style="font-size:0.78rem;color:#94a3b8;">答對 '+sessionCorrect+'/'+sessionTotal+' 題</div>'
+      +lv+'</div>';
+  }
+  const scoreNoteHTML = buildScoreHTML();
+  // Grammar Picnic 完成標記
+  if(window._currentGPUnit){
+    gpState.completed[window._currentGPUnit] = true;
+    gpSave();
+    // 給徽章獎勵
+    S.badges.mini=(S.badges.mini||0)+sessionBadges+2;
+    window._currentGPUnit = null;
+    save();sfxLevelUp();
+    // 顯示 GP 完成畫面
+    const gpUnit = GP_UNITS.find(u=>u.id===(Object.keys(gpState.completed).filter(k=>gpState.completed[k]).slice(-1)[0]));
+    const c=document.getElementById('learnContent');
+    c.innerHTML=`<div style="text-align:center;padding:30px 20px;">
+      ${scoreNoteHTML}
+      <div style="font-size:3.5rem;margin-bottom:10px;">${gpUnit?gpUnit.icon:'🎉'}</div>
+      <div style="font-size:1.4rem;font-weight:900;color:#1d4ed8;margin-bottom:8px;">${gpUnit?gpUnit.title:''} 完成！</div>
+      <div style="font-size:1rem;color:#3b82f6;font-weight:700;margin-bottom:20px;">波比說：「太棒了！文法學得超好！」</div>
+      <div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #3b82f6;border-radius:16px;padding:16px;margin-bottom:20px;">
+        <div style="font-size:0.9rem;font-weight:800;color:#1e40af;">🌟 獲得 +2 迷你波比徽章！</div>
+      </div>
+      <button onclick="exitLesson();renderGrammarPicnic();" style="width:100%;padding:16px;border-radius:14px;border:none;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:white;font-size:1.1rem;font-weight:900;cursor:pointer;font-family:Nunito,sans-serif;">回到 Grammar Picnic ▶</button>
+    </div>`;
+    return;
+  }
+  // 儲存分數
+  if(!S.lessonScores) S.lessonScores={};
+  const scoreKey = currentSubject+'_'+currentChapterIdx;
+  const scorePct = scorePct0;
+  const prevScore = (S.lessonScores[scoreKey]||{}).score||0;
+  S.lessonScores[scoreKey] = {
+    score: Math.max(scorePct, prevScore),
+    correct: sessionCorrect,
+    total: sessionTotal,
+    date: today()
+  };
   S.badges.mini=(S.badges.mini||0)+sessionBadges;
   updateDailyLog(currentSubject);
-  if(!isMakeupMode){
+  const needRetry = scorePct < 90 && !isMakeupMode && sessionTotal>0;
+  if(!isMakeupMode && !needRetry){
     if(S.chapterProgress[currentSubject]<COURSES_ALL[currentSubject].length-1){
     S.chapterProgress[currentSubject]++;
     }
@@ -4226,6 +5066,8 @@ function showComplete(){
     english:'拼音和句型棒棒的！英文越來越好！',
     math:'乘除和分數搞定！數學偵探出動！'
   };
+  // 分數顯示
+  // 分數顯示使用最頂部的 scoreNoteHTML
   const makeupNote=isMakeupMode
     ?'<div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #3b82f6;border-radius:14px;padding:12px;margin:10px 0;text-align:center;font-size:0.9rem;font-weight:800;color:#1d4ed8;">📅 補課完成！月曆上的記錄更新了！</div>'
     :'';
@@ -4490,342 +5332,345 @@ function initSpot(area){
    🎲 方塊還原遊戲
    ===================================================== */
 function initCube(area){
-
-const puzzles=[
-{
-id:1,
-desc:‘波比把右邊轉了一下，你能還原嗎？’,
-state:[‘🟦’,‘🟦’,‘🟦’,‘🟦’,  ‘🟨’,‘🟥’,‘🟨’,‘🟥’,  ‘🟥’,‘🟨’,‘🟥’,‘🟨’,  ‘🟩’,‘🟩’,‘🟩’,‘🟩’,  ‘🟧’,‘🟧’,‘🟧’,‘🟧’,  ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-solved:[‘🟦’,‘🟦’,‘🟦’,‘🟦’, ‘🟨’,‘🟨’,‘🟨’,‘🟨’, ‘🟥’,‘🟥’,‘🟥’,‘🟥’, ‘🟩’,‘🟩’,‘🟩’,‘🟩’, ‘🟧’,‘🟧’,‘🟧’,‘🟧’, ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-moves:[‘R’,‘R逆’],  correctMoves:[‘R逆’],
-hint:‘右邊被順時針轉了一下，用逆時針轉回去！’
-},
-{
-id:2,
-desc:‘上層被轉了兩次，怎麼還原？’,
-state:[‘🟥’,‘🟥’,‘🟦’,‘🟦’,  ‘🟩’,‘🟩’,‘🟨’,‘🟨’,  ‘⬜’,‘⬜’,‘🟥’,‘🟥’,  ‘🟩’,‘🟩’,‘🟩’,‘🟩’,  ‘🟧’,‘🟧’,‘🟧’,‘🟧’,  ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-solved:[‘🟦’,‘🟦’,‘🟦’,‘🟦’, ‘🟨’,‘🟨’,‘🟨’,‘🟨’, ‘🟥’,‘🟥’,‘🟥’,‘🟥’, ‘🟩’,‘🟩’,‘🟩’,‘🟩’, ‘🟧’,‘🟧’,‘🟧’,‘🟧’, ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-moves:[‘U’,‘U2’,‘U逆’],  correctMoves:[‘U2’],
-hint:‘轉了兩次，再轉兩次就回來了！U2 = 轉兩次’
-},
-{
-id:3,
-desc:‘波比做了 R U，你能做 U逆 R逆 還原嗎？’,
-state:[‘🟩’,‘🟦’,‘🟩’,‘🟦’,  ‘🟧’,‘🟨’,‘🟧’,‘🟨’,  ‘🟥’,‘🟥’,‘🟥’,‘🟥’,  ‘⬜’,‘🟩’,‘⬜’,‘🟩’,  ‘🟧’,‘🟧’,‘⬜’,‘⬜’,  ‘🟦’,‘🟦’,‘🟦’,‘🟦’],
-solved:[‘🟦’,‘🟦’,‘🟦’,‘🟦’, ‘🟨’,‘🟨’,‘🟨’,‘🟨’, ‘🟥’,‘🟥’,‘🟥’,‘🟥’, ‘🟩’,‘🟩’,‘🟩’,‘🟩’, ‘🟧’,‘🟧’,‘🟧’,‘🟧’, ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-moves:[‘R逆 U逆’,‘U逆 R逆’,‘R U’,‘U R’],  correctMoves:[‘U逆 R逆’],
-hint:‘R U 的逆操作是 U逆 R逆，順序要反過來！’
-},
-{
-id:4,
-desc:‘一個角塊位置對但方向錯，波比說：要用幾次 R U R逆 U逆？’,
-state:[‘🟦’,‘🟦’,‘🟦’,‘🟥’,  ‘🟨’,‘🟨’,‘🟥’,‘🟨’,  ‘🟥’,‘⬜’,‘🟥’,‘🟥’,  ‘🟩’,‘🟩’,‘🟩’,‘🟩’,  ‘🟧’,‘🟧’,‘🟧’,‘🟧’,  ‘⬜’,‘🟦’,‘⬜’,‘⬜’],
-solved:[‘🟦’,‘🟦’,‘🟦’,‘🟦’, ‘🟨’,‘🟨’,‘🟨’,‘🟨’, ‘🟥’,‘🟥’,‘🟥’,‘🟥’, ‘🟩’,‘🟩’,‘🟩’,‘🟩’, ‘🟧’,‘🟧’,‘🟧’,‘🟧’, ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-moves:[‘2次’,‘3次’,‘4次（週期！）’,‘6次’],  correctMoves:[‘6次’],
-hint:‘R U R逆 U逆 的週期是6！做6次，角塊轉回原本方向！’
-},
-{
-id:5,
-desc:‘面對這個狀態，波比問：用什麼公式最省步驟？’,
-state:[‘🟦’,‘🟥’,‘🟦’,‘🟦’,  ‘🟨’,‘🟨’,‘🟨’,‘🟩’,  ‘🟥’,‘🟥’,‘🟩’,‘🟥’,  ‘🟩’,‘⬜’,‘🟩’,‘🟩’,  ‘🟧’,‘🟧’,‘🟧’,‘🟧’,  ‘⬜’,‘⬜’,‘🟦’,‘⬜’],
-solved:[‘🟦’,‘🟦’,‘🟦’,‘🟦’, ‘🟨’,‘🟨’,‘🟨’,‘🟨’, ‘🟥’,‘🟥’,‘🟥’,‘🟥’, ‘🟩’,‘🟩’,‘🟩’,‘🟩’, ‘🟧’,‘🟧’,‘🟧’,‘🟧’, ‘⬜’,‘⬜’,‘⬜’,‘⬜’],
-moves:[‘先底層十字，再角塊’,‘先整頂層，再底層’,‘隨便轉，碰運氣’,‘先算好再動’],  correctMoves:[‘先算好再動’],
-hint:‘觀察哪些塊已在正確位置，只移動需要移動的！這叫「效率思維」！’
-},
-];
-let pIdx=0, timeLeft=60, score=0;
-
-function renderPuzzle(){
-if(pIdx>=puzzles.length){
-clearInterval(gameTimerInterval);
-gameRunning=false;
-showGameEnd();
-return;
-}
-const p=puzzles[pIdx];
-const faces=[‘前’,‘後’,‘右’,‘左’,‘上’,‘下’];
-const faceColors=[’#e11d48’,’#7c3aed’,’#0ea5e9’,’#059669’,’#f59e0b’,’#6b7280’];
-const stateHtml = [0,1,2,3].map((fi,i)=>` <div style="text-align:center;"> <div style="font-size:0.65rem;font-weight:800;color:${faceColors[fi]};margin-bottom:3px;">${faces[fi]}面</div> <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;width:52px;"> ${p.state.slice(fi*4,fi*4+4).map(c=>`<div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:rgba(255,255,255,0.08);border-radius:5px;">${c}</div>`).join('')} </div> </div>`).join(’’);
-
-```
-area.innerHTML=`
-<div style="padding:4px 8px 0;">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-<span style="font-size:0.85rem;font-weight:800;color:white;">第${pIdx+1}/${puzzles.length}題 &nbsp;⏱<span id="cubeTime">${timeLeft}</span>秒</span>
-<span style="font-size:0.9rem;font-weight:900;color:#fbbf24;">⭐ ${score}</span>
-</div>
-<div style="background:rgba(255,255,255,0.08);border-radius:14px;padding:12px;margin-bottom:10px;">
-<div style="font-size:0.88rem;font-weight:800;color:#fbbf24;margin-bottom:10px;">🎲 ${p.desc}</div>
-<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">${stateHtml}</div>
-</div>
-<div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-weight:700;text-align:center;margin-bottom:8px;">💡 ${p.hint}</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="cubeMoves">
-${p.moves.map(m=>`
-<button onclick="cubeAnswer('${m.replace(/'/g,'\'')}','${p.correctMoves[0].replace(/'/g,'\'')}')"
-style="background:rgba(225,29,72,0.15);border:2px solid rgba(225,29,72,0.4);border-radius:14px;padding:14px 10px;font-size:1rem;font-weight:900;color:white;cursor:pointer;font-family:Nunito,sans-serif;text-align:center;">
-${m}
-</button>`).join('')}
-</div>
-</div>`;
-```
-
-}
-
-window.cubeAnswer=function(chosen, correct){
-document.querySelectorAll(’#cubeMoves button’).forEach(b=>b.disabled=true);
-const isCorrect = chosen===correct;
-document.querySelectorAll(’#cubeMoves button’).forEach(b=>{
-if(b.textContent.trim()===correct){b.style.background=‘rgba(34,197,94,0.3)’;b.style.borderColor=’#22c55e’;}
-else if(b.textContent.trim()===chosen&&!isCorrect){b.style.background=‘rgba(239,68,68,0.3)’;b.style.borderColor=’#ef4444’;}
-});
-if(isCorrect){sfxCorrect();score+=30;addGameScore(30);}
-else{sfxWrong();}
-setTimeout(()=>{pIdx++;renderPuzzle();},1200);
-};
-
-renderPuzzle();
-gameTimerInterval=setInterval(()=>{
-timeLeft–;
-const tw=document.getElementById(‘cubeTime’);
-if(tw)tw.textContent=timeLeft;
-document.getElementById(‘gameTimerBar’).style.width=`${(timeLeft/60)*100}%`;
-if(timeLeft<=0){clearInterval(gameTimerInterval);gameRunning=false;showGameEnd();}
-},1000);
+  
+  const puzzles=[
+    {
+    id:1,
+    desc:'波比把右邊轉了一下，你能還原嗎？',
+    state:['🟦','🟦','🟦','🟦',  '🟨','🟥','🟨','🟥',  '🟥','🟨','🟥','🟨',  '🟩','🟩','🟩','🟩',  '🟧','🟧','🟧','🟧',  '⬜','⬜','⬜','⬜'],
+    solved:['🟦','🟦','🟦','🟦', '🟨','🟨','🟨','🟨', '🟥','🟥','🟥','🟥', '🟩','🟩','🟩','🟩', '🟧','🟧','🟧','🟧', '⬜','⬜','⬜','⬜'],
+    moves:['R','R逆'],  correctMoves:['R逆'],
+    hint:'右邊被順時針轉了一下，用逆時針轉回去！'
+    },
+    {
+    id:2,
+    desc:'上層被轉了兩次，怎麼還原？',
+    state:['🟥','🟥','🟦','🟦',  '🟩','🟩','🟨','🟨',  '⬜','⬜','🟥','🟥',  '🟩','🟩','🟩','🟩',  '🟧','🟧','🟧','🟧',  '⬜','⬜','⬜','⬜'],
+    solved:['🟦','🟦','🟦','🟦', '🟨','🟨','🟨','🟨', '🟥','🟥','🟥','🟥', '🟩','🟩','🟩','🟩', '🟧','🟧','🟧','🟧', '⬜','⬜','⬜','⬜'],
+    moves:['U','U2','U逆'],  correctMoves:['U2'],
+    hint:'轉了兩次，再轉兩次就回來了！U2 = 轉兩次'
+    },
+    {
+    id:3,
+    desc:'波比做了 R U，你能做 U逆 R逆 還原嗎？',
+    state:['🟩','🟦','🟩','🟦',  '🟧','🟨','🟧','🟨',  '🟥','🟥','🟥','🟥',  '⬜','🟩','⬜','🟩',  '🟧','🟧','⬜','⬜',  '🟦','🟦','🟦','🟦'],
+    solved:['🟦','🟦','🟦','🟦', '🟨','🟨','🟨','🟨', '🟥','🟥','🟥','🟥', '🟩','🟩','🟩','🟩', '🟧','🟧','🟧','🟧', '⬜','⬜','⬜','⬜'],
+    moves:['R逆 U逆','U逆 R逆','R U','U R'],  correctMoves:['U逆 R逆'],
+    hint:'R U 的逆操作是 U逆 R逆，順序要反過來！'
+    },
+    {
+    id:4,
+    desc:'一個角塊位置對但方向錯，波比說：要用幾次 R U R逆 U逆？',
+    state:['🟦','🟦','🟦','🟥',  '🟨','🟨','🟥','🟨',  '🟥','⬜','🟥','🟥',  '🟩','🟩','🟩','🟩',  '🟧','🟧','🟧','🟧',  '⬜','🟦','⬜','⬜'],
+    solved:['🟦','🟦','🟦','🟦', '🟨','🟨','🟨','🟨', '🟥','🟥','🟥','🟥', '🟩','🟩','🟩','🟩', '🟧','🟧','🟧','🟧', '⬜','⬜','⬜','⬜'],
+    moves:['2次','3次','4次（週期！）','6次'],  correctMoves:['6次'],
+    hint:'R U R逆 U逆 的週期是6！做6次，角塊轉回原本方向！'
+    },
+    {
+    id:5,
+    desc:'面對這個狀態，波比問：用什麼公式最省步驟？',
+    state:['🟦','🟥','🟦','🟦',  '🟨','🟨','🟨','🟩',  '🟥','🟥','🟩','🟥',  '🟩','⬜','🟩','🟩',  '🟧','🟧','🟧','🟧',  '⬜','⬜','🟦','⬜'],
+    solved:['🟦','🟦','🟦','🟦', '🟨','🟨','🟨','🟨', '🟥','🟥','🟥','🟥', '🟩','🟩','🟩','🟩', '🟧','🟧','🟧','🟧', '⬜','⬜','⬜','⬜'],
+    moves:['先底層十字，再角塊','先整頂層，再底層','隨便轉，碰運氣','先算好再動'],  correctMoves:['先算好再動'],
+    hint:'觀察哪些塊已在正確位置，只移動需要移動的！這叫「效率思維」！'
+    },
+  ];
+  let pIdx=0, timeLeft=60, score=0;
+  
+  function renderPuzzle(){
+    if(pIdx>=puzzles.length){
+    clearInterval(gameTimerInterval);
+    gameRunning=false;
+    showGameEnd();
+    return;
+    }
+    const p=puzzles[pIdx];
+    const faces=['前','後','右','左','上','下'];
+    const faceColors=['#e11d48','#7c3aed','#0ea5e9','#059669','#f59e0b','#6b7280'];
+    const stateHtml = [0,1,2,3].map((fi,i)=>`
+    <div style="text-align:center;">
+    <div style="font-size:0.65rem;font-weight:800;color:${faceColors[fi]};margin-bottom:3px;">${faces[fi]}面</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;width:52px;">
+    ${p.state.slice(fi*4,fi*4+4).map(c=>`<div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:rgba(255,255,255,0.08);border-radius:5px;">${c}</div>`).join('')}
+    </div>
+    </div>`).join('');
+    
+    area.innerHTML=`
+    <div style="padding:4px 8px 0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <span style="font-size:0.85rem;font-weight:800;color:white;">第${pIdx+1}/${puzzles.length}題 &nbsp;⏱<span id="cubeTime">${timeLeft}</span>秒</span>
+    <span style="font-size:0.9rem;font-weight:900;color:#fbbf24;">⭐ ${score}</span>
+    </div>
+    <div style="background:rgba(255,255,255,0.08);border-radius:14px;padding:12px;margin-bottom:10px;">
+    <div style="font-size:0.88rem;font-weight:800;color:#fbbf24;margin-bottom:10px;">🎲 ${p.desc}</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">${stateHtml}</div>
+    </div>
+    <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-weight:700;text-align:center;margin-bottom:8px;">💡 ${p.hint}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="cubeMoves">
+    ${p.moves.map(m=>`
+    <button onclick="cubeAnswer('${m.replace(/'/g,'\'')}','${p.correctMoves[0].replace(/'/g,'\'')}')"
+    style="background:rgba(225,29,72,0.15);border:2px solid rgba(225,29,72,0.4);border-radius:14px;padding:14px 10px;font-size:1rem;font-weight:900;color:white;cursor:pointer;font-family:Nunito,sans-serif;text-align:center;">
+    ${m}
+    </button>`).join('')}
+    </div>
+    </div>`;
+  }
+  
+  window.cubeAnswer=function(chosen, correct){
+    document.querySelectorAll('#cubeMoves button').forEach(b=>b.disabled=true);
+    const isCorrect = chosen===correct;
+    document.querySelectorAll('#cubeMoves button').forEach(b=>{
+    if(b.textContent.trim()===correct){b.style.background='rgba(34,197,94,0.3)';b.style.borderColor='#22c55e';}
+    else if(b.textContent.trim()===chosen&&!isCorrect){b.style.background='rgba(239,68,68,0.3)';b.style.borderColor='#ef4444';}
+    });
+    if(isCorrect){sfxCorrect();score+=30;addGameScore(30);}
+    else{sfxWrong();}
+    setTimeout(()=>{pIdx++;renderPuzzle();},1200);
+  };
+  
+  renderPuzzle();
+  gameTimerInterval=setInterval(()=>{
+    timeLeft--;
+    const tw=document.getElementById('cubeTime');
+    if(tw)tw.textContent=timeLeft;
+    document.getElementById('gameTimerBar').style.width=`${(timeLeft/60)*100}%`;
+    if(timeLeft<=0){clearInterval(gameTimerInterval);gameRunning=false;showGameEnd();}
+  },1000);
 }
 /* =====================================================
-🪀 扯鈴節奏遊戲
-===================================================== */
+   🪀 扯鈴節奏遊戲
+   ===================================================== */
 function initDiabolo(area){
-
-let timeLeft=45, score=0, round=0;
-
-const questions=[
-{
-q:‘扯鈴拋出後向右偏，落下時會落在哪裡？’,
-visual:‘right’,
-opts:[‘偏右（拋物線水平方向保持原速）’,‘正下方’,‘偏左’,‘隨機’],
-ans:0, pts:20,
-explain:‘水平方向：勻速！垂直方向：重力加速。所以偏右拋出→偏右落下！’
-},
-{
-q:‘拋得越高，在空中時間越長還是越短？’,
-visual:‘high’,
-opts:[‘越長（高度越高，飛行時間越長）’,‘越短’,‘一樣長’,‘視重量而定’],
-ans:0, pts:20,
-explain:‘h=½gt²，高度越高，時間t越長！拋3倍高，時間是√3≈1.73倍！’
-},
-{
-q:‘兩顆扯鈴，一顆重一顆輕，同樣高度丟下，哪個先落地？’,
-visual:‘weight’,
-opts:[‘同時落地（重力加速度和質量無關）’,‘重的先落’,‘輕的先落’,‘看形狀’],
-ans:0, pts:25,
-explain:‘伽利略的發現：忽略空氣阻力，所有物體自由落體速度相同！質量不影響落下時間！’
-},
-{
-q:‘扯鈴水平飛出，同時有顆球從同樣高度直接落下，哪個先著地？’,
-visual:‘horizontal’,
-opts:[‘同時著地（水平拋出的垂直速度和自由落體相同）’,‘飛出的先’,‘直接落的先’,‘視速度而定’],
-ans:0, pts:30,
-explain:‘水平分速不影響垂直落體！兩者的垂直加速度都是g，所以同時著地。這是物理最美的結論之一！’
-},
-{
-q:‘小蛹拋扯鈴，波比觀察到扯鈴在最高點時速度方向是？’,
-visual:‘peak’,
-opts:[‘水平方向（最高點垂直速度=0，只剩水平速度）’,‘斜向上’,‘垂直向下’,‘靜止’],
-ans:0, pts:30,
-explain:‘最高點：垂直速度=0（從上升變下降的瞬間），但水平速度還在！所以速度方向是純水平。你能感覺到扯鈴在最高點「停了一下」嗎？’
-},
-];
-
-function renderRound(){
-if(round>=questions.length){
-clearInterval(gameTimerInterval);
-gameRunning=false;
-showGameEnd();
-return;
+  
+  let timeLeft=45, score=0, round=0;
+  
+  const questions=[
+    {
+    q:'扯鈴拋出後向右偏，落下時會落在哪裡？',
+    visual:'right',
+    opts:['偏右（拋物線水平方向保持原速）','正下方','偏左','隨機'],
+    ans:0, pts:20,
+    explain:'水平方向：勻速！垂直方向：重力加速。所以偏右拋出→偏右落下！'
+    },
+    {
+    q:'拋得越高，在空中時間越長還是越短？',
+    visual:'high',
+    opts:['越長（高度越高，飛行時間越長）','越短','一樣長','視重量而定'],
+    ans:0, pts:20,
+    explain:'h=½gt²，高度越高，時間t越長！拋3倍高，時間是√3≈1.73倍！'
+    },
+    {
+    q:'兩顆扯鈴，一顆重一顆輕，同樣高度丟下，哪個先落地？',
+    visual:'weight',
+    opts:['同時落地（重力加速度和質量無關）','重的先落','輕的先落','看形狀'],
+    ans:0, pts:25,
+    explain:'伽利略的發現：忽略空氣阻力，所有物體自由落體速度相同！質量不影響落下時間！'
+    },
+    {
+    q:'扯鈴水平飛出，同時有顆球從同樣高度直接落下，哪個先著地？',
+    visual:'horizontal',
+    opts:['同時著地（水平拋出的垂直速度和自由落體相同）','飛出的先','直接落的先','視速度而定'],
+    ans:0, pts:30,
+    explain:'水平分速不影響垂直落體！兩者的垂直加速度都是g，所以同時著地。這是物理最美的結論之一！'
+    },
+    {
+    q:'小蛹拋扯鈴，波比觀察到扯鈴在最高點時速度方向是？',
+    visual:'peak',
+    opts:['水平方向（最高點垂直速度=0，只剩水平速度）','斜向上','垂直向下','靜止'],
+    ans:0, pts:30,
+    explain:'最高點：垂直速度=0（從上升變下降的瞬間），但水平速度還在！所以速度方向是純水平。你能感覺到扯鈴在最高點「停了一下」嗎？'
+    },
+  ];
+  
+  function renderRound(){
+    if(round>=questions.length){
+    clearInterval(gameTimerInterval);
+    gameRunning=false;
+    showGameEnd();
+    return;
+    }
+    const q=questions[round];
+    const visuals={
+    right:'🪀 偏右飛出 → 偏右落下',
+    high:'🪀 拋越高 ↑ 空中時間越長 ↓',
+    weight:'⚖️ 輕🔵 vs 重🔴 同高度落下',
+    horizontal:'🪀→→(水平) vs 🔴↓(自由落體)',
+    peak:'→→→ 🪀 最高點 ←速度純水平→'
+    };
+    
+    area.innerHTML=`
+    <div style="padding:4px 8px 0;">
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+    <span style="font-size:0.85rem;font-weight:800;color:white;">第${round+1}/${questions.length}題 ⏱<span id="diabTime">${timeLeft}</span>秒</span>
+    <span style="font-size:0.9rem;font-weight:900;color:#fbbf24;">⭐ ${score}</span>
+    </div>
+    <div style="background:rgba(124,58,237,0.2);border:2px solid rgba(124,58,237,0.5);border-radius:14px;padding:14px;margin-bottom:10px;">
+    <div style="font-size:0.78rem;font-weight:900;color:#c4b5fd;margin-bottom:6px;">🪀 物理推理：</div>
+    <div style="font-size:1rem;font-weight:800;color:white;line-height:1.6;">${q.q}</div>
+    <div style="font-family:monospace;font-size:1.2rem;color:#fbbf24;margin-top:8px;white-space:pre;text-align:center;background:rgba(0,0,0,0.2);border-radius:8px;padding:8px;">${visuals[q.visual]||'🪀'}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:7px;" id="diabOpts">
+    ${q.opts.map((o,i)=>`
+    <button onclick="diaboloAnswer(${i},${q.ans},'${escStr(q.explain)}')"
+    style="background:rgba(124,58,237,0.15);border:2px solid rgba(124,58,237,0.35);border-radius:12px;padding:12px 14px;font-size:0.9rem;font-weight:800;color:#e2e8f0;cursor:pointer;font-family:Nunito,sans-serif;text-align:left;width:100%;box-sizing:border-box;">
+    ${['A','B','C','D'][i]}. ${o}
+    </button>`).join('')}
+    </div>
+    <div id="diabFeedback" style="margin-top:8px;"></div>
+    </div>`;
+  }
+  
+  window.diaboloAnswer=function(chosen, correct, explain){
+    document.querySelectorAll('#diabOpts button').forEach(b=>b.disabled=true);
+    const isCorrect=chosen===correct;
+    document.querySelectorAll('#diabOpts button').forEach((b,i)=>{
+    if(i===correct){b.style.background='rgba(34,197,94,0.25)';b.style.borderColor='#22c55e';b.style.color='#86efac';}
+    else if(i===chosen&&!isCorrect){b.style.background='rgba(239,68,68,0.2)';b.style.borderColor='#ef4444';b.style.color='#fca5a5';}
+    });
+    const pts=questions[round].pts;
+    if(isCorrect){sfxCorrect();score+=pts;addGameScore(pts);}
+    else{sfxWrong();}
+    document.getElementById('diabFeedback').innerHTML=`
+    <div style="background:${isCorrect?'rgba(34,197,94,0.15)':'rgba(255,255,255,0.08)'};border-radius:10px;padding:10px 12px;font-size:0.78rem;font-weight:700;color:${isCorrect?'#86efac':'#cbd5e1'};line-height:1.6;">
+    ${isCorrect?'✅ 正確！':'💡 '} ${explain}
+    </div>`;
+    setTimeout(()=>{round++;renderRound();},2000);
+  };
+  
+  renderRound();
+  gameTimerInterval=setInterval(()=>{
+    timeLeft--;
+    const tw=document.getElementById('diabTime');
+    if(tw)tw.textContent=timeLeft;
+    document.getElementById('gameTimerBar').style.width=`${(timeLeft/45)*100}%`;
+    if(timeLeft<=0){clearInterval(gameTimerInterval);gameRunning=false;showGameEnd();}
+  },1000);
 }
-const q=questions[round];
-const visuals={
-right:‘🪀 偏右飛出 → 偏右落下’,
-high:‘🪀 拋越高 ↑ 空中時間越長 ↓’,
-weight:‘⚖️ 輕🔵 vs 重🔴 同高度落下’,
-horizontal:‘🪀→→(水平) vs 🔴↓(自由落體)’,
-peak:‘→→→ 🪀 最高點 ←速度純水平→’
-};
 
-```
-area.innerHTML=`
-<div style="padding:4px 8px 0;">
-<div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-<span style="font-size:0.85rem;font-weight:800;color:white;">第${round+1}/${questions.length}題 ⏱<span id="diabTime">${timeLeft}</span>秒</span>
-<span style="font-size:0.9rem;font-weight:900;color:#fbbf24;">⭐ ${score}</span>
-</div>
-<div style="background:rgba(124,58,237,0.2);border:2px solid rgba(124,58,237,0.5);border-radius:14px;padding:14px;margin-bottom:10px;">
-<div style="font-size:0.78rem;font-weight:900;color:#c4b5fd;margin-bottom:6px;">🪀 物理推理：</div>
-<div style="font-size:1rem;font-weight:800;color:white;line-height:1.6;">${q.q}</div>
-<div style="font-family:monospace;font-size:1.2rem;color:#fbbf24;margin-top:8px;white-space:pre;text-align:center;background:rgba(0,0,0,0.2);border-radius:8px;padding:8px;">${visuals[q.visual]||'🪀'}</div>
-</div>
-<div style="display:flex;flex-direction:column;gap:7px;" id="diabOpts">
-${q.opts.map((o,i)=>`
-<button onclick="diaboloAnswer(${i},${q.ans},'${escStr(q.explain)}')"
-style="background:rgba(124,58,237,0.15);border:2px solid rgba(124,58,237,0.35);border-radius:12px;padding:12px 14px;font-size:0.9rem;font-weight:800;color:#e2e8f0;cursor:pointer;font-family:Nunito,sans-serif;text-align:left;width:100%;box-sizing:border-box;">
-${['A','B','C','D'][i]}. ${o}
-</button>`).join('')}
-</div>
-<div id="diabFeedback" style="margin-top:8px;"></div>
-</div>`;
-```
-
-}
-
-window.diaboloAnswer=function(chosen, correct, explain){
-document.querySelectorAll(’#diabOpts button’).forEach(b=>b.disabled=true);
-const isCorrect=chosen===correct;
-document.querySelectorAll(’#diabOpts button’).forEach((b,i)=>{
-if(i===correct){b.style.background=‘rgba(34,197,94,0.25)’;b.style.borderColor=’#22c55e’;b.style.color=’#86efac’;}
-else if(i===chosen&&!isCorrect){b.style.background=‘rgba(239,68,68,0.2)’;b.style.borderColor=’#ef4444’;b.style.color=’#fca5a5’;}
-});
-const pts=questions[round].pts;
-if(isCorrect){sfxCorrect();score+=pts;addGameScore(pts);}
-else{sfxWrong();}
-document.getElementById(‘diabFeedback’).innerHTML=` <div style="background:${isCorrect?'rgba(34,197,94,0.15)':'rgba(255,255,255,0.08)'};border-radius:10px;padding:10px 12px;font-size:0.78rem;font-weight:700;color:${isCorrect?'#86efac':'#cbd5e1'};line-height:1.6;"> ${isCorrect?'✅ 正確！':'💡 '} ${explain} </div>`;
-setTimeout(()=>{round++;renderRound();},2000);
-};
-
-renderRound();
-gameTimerInterval=setInterval(()=>{
-timeLeft–;
-const tw=document.getElementById(‘diabTime’);
-if(tw)tw.textContent=timeLeft;
-document.getElementById(‘gameTimerBar’).style.width=`${(timeLeft/45)*100}%`;
-if(timeLeft<=0){clearInterval(gameTimerInterval);gameRunning=false;showGameEnd();}
-},1000);
-}
 
 /* =====================================================
-數字華容道 Sliding Puzzle
-===================================================== */
+   數字華容道 Sliding Puzzle
+   ===================================================== */
 function initSliding(area){
-clearInterval(gameTimerInterval);
-gameRunning=true;
-let moves=0, size=3, solved=false;
-let totalTime=120, timeLeft=totalTime;
-// 產生打亂的拼圖
-function makeBoard(n){
-let arr=[];
-for(let i=1;i<n*n;i++) arr.push(i);
-arr.push(0); // 0 = 空格
-// Fisher-Yates 打亂並確保可解
-for(let i=arr.length-1;i>0;i–){
-const j=Math.floor(Math.random()*(i+1));
-[arr[i],arr[j]]=[arr[j],arr[i]];
-}
-// 確保可解：計算逆序數
-function isSolvable(a){
-let inv=0;
-const flat=a.filter(x=>x!==0);
-for(let i=0;i<flat.length;i++)
-for(let j=i+1;j<flat.length;j++)
-if(flat[i]>flat[j]) inv++;
-const zeroRow=Math.floor(a.indexOf(0)/n);
-if(n%2===1) return inv%2===0;
-return (inv+zeroRow)%2===1;
-}
-if(!isSolvable(arr)){
-// 交換前兩個非零元素修正
-if(arr[0]!==0&&arr[1]!==0)[arr[0],arr[1]]=[arr[1],arr[0]];
-else if(arr[arr.length-2]!==0&&arr[arr.length-3]!==0)
-[arr[arr.length-2],arr[arr.length-3]]=[arr[arr.length-3],arr[arr.length-2]];
-}
-return arr;
-}
-let board=makeBoard(size);
-function isSolved(b){
-for(let i=0;i<b.length-1;i++) if(b[i]!==i+1) return false;
-return b[b.length-1]===0;
-}
-function render(){
-const cell=(canvas.width-16)/size;
-ctx.clearRect(0,0,canvas.width,canvas.height);
-// 背景
-ctx.fillStyle=’#0f172a’; ctx.fillRect(0,0,canvas.width,canvas.height);
-// 分數
-ctx.font=‘bold 16px Nunito,sans-serif’;
-ctx.fillStyle=’#94a3b8’; ctx.textAlign=‘left’;
-ctx.fillText(`移動：${moves}步`,10,22);
-ctx.textAlign=‘right’;
-ctx.fillStyle=’#fbbf24’;
-ctx.fillText(`⏱ ${timeLeft}s`,canvas.width-10,22);
-const offsetY=38;
-board.forEach((val,idx)=>{
-const row=Math.floor(idx/size), col=idx%size;
-const x=8+col*cell, y=offsetY+row*cell;
-if(val===0){
-ctx.fillStyle=‘rgba(255,255,255,0.05)’;
-ctx.beginPath();
-ctx.roundRect(x+3,y+3,cell-6,cell-6,10);
-ctx.fill();
-return;
-}
-// 漸層色
-const hue=Math.round((val-1)/(size*size-1)*200+160);
-const grad=ctx.createLinearGradient(x,y,x+cell,y+cell);
-grad.addColorStop(0,`hsl(${hue},80%,55%)`);
-grad.addColorStop(1,`hsl(${hue+30},70%,40%)`);
-ctx.fillStyle=grad;
-ctx.beginPath();
-ctx.roundRect(x+3,y+3,cell-6,cell-6,10);
-ctx.fill();
-// 白邊高光
-ctx.strokeStyle=‘rgba(255,255,255,0.25)’;
-ctx.lineWidth=1.5;
-ctx.stroke();
-// 數字
-ctx.fillStyle=‘white’;
-ctx.font=`bold ${cell*0.38}px Nunito,sans-serif`;
-ctx.textAlign=‘center’; ctx.textBaseline=‘middle’;
-ctx.fillText(val,x+cell/2,y+cell/2);
-ctx.textBaseline=‘alphabetic’;
-});
-if(solved){
-ctx.fillStyle=‘rgba(0,0,0,0.7)’;
-ctx.fillRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle=’#fbbf24’;
-ctx.font=‘bold 28px Nunito,sans-serif’;
-ctx.textAlign=‘center’;
-ctx.fillText(‘🎉 完成！’,canvas.width/2,canvas.height/2-20);
-ctx.font=‘bold 16px Nunito,sans-serif’;
-ctx.fillStyle=’#a5b4fc’;
-ctx.fillText(`共 ${moves} 步`,canvas.width/2,canvas.height/2+14);
-}
-}
-function tryMove(idx){
-if(solved) return;
-const zero=board.indexOf(0);
-const zRow=Math.floor(zero/size), zCol=zero%size;
-const iRow=Math.floor(idx/size), iCol=idx%size;
-const dist=Math.abs(zRow-iRow)+Math.abs(zCol-iCol);
-if(dist===1){
-[board[zero],board[idx]]=[board[idx],board[zero]];
-moves++;
-sfxFlip();
-if(isSolved(board)){
-solved=true;
-gameRunning=false;
-clearInterval(gameTimerInterval);
-const bonus=Math.max(0,300-moves*5+(timeLeft*2));
-addGameScore(bonus);
-sfxLevelUp();
-render();
-setTimeout(showGameEnd,1200);
-} else {
-render();
-}
-}
-}
-area.innerHTML=`<div style="position:relative;width:100%;max-width:400px;margin:0 auto;">
-<canvas id="slidingCanvas" style="width:100%;border-radius:16px;display:block;touch-action:none;cursor:pointer;"></canvas>
-
+  clearInterval(gameTimerInterval);
+  gameRunning=true;
+  let moves=0, size=3, solved=false;
+  let totalTime=120, timeLeft=totalTime;
+  // 產生打亂的拼圖
+  function makeBoard(n){
+    let arr=[];
+    for(let i=1;i<n*n;i++) arr.push(i);
+    arr.push(0); // 0 = 空格
+    // Fisher-Yates 打亂並確保可解
+    for(let i=arr.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]]=[arr[j],arr[i]];
+    }
+    // 確保可解：計算逆序數
+    function isSolvable(a){
+      let inv=0;
+      const flat=a.filter(x=>x!==0);
+      for(let i=0;i<flat.length;i++)
+        for(let j=i+1;j<flat.length;j++)
+          if(flat[i]>flat[j]) inv++;
+      const zeroRow=Math.floor(a.indexOf(0)/n);
+      if(n%2===1) return inv%2===0;
+      return (inv+zeroRow)%2===1;
+    }
+    if(!isSolvable(arr)){
+      // 交換前兩個非零元素修正
+      if(arr[0]!==0&&arr[1]!==0)[arr[0],arr[1]]=[arr[1],arr[0]];
+      else if(arr[arr.length-2]!==0&&arr[arr.length-3]!==0)
+        [arr[arr.length-2],arr[arr.length-3]]=[arr[arr.length-3],arr[arr.length-2]];
+    }
+    return arr;
+  }
+  let board=makeBoard(size);
+  function isSolved(b){
+    for(let i=0;i<b.length-1;i++) if(b[i]!==i+1) return false;
+    return b[b.length-1]===0;
+  }
+  function render(){
+    const cell=(canvas.width-16)/size;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    // 背景
+    ctx.fillStyle='#0f172a'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    // 分數
+    ctx.font='bold 16px Nunito,sans-serif';
+    ctx.fillStyle='#94a3b8'; ctx.textAlign='left';
+    ctx.fillText(`移動：${moves}步`,10,22);
+    ctx.textAlign='right';
+    ctx.fillStyle='#fbbf24';
+    ctx.fillText(`⏱ ${timeLeft}s`,canvas.width-10,22);
+    const offsetY=38;
+    board.forEach((val,idx)=>{
+      const row=Math.floor(idx/size), col=idx%size;
+      const x=8+col*cell, y=offsetY+row*cell;
+      if(val===0){
+        ctx.fillStyle='rgba(255,255,255,0.05)';
+        ctx.beginPath();
+        ctx.roundRect(x+3,y+3,cell-6,cell-6,10);
+        ctx.fill();
+        return;
+      }
+      // 漸層色
+      const hue=Math.round((val-1)/(size*size-1)*200+160);
+      const grad=ctx.createLinearGradient(x,y,x+cell,y+cell);
+      grad.addColorStop(0,`hsl(${hue},80%,55%)`);
+      grad.addColorStop(1,`hsl(${hue+30},70%,40%)`);
+      ctx.fillStyle=grad;
+      ctx.beginPath();
+      ctx.roundRect(x+3,y+3,cell-6,cell-6,10);
+      ctx.fill();
+      // 白邊高光
+      ctx.strokeStyle='rgba(255,255,255,0.25)';
+      ctx.lineWidth=1.5;
+      ctx.stroke();
+      // 數字
+      ctx.fillStyle='white';
+      ctx.font=`bold ${cell*0.38}px Nunito,sans-serif`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(val,x+cell/2,y+cell/2);
+      ctx.textBaseline='alphabetic';
+    });
+    if(solved){
+      ctx.fillStyle='rgba(0,0,0,0.7)';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle='#fbbf24';
+      ctx.font='bold 28px Nunito,sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText('🎉 完成！',canvas.width/2,canvas.height/2-20);
+      ctx.font='bold 16px Nunito,sans-serif';
+      ctx.fillStyle='#a5b4fc';
+      ctx.fillText(`共 ${moves} 步`,canvas.width/2,canvas.height/2+14);
+    }
+  }
+  function tryMove(idx){
+    if(solved) return;
+    const zero=board.indexOf(0);
+    const zRow=Math.floor(zero/size), zCol=zero%size;
+    const iRow=Math.floor(idx/size), iCol=idx%size;
+    const dist=Math.abs(zRow-iRow)+Math.abs(zCol-iCol);
+    if(dist===1){
+      [board[zero],board[idx]]=[board[idx],board[zero]];
+      moves++;
+      sfxFlip();
+      if(isSolved(board)){
+        solved=true;
+        gameRunning=false;
+        clearInterval(gameTimerInterval);
+        const bonus=Math.max(0,300-moves*5+(timeLeft*2));
+        addGameScore(bonus);
+        sfxLevelUp();
+        render();
+        setTimeout(showGameEnd,1200);
+      } else {
+        render();
+      }
+    }
+  }
+  area.innerHTML=`<div style="position:relative;width:100%;max-width:400px;margin:0 auto;">
+    <canvas id="slidingCanvas" style="width:100%;border-radius:16px;display:block;touch-action:none;cursor:pointer;"></canvas>
   </div>`;
   const canvas=document.getElementById('slidingCanvas');
   const ctx=canvas.getContext('2d');
@@ -4858,21 +5703,20 @@ area.innerHTML=`<div style="position:relative;width:100%;max-width:400px;margin:
 }
 
 /* =====================================================
-接扯鈴 Catch Diabolo
-===================================================== */
+   接扯鈴 Catch Diabolo
+   ===================================================== */
 function initWhack2(area){
-clearInterval(gameTimerInterval);
-gameRunning=true;
-let score=0, lives=3, totalTime=45, timeLeft=totalTime;
-let items=[], animFrame=null, spawnTO=null;
-area.innerHTML=`<div style="position:relative;width:100%;max-width:520px;margin:0 auto;">
-<div style="display:flex;justify-content:space-between;padding:6px 4px 8px;">
-<div id="w2Lives" style="font-size:1.3rem;">❤️❤️❤️</div>
-<div style="font-size:1.4rem;font-weight:900;color:#fbbf24;" id="w2Score">0</div>
-<div style="font-size:1rem;font-weight:800;color:#94a3b8;">⏱ <span id="w2Time">45</span>s</div>
-</div>
-<canvas id="w2Canvas" style="width:100%;border-radius:16px;background:linear-gradient(160deg,#0f172a,#1e1b4b);display:block;touch-action:none;"></canvas>
-
+  clearInterval(gameTimerInterval);
+  gameRunning=true;
+  let score=0, lives=3, totalTime=45, timeLeft=totalTime;
+  let items=[], animFrame=null, spawnTO=null;
+  area.innerHTML=`<div style="position:relative;width:100%;max-width:520px;margin:0 auto;">
+    <div style="display:flex;justify-content:space-between;padding:6px 4px 8px;">
+      <div id="w2Lives" style="font-size:1.3rem;">❤️❤️❤️</div>
+      <div style="font-size:1.4rem;font-weight:900;color:#fbbf24;" id="w2Score">0</div>
+      <div style="font-size:1rem;font-weight:800;color:#94a3b8;">⏱ <span id="w2Time">45</span>s</div>
+    </div>
+    <canvas id="w2Canvas" style="width:100%;border-radius:16px;background:linear-gradient(160deg,#0f172a,#1e1b4b);display:block;touch-action:none;"></canvas>
   </div>`;
   const canvas=document.getElementById('w2Canvas');
   const ctx=canvas.getContext('2d');
@@ -4964,130 +5808,166 @@ area.innerHTML=`<div style="position:relative;width:100%;max-width:520px;margin:
 }
 
 /* =====================================================
-波比問答 Quick Quiz Game
-所有題目結構：choices[]（選項文字陣列） + ans（正確答案索引數字）
-===================================================== */
+   波比問答 Quick Quiz Game
+   所有題目結構：choices[]（選項文字陣列） + ans（正確答案索引數字）
+   ===================================================== */
 function initQuizGame(area){
-clearInterval(gameTimerInterval);
-gameRunning=true;
-let score=0, qIdx=0, totalTime=75, timeLeft=totalTime;
-let combo=0, streak=0;
+  clearInterval(gameTimerInterval);
+  gameRunning=true;
+  let score=0, qIdx=0, totalTime=75, timeLeft=totalTime;
+  let combo=0, streak=0;
 
-// 從所有已完成題目中抽取，支援 choices+ans(index) 結構
-const pool = DETECTIVE_CHALLENGES.filter(q =>
-Array.isArray(q.choices) && typeof q.ans === ‘number’ &&
-detectiveState.completed.includes(q.id)
-);
+  // 從所有已完成題目中抽取，支援 choices+ans(index) 結構
+  const pool = DETECTIVE_CHALLENGES.filter(q =>
+    Array.isArray(q.choices) && typeof q.ans === 'number' &&
+    detectiveState.completed.includes(q.id)
+  );
 
-if(pool.length === 0){
-area.innerHTML = ` <div style="text-align:center;padding:40px 20px;"> <div style="font-size:3rem;margin-bottom:12px;">🔍</div> <div style="font-size:1.1rem;font-weight:900;color:white;margin-bottom:8px;">還沒有足夠的題目！</div> <div style="font-size:0.85rem;color:#94a3b8;line-height:1.7;">先去偵探挑戰室完成更多題目<br>再來找波比問答吧！</div> </div>`;
-gameRunning=false; setTimeout(showGameEnd,2500); return;
-}
+  if(pool.length === 0){
+    area.innerHTML = `
+      <div style="text-align:center;padding:40px 20px;">
+        <div style="font-size:3rem;margin-bottom:12px;">🔍</div>
+        <div style="font-size:1.1rem;font-weight:900;color:white;margin-bottom:8px;">還沒有足夠的題目！</div>
+        <div style="font-size:0.85rem;color:#94a3b8;line-height:1.7;">先去偵探挑戰室完成更多題目<br>再來找波比問答吧！</div>
+      </div>`;
+    gameRunning=false; setTimeout(showGameEnd,2500); return;
+  }
 
-// 打亂取最多12題
-const shuffled = […pool].sort(()=>Math.random()-0.5).slice(0, Math.min(12, pool.length));
-const totalQ = shuffled.length;
+  // 打亂取最多12題
+  const shuffled = [...pool].sort(()=>Math.random()-0.5).slice(0, Math.min(12, pool.length));
+  const totalQ = shuffled.length;
 
-// 每題建立打亂的選項順序（記住正確答案對應到哪個位置）
-function buildQuestion(q){
-const correctText = q.choices[q.ans];
-// 建立帶原始索引的選項，然後打亂
-const indexed = q.choices.map((txt, i) => ({txt, isCorrect: i === q.ans}));
-for(let i=indexed.length-1;i>0;i–){
-const j=Math.floor(Math.random()*(i+1));
-[indexed[i],indexed[j]]=[indexed[j],indexed[i]];
-}
-return {q, indexed, correctText};
-}
+  // 每題建立打亂的選項順序（記住正確答案對應到哪個位置）
+  function buildQuestion(q){
+    const correctText = q.choices[q.ans];
+    // 建立帶原始索引的選項，然後打亂
+    const indexed = q.choices.map((txt, i) => ({txt, isCorrect: i === q.ans}));
+    for(let i=indexed.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [indexed[i],indexed[j]]=[indexed[j],indexed[i]];
+    }
+    return {q, indexed, correctText};
+  }
 
-let currentBuilt = null;
+  let currentBuilt = null;
 
-function renderQ(){
-if(qIdx >= totalQ || !gameRunning){ endQuizGame(); return; }
-currentBuilt = buildQuestion(shuffled[qIdx]);
-const {q, indexed} = currentBuilt;
-const pct = Math.round(qIdx/totalQ*100);
-area.innerHTML = ` <div style="padding:4px 6px 0;overflow-y:auto;max-height:100%;"> <!-- 頂部狀態列 --> <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"> <div style="font-size:0.8rem;font-weight:800;color:white;">${qIdx+1}<span style="color:#64748b;">/${totalQ}</span></div> <div style="font-size:1rem;font-weight:900;color:#fbbf24;">⭐ ${score}</div> <div style="font-size:0.8rem;font-weight:800;color:#94a3b8;">⏱<span id="qgTime">${timeLeft}</span>s</div> </div> <!-- 進度條 --> <div style="height:5px;background:rgba(255,255,255,0.08);border-radius:5px;overflow:hidden;margin-bottom:10px;"> <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#059669,#10b981);border-radius:5px;transition:width 0.4s;"></div> </div> <!-- 連擊顯示 --> <div id="qgCombo" style="text-align:center;min-height:20px;margin-bottom:6px;font-size:0.82rem;font-weight:900;color:#fbbf24;"> ${streak>=3?`🔥 ${streak}連答！`:''}</div> <!-- 題目標籤 --> <div style="display:inline-block;background:${q.tagColor||'#059669'}33;border:1.5px solid ${q.tagColor||'#059669'};border-radius:8px;padding:3px 10px;font-size:0.68rem;font-weight:900;color:${q.tagColor||'#6ee7b7'};margin-bottom:8px;">${q.tag||'💬 波比問答'}</div> <!-- 題目 --> <div style="background:rgba(5,150,105,0.15);border:2px solid rgba(5,150,105,0.4);border-radius:14px;padding:14px;margin-bottom:10px;"> <div style="font-size:0.92rem;font-weight:800;color:white;line-height:1.7;">${q.q}</div> </div> <!-- 選項 --> <div style="display:flex;flex-direction:column;gap:6px;" id="qgOpts"> ${indexed.map((opt,i)=>`
-<button id="qgBtn${i}" onclick="qgAnswer(${i})"
-style="background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.12);border-radius:12px;padding:11px 14px;font-size:0.85rem;font-weight:800;color:#e2e8f0;cursor:pointer;font-family:Nunito,sans-serif;text-align:left;width:100%;box-sizing:border-box;transition:all 0.15s;-webkit-tap-highlight-color:transparent;"
-onmouseenter="if(!this.disabled)this.style.borderColor='#10b981'"
-onmouseleave="if(!this.disabled)this.style.borderColor='rgba(255,255,255,0.12)'">
-<span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:rgba(5,150,105,0.3);text-align:center;line-height:22px;font-size:0.72rem;margin-right:8px;flex-shrink:0;">${[‘A’,‘B’,‘C’,‘D’][i]}</span>${opt.txt}
-</button>`).join('')} </div> <div id="qgFeedback" style="margin-top:8px;min-height:32px;"></div> </div>`;
-}
+  function renderQ(){
+    if(qIdx >= totalQ || !gameRunning){ endQuizGame(); return; }
+    currentBuilt = buildQuestion(shuffled[qIdx]);
+    const {q, indexed} = currentBuilt;
+    const pct = Math.round(qIdx/totalQ*100);
+    area.innerHTML = `
+    <div style="padding:4px 6px 0;overflow-y:auto;max-height:100%;">
+      <!-- 頂部狀態列 -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-size:0.8rem;font-weight:800;color:white;">${qIdx+1}<span style="color:#64748b;">/${totalQ}</span></div>
+        <div style="font-size:1rem;font-weight:900;color:#fbbf24;">⭐ ${score}</div>
+        <div style="font-size:0.8rem;font-weight:800;color:#94a3b8;">⏱<span id="qgTime">${timeLeft}</span>s</div>
+      </div>
+      <!-- 進度條 -->
+      <div style="height:5px;background:rgba(255,255,255,0.08);border-radius:5px;overflow:hidden;margin-bottom:10px;">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#059669,#10b981);border-radius:5px;transition:width 0.4s;"></div>
+      </div>
+      <!-- 連擊顯示 -->
+      <div id="qgCombo" style="text-align:center;min-height:20px;margin-bottom:6px;font-size:0.82rem;font-weight:900;color:#fbbf24;">
+        ${streak>=3?`🔥 ${streak}連答！`:''}</div>
+      <!-- 題目標籤 -->
+      <div style="display:inline-block;background:${q.tagColor||'#059669'}33;border:1.5px solid ${q.tagColor||'#059669'};border-radius:8px;padding:3px 10px;font-size:0.68rem;font-weight:900;color:${q.tagColor||'#6ee7b7'};margin-bottom:8px;">${q.tag||'💬 波比問答'}</div>
+      <!-- 題目 -->
+      <div style="background:rgba(5,150,105,0.15);border:2px solid rgba(5,150,105,0.4);border-radius:14px;padding:14px;margin-bottom:10px;">
+        <div style="font-size:0.92rem;font-weight:800;color:white;line-height:1.7;">${q.q}</div>
+      </div>
+      <!-- 選項 -->
+      <div style="display:flex;flex-direction:column;gap:6px;" id="qgOpts">
+        ${indexed.map((opt,i)=>`
+        <button id="qgBtn${i}" onclick="qgAnswer(${i})"
+          style="background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.12);border-radius:12px;padding:11px 14px;font-size:0.85rem;font-weight:800;color:#e2e8f0;cursor:pointer;font-family:Nunito,sans-serif;text-align:left;width:100%;box-sizing:border-box;transition:all 0.15s;-webkit-tap-highlight-color:transparent;"
+          onmouseenter="if(!this.disabled)this.style.borderColor='#10b981'"
+          onmouseleave="if(!this.disabled)this.style.borderColor='rgba(255,255,255,0.12)'">
+          <span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:rgba(5,150,105,0.3);text-align:center;line-height:22px;font-size:0.72rem;margin-right:8px;flex-shrink:0;">${['A','B','C','D'][i]}</span>${opt.txt}
+        </button>`).join('')}
+      </div>
+      <div id="qgFeedback" style="margin-top:8px;min-height:32px;"></div>
+    </div>`;
+  }
 
-window.qgAnswer = function(btnIdx){
-if(!gameRunning) return;
-document.querySelectorAll(’#qgOpts button’).forEach(b=>b.disabled=true);
-const {indexed, correctText, q} = currentBuilt;
-const ok = indexed[btnIdx].isCorrect;
-// 視覺回饋
-indexed.forEach((opt,i)=>{
-const btn = document.getElementById(‘qgBtn’+i);
-if(!btn) return;
-if(opt.isCorrect){
-btn.style.background=‘rgba(34,197,94,0.25)’;
-btn.style.borderColor=’#22c55e’; btn.style.color=’#86efac’;
-} else if(i===btnIdx && !ok){
-btn.style.background=‘rgba(239,68,68,0.2)’;
-btn.style.borderColor=’#ef4444’; btn.style.color=’#fca5a5’;
-}
-});
-if(ok){
-sfxCorrect();
-streak++; combo++;
-const bonus = streak>=5?40:streak>=3?30:20;
-score+=bonus; addGameScore(bonus);
-document.getElementById(‘qgFeedback’).innerHTML=` <div style="background:rgba(34,197,94,0.15);border-radius:10px;padding:8px 12px;font-size:0.78rem;font-weight:700;color:#86efac;line-height:1.6;"> ✅ 答對了！+${bonus}分${streak>=3?' 🔥連答加分！':''}${q.explain?'<br><span style="color:#6ee7b7;opacity:0.85;">'+q.explain.slice(0,60)+'⋯</span>':''} </div>`;
-} else {
-sfxWrong(); streak=0;
-document.getElementById(‘qgFeedback’).innerHTML=` <div style="background:rgba(239,68,68,0.1);border-radius:10px;padding:8px 12px;font-size:0.78rem;font-weight:700;color:#fca5a5;line-height:1.6;"> 💡 答錯了！正確答案是：<span style="color:#fbbf24;">${correctText}</span> </div>`;
-}
-setTimeout(()=>{ qIdx++; renderQ(); }, 1800);
-};
+  window.qgAnswer = function(btnIdx){
+    if(!gameRunning) return;
+    document.querySelectorAll('#qgOpts button').forEach(b=>b.disabled=true);
+    const {indexed, correctText, q} = currentBuilt;
+    const ok = indexed[btnIdx].isCorrect;
+    // 視覺回饋
+    indexed.forEach((opt,i)=>{
+      const btn = document.getElementById('qgBtn'+i);
+      if(!btn) return;
+      if(opt.isCorrect){
+        btn.style.background='rgba(34,197,94,0.25)';
+        btn.style.borderColor='#22c55e'; btn.style.color='#86efac';
+      } else if(i===btnIdx && !ok){
+        btn.style.background='rgba(239,68,68,0.2)';
+        btn.style.borderColor='#ef4444'; btn.style.color='#fca5a5';
+      }
+    });
+    if(ok){
+      sfxCorrect();
+      streak++; combo++;
+      const bonus = streak>=5?40:streak>=3?30:20;
+      score+=bonus; addGameScore(bonus);
+      document.getElementById('qgFeedback').innerHTML=`
+        <div style="background:rgba(34,197,94,0.15);border-radius:10px;padding:8px 12px;font-size:0.78rem;font-weight:700;color:#86efac;line-height:1.6;">
+          ✅ 答對了！+${bonus}分${streak>=3?' 🔥連答加分！':''}${q.explain?'<br><span style="color:#6ee7b7;opacity:0.85;">'+q.explain.slice(0,60)+'⋯</span>':''}
+        </div>`;
+    } else {
+      sfxWrong(); streak=0;
+      document.getElementById('qgFeedback').innerHTML=`
+        <div style="background:rgba(239,68,68,0.1);border-radius:10px;padding:8px 12px;font-size:0.78rem;font-weight:700;color:#fca5a5;line-height:1.6;">
+          💡 答錯了！正確答案是：<span style="color:#fbbf24;">${correctText}</span>
+        </div>`;
+    }
+    setTimeout(()=>{ qIdx++; renderQ(); }, 1800);
+  };
 
-renderQ();
+  renderQ();
 
-gameTimerInterval = setInterval(()=>{
-if(!gameRunning) return;
-timeLeft–;
-const tw=document.getElementById(‘qgTime’); if(tw) tw.textContent=timeLeft;
-document.getElementById(‘gameTimerBar’).style.width=`${(timeLeft/totalTime)*100}%`;
-if(timeLeft<=0) endQuizGame();
-},1000);
+  gameTimerInterval = setInterval(()=>{
+    if(!gameRunning) return;
+    timeLeft--;
+    const tw=document.getElementById('qgTime'); if(tw) tw.textContent=timeLeft;
+    document.getElementById('gameTimerBar').style.width=`${(timeLeft/totalTime)*100}%`;
+    if(timeLeft<=0) endQuizGame();
+  },1000);
 
-function endQuizGame(){
-gameRunning=false; clearInterval(gameTimerInterval); showGameEnd();
-}
+  function endQuizGame(){
+    gameRunning=false; clearInterval(gameTimerInterval); showGameEnd();
+  }
 }
 
 /* =====================================================
-切水果遊戲 Fruit Ninja 風格
-===================================================== */
+   切水果遊戲 Fruit Ninja 風格
+   ===================================================== */
 function initFruitNinja(area){
-clearInterval(gameTimerInterval);
-gameRunning=true;
-let score=0, lives=3, combo=0, comboTimer=null;
-let fruits=[], slashTrail=[], animFrame=null;
-let spawnInterval=null, diffInterval=null;
-let spawnDelay=2200, maxFruitsPerSpawn=1;
-let totalTime=90, timeLeft=totalTime;
+  clearInterval(gameTimerInterval);
+  gameRunning=true;
+  let score=0, lives=3, combo=0, comboTimer=null;
+  let fruits=[], slashTrail=[], animFrame=null;
+  let spawnInterval=null, diffInterval=null;
+  let spawnDelay=2200, maxFruitsPerSpawn=1;
+  let totalTime=90, timeLeft=totalTime;
 
-const FRUIT_TYPES=[
-{emoji:‘🍎’,pts:10,color:’#ef4444’},
-{emoji:‘🍊’,pts:10,color:’#f97316’},
-{emoji:‘🍋’,pts:15,color:’#eab308’},
-{emoji:‘🍇’,pts:20,color:’#a855f7’},
-{emoji:‘🍓’,pts:15,color:’#ec4899’},
-{emoji:‘🍑’,pts:15,color:’#fb923c’},
-{emoji:‘🥝’,pts:20,color:’#22c55e’},
-{emoji:‘🍍’,pts:25,color:’#f59e0b’},
-{emoji:‘🍉’,pts:30,color:’#10b981’},
-{emoji:‘🫐’,pts:20,color:’#6366f1’},
-];
+  const FRUIT_TYPES=[
+    {emoji:'🍎',pts:10,color:'#ef4444'},
+    {emoji:'🍊',pts:10,color:'#f97316'},
+    {emoji:'🍋',pts:15,color:'#eab308'},
+    {emoji:'🍇',pts:20,color:'#a855f7'},
+    {emoji:'🍓',pts:15,color:'#ec4899'},
+    {emoji:'🍑',pts:15,color:'#fb923c'},
+    {emoji:'🥝',pts:20,color:'#22c55e'},
+    {emoji:'🍍',pts:25,color:'#f59e0b'},
+    {emoji:'🍉',pts:30,color:'#10b981'},
+    {emoji:'🫐',pts:20,color:'#6366f1'},
+  ];
 
-area.innerHTML=`
-
+  area.innerHTML=`
   <div style="position:relative;width:100%;max-width:520px;margin:0 auto;user-select:none;">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 4px 8px;flex-shrink:0;">
       <div style="display:flex;gap:4px;" id="fnLives">
@@ -5100,361 +5980,541 @@ area.innerHTML=`
     <canvas id="fnCanvas" style="width:100%;border-radius:16px;background:linear-gradient(160deg,#0f172a,#1e1b4b,#0f172a);display:block;touch-action:none;cursor:crosshair;"></canvas>
   </div>`;
 
-const canvas=document.getElementById(‘fnCanvas’);
-const ctx=canvas.getContext(‘2d’);
+  const canvas=document.getElementById('fnCanvas');
+  const ctx=canvas.getContext('2d');
 
-// canvas 尺寸自適應
-function resize(){
-const w=canvas.parentElement.clientWidth||320;
-canvas.width=w;
-canvas.height=Math.min(w*1.1, 400);
-}
-resize();
+  // canvas 尺寸自適應
+  function resize(){
+    const w=canvas.parentElement.clientWidth||320;
+    canvas.width=w;
+    canvas.height=Math.min(w*1.1, 400);
+  }
+  resize();
 
-// 水果物件
-function spawnFruit(){
-if(!gameRunning) return;
-const count=1+Math.floor(Math.random()*maxFruitsPerSpawn);
-for(let i=0;i<count;i++){
-const isBomb=Math.random()<0.12;
-const ft=FRUIT_TYPES[Math.floor(Math.random()*FRUIT_TYPES.length)];
-const x=50+Math.random()*(canvas.width-100);
-const vy=-(canvas.height*0.032+Math.random()*canvas.height*0.018);
-const vx=(Math.random()-0.5)*4;
-fruits.push({
-x, y:canvas.height+30,
-vx, vy,
-size:isBomb?38:34+Math.random()*10,
-emoji:isBomb?‘💣’:ft.emoji,
-pts:ft.pts, color:ft.color,
-isBomb, sliced:false,
-opacity:1,
-rot:Math.random()*Math.PI*2,
-rotV:(Math.random()-0.5)*0.12,
-// 切片效果
-halfL:null, halfR:null,
-});
-}
-}
+  // 水果物件
+  function spawnFruit(){
+    if(!gameRunning) return;
+    const count=1+Math.floor(Math.random()*maxFruitsPerSpawn);
+    for(let i=0;i<count;i++){
+      const isBomb=Math.random()<0.12;
+      const ft=FRUIT_TYPES[Math.floor(Math.random()*FRUIT_TYPES.length)];
+      const x=50+Math.random()*(canvas.width-100);
+      const vy=-(canvas.height*0.032+Math.random()*canvas.height*0.018);
+      const vx=(Math.random()-0.5)*4;
+      fruits.push({
+        x, y:canvas.height+30,
+        vx, vy,
+        size:isBomb?38:34+Math.random()*10,
+        emoji:isBomb?'💣':ft.emoji,
+        pts:ft.pts, color:ft.color,
+        isBomb, sliced:false,
+        opacity:1,
+        rot:Math.random()*Math.PI*2,
+        rotV:(Math.random()-0.5)*0.12,
+        // 切片效果
+        halfL:null, halfR:null,
+      });
+    }
+  }
 
-// 切片軌跡
-let isSlicing=false, sliceX=0, sliceY=0, prevSliceX=0, prevSliceY=0;
+  // 切片軌跡
+  let isSlicing=false, sliceX=0, sliceY=0, prevSliceX=0, prevSliceY=0;
 
-function getPos(e, canvas){
-const rect=canvas.getBoundingClientRect();
-const scaleX=canvas.width/rect.width;
-const scaleY=canvas.height/rect.height;
-if(e.touches){
-return {x:(e.touches[0].clientX-rect.left)*scaleX, y:(e.touches[0].clientY-rect.top)*scaleY};
-}
-return {x:(e.clientX-rect.left)*scaleX, y:(e.clientY-rect.top)*scaleY};
-}
+  function getPos(e, canvas){
+    const rect=canvas.getBoundingClientRect();
+    const scaleX=canvas.width/rect.width;
+    const scaleY=canvas.height/rect.height;
+    if(e.touches){
+      return {x:(e.touches[0].clientX-rect.left)*scaleX, y:(e.touches[0].clientY-rect.top)*scaleY};
+    }
+    return {x:(e.clientX-rect.left)*scaleX, y:(e.clientY-rect.top)*scaleY};
+  }
 
-function checkSlice(x1,y1,x2,y2){
-if(!gameRunning) return;
-fruits.forEach(f=>{
-if(f.sliced) return;
-const dx=x2-x1, dy=y2-y1;
-const fx=f.x-x1, fy=f.y-y1;
-const len2=dx*dx+dy*dy;
-const t=len2>0?Math.max(0,Math.min(1,(fx*dx+fy*dy)/len2)):0;
-const nx=x1+t*dx-f.x, ny=y1+t*dy-f.y;
-const dist=Math.sqrt(nx*nx+ny*ny);
-if(dist<f.size*0.7){
-f.sliced=true;
-if(f.isBomb){
-sfxWrong();
-lives–;
-updateLives();
-// 炸彈閃屏
-canvas.style.background=‘rgba(239,68,68,0.5)’;
-setTimeout(()=>canvas.style.background=‘linear-gradient(160deg,#0f172a,#1e1b4b,#0f172a)’,300);
-if(lives<=0){endFruitNinja();}
-} else {
-sfxCorrect();
-combo++;
-clearTimeout(comboTimer);
-comboTimer=setTimeout(()=>combo=0, 1200);
-const pts=f.pts*(combo>=3?2:1);
-score+=pts;
-addGameScore(pts);
-document.getElementById(‘fnScore’).textContent=score;
-if(combo>=3){
-const el=document.getElementById(‘fnCombo’);
-el.textContent=`🔥 ${combo} 連斬！×2分！`;
-setTimeout(()=>{if(el)el.textContent=’’;},900);
-}
-// 產生切片半體
-f.halfL={x:f.x,y:f.y,vx:f.vx-2,vy:f.vy-1,rot:f.rot,emoji:f.emoji,opacity:1,size:f.size};
-f.halfR={x:f.x,y:f.y,vx:f.vx+2,vy:f.vy-1,rot:f.rot,emoji:f.emoji,opacity:1,size:f.size};
-// 分數飄字
-spawnScoreText(f.x, f.y, `+${pts}`, f.color);
-}
-}
-});
-}
-
-// 飄字效果
-const scoreTexts=[];
-function spawnScoreText(x,y,txt,color){
-scoreTexts.push({x,y,txt,color,opacity:1,vy:-2});
-}
-
-function updateLives(){
-const el=document.getElementById(‘fnLives’);
-if(el) el.innerHTML=[‘❤️’,‘❤️’,‘❤️’].slice(0,lives).join(’’)+[‘🖤’,‘🖤’,‘🖤’].slice(0,3-lives).join(’’);
-}
-
-// 主迴圈
-function loop(){
-if(!gameRunning){cancelAnimationFrame(animFrame);return;}
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-```
-const g=ctx.createLinearGradient(0,0,0,canvas.height);
-g.addColorStop(0,'#0f172a');g.addColorStop(0.5,'#1e1b4b');g.addColorStop(1,'#0f172a');
-ctx.fillStyle=g; ctx.fillRect(0,0,canvas.width,canvas.height);
-
-const gravity=0.45;
-
-// 更新水果
-fruits=fruits.filter(f=>{
-  if(f.sliced){
-    // 切片半體
-    if(f.halfL){
-      f.halfL.vy+=gravity; f.halfL.x+=f.halfL.vx; f.halfL.y+=f.halfL.vy;
-      f.halfL.rot+=0.1; f.halfL.opacity-=0.04;
-      f.halfR.vy+=gravity; f.halfR.x+=f.halfR.vx; f.halfR.y+=f.halfR.vy;
-      f.halfR.rot-=0.1; f.halfR.opacity-=0.04;
-      if(f.halfL.opacity>0){
-        // 左半
-        ctx.save(); ctx.globalAlpha=f.halfL.opacity;
-        ctx.translate(f.halfL.x,f.halfL.y); ctx.rotate(f.halfL.rot);
-        ctx.font=`${f.halfL.size}px serif`;
-        ctx.textAlign='center'; ctx.textBaseline='middle';
-        // 裁切左半
-        ctx.beginPath(); ctx.rect(-f.halfL.size,-f.halfL.size,f.halfL.size,f.halfL.size*2);
-        ctx.clip();
-        ctx.fillText(f.halfL.emoji,0,0);
-        ctx.restore();
-        // 右半
-        ctx.save(); ctx.globalAlpha=f.halfR.opacity;
-        ctx.translate(f.halfR.x,f.halfR.y); ctx.rotate(f.halfR.rot);
-        ctx.font=`${f.halfR.size}px serif`;
-        ctx.textAlign='center'; ctx.textBaseline='middle';
-        ctx.beginPath(); ctx.rect(0,-f.halfR.size,f.halfR.size,f.halfR.size*2);
-        ctx.clip();
-        ctx.fillText(f.halfR.emoji,0,0);
-        ctx.restore();
-        return true;
+  function checkSlice(x1,y1,x2,y2){
+    if(!gameRunning) return;
+    fruits.forEach(f=>{
+      if(f.sliced) return;
+      const dx=x2-x1, dy=y2-y1;
+      const fx=f.x-x1, fy=f.y-y1;
+      const len2=dx*dx+dy*dy;
+      const t=len2>0?Math.max(0,Math.min(1,(fx*dx+fy*dy)/len2)):0;
+      const nx=x1+t*dx-f.x, ny=y1+t*dy-f.y;
+      const dist=Math.sqrt(nx*nx+ny*ny);
+      if(dist<f.size*0.7){
+        f.sliced=true;
+        if(f.isBomb){
+          sfxWrong();
+          lives--;
+          updateLives();
+          // 炸彈閃屏
+          canvas.style.background='rgba(239,68,68,0.5)';
+          setTimeout(()=>canvas.style.background='linear-gradient(160deg,#0f172a,#1e1b4b,#0f172a)',300);
+          if(lives<=0){endFruitNinja();}
+        } else {
+          sfxCorrect();
+          combo++;
+          clearTimeout(comboTimer);
+          comboTimer=setTimeout(()=>combo=0, 1200);
+          const pts=f.pts*(combo>=3?2:1);
+          score+=pts;
+          addGameScore(pts);
+          document.getElementById('fnScore').textContent=score;
+          if(combo>=3){
+            const el=document.getElementById('fnCombo');
+            el.textContent=`🔥 ${combo} 連斬！×2分！`;
+            setTimeout(()=>{if(el)el.textContent='';},900);
+          }
+          // 產生切片半體
+          f.halfL={x:f.x,y:f.y,vx:f.vx-2,vy:f.vy-1,rot:f.rot,emoji:f.emoji,opacity:1,size:f.size};
+          f.halfR={x:f.x,y:f.y,vx:f.vx+2,vy:f.vy-1,rot:f.rot,emoji:f.emoji,opacity:1,size:f.size};
+          // 分數飄字
+          spawnScoreText(f.x, f.y, `+${pts}`, f.color);
+        }
       }
-      return false;
-    }
-    return false;
+    });
   }
-  f.vy+=gravity; f.x+=f.vx; f.y+=f.vy; f.rot+=f.rotV;
-  // 未切到掉出畫面
-  if(f.y>canvas.height+60){
-    if(!f.isBomb){
-      lives--;
-      updateLives();
-      if(lives<=0){endFruitNinja();}
-    }
-    return false;
+
+  // 飄字效果
+  const scoreTexts=[];
+  function spawnScoreText(x,y,txt,color){
+    scoreTexts.push({x,y,txt,color,opacity:1,vy:-2});
   }
-  // 繪製水果
-  ctx.save();
-  ctx.translate(f.x,f.y); ctx.rotate(f.rot);
-  ctx.font=`${f.size}px serif`;
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText(f.emoji,0,0);
-  ctx.restore();
-  return true;
+
+  function updateLives(){
+    const el=document.getElementById('fnLives');
+    if(el) el.innerHTML=['❤️','❤️','❤️'].slice(0,lives).join('')+['🖤','🖤','🖤'].slice(0,3-lives).join('');
+  }
+
+  // 主迴圈
+  function loop(){
+    if(!gameRunning){cancelAnimationFrame(animFrame);return;}
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    const g=ctx.createLinearGradient(0,0,0,canvas.height);
+    g.addColorStop(0,'#0f172a');g.addColorStop(0.5,'#1e1b4b');g.addColorStop(1,'#0f172a');
+    ctx.fillStyle=g; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    const gravity=0.45;
+
+    // 更新水果
+    fruits=fruits.filter(f=>{
+      if(f.sliced){
+        // 切片半體
+        if(f.halfL){
+          f.halfL.vy+=gravity; f.halfL.x+=f.halfL.vx; f.halfL.y+=f.halfL.vy;
+          f.halfL.rot+=0.1; f.halfL.opacity-=0.04;
+          f.halfR.vy+=gravity; f.halfR.x+=f.halfR.vx; f.halfR.y+=f.halfR.vy;
+          f.halfR.rot-=0.1; f.halfR.opacity-=0.04;
+          if(f.halfL.opacity>0){
+            // 左半
+            ctx.save(); ctx.globalAlpha=f.halfL.opacity;
+            ctx.translate(f.halfL.x,f.halfL.y); ctx.rotate(f.halfL.rot);
+            ctx.font=`${f.halfL.size}px serif`;
+            ctx.textAlign='center'; ctx.textBaseline='middle';
+            // 裁切左半
+            ctx.beginPath(); ctx.rect(-f.halfL.size,-f.halfL.size,f.halfL.size,f.halfL.size*2);
+            ctx.clip();
+            ctx.fillText(f.halfL.emoji,0,0);
+            ctx.restore();
+            // 右半
+            ctx.save(); ctx.globalAlpha=f.halfR.opacity;
+            ctx.translate(f.halfR.x,f.halfR.y); ctx.rotate(f.halfR.rot);
+            ctx.font=`${f.halfR.size}px serif`;
+            ctx.textAlign='center'; ctx.textBaseline='middle';
+            ctx.beginPath(); ctx.rect(0,-f.halfR.size,f.halfR.size,f.halfR.size*2);
+            ctx.clip();
+            ctx.fillText(f.halfR.emoji,0,0);
+            ctx.restore();
+            return true;
+          }
+          return false;
+        }
+        return false;
+      }
+      f.vy+=gravity; f.x+=f.vx; f.y+=f.vy; f.rot+=f.rotV;
+      // 未切到掉出畫面
+      if(f.y>canvas.height+60){
+        if(!f.isBomb){
+          lives--;
+          updateLives();
+          if(lives<=0){endFruitNinja();}
+        }
+        return false;
+      }
+      // 繪製水果
+      ctx.save();
+      ctx.translate(f.x,f.y); ctx.rotate(f.rot);
+      ctx.font=`${f.size}px serif`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(f.emoji,0,0);
+      ctx.restore();
+      return true;
+    });
+
+    // 飄分數字
+    for(let i=scoreTexts.length-1;i>=0;i--){
+      const st=scoreTexts[i];
+      st.y+=st.vy; st.opacity-=0.03;
+      if(st.opacity<=0){scoreTexts.splice(i,1);continue;}
+      ctx.save();
+      ctx.globalAlpha=st.opacity;
+      ctx.font='bold 20px Nunito,sans-serif';
+      ctx.fillStyle=st.color||'#fbbf24';
+      ctx.textAlign='center';
+      ctx.fillText(st.txt,st.x,st.y);
+      ctx.restore();
+    }
+
+    // 繪製切割軌跡
+    if(isSlicing && slashTrail.length>1){
+      ctx.save();
+      ctx.strokeStyle='rgba(255,255,255,0.85)';
+      ctx.lineWidth=3;
+      ctx.lineCap='round';
+      ctx.lineJoin='round';
+      ctx.shadowColor='rgba(200,220,255,0.8)';
+      ctx.shadowBlur=12;
+      ctx.beginPath();
+      ctx.moveTo(slashTrail[0].x,slashTrail[0].y);
+      for(let i=1;i<slashTrail.length;i++){
+        ctx.lineTo(slashTrail[i].x,slashTrail[i].y);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+    slashTrail=slashTrail.slice(-12);
+
+    animFrame=requestAnimationFrame(loop);
+  }
+
+  // 事件監聽
+  function onStart(e){
+    e.preventDefault();
+    isSlicing=true;
+    const p=getPos(e,canvas);
+    sliceX=p.x; sliceY=p.y;
+    slashTrail=[{x:sliceX,y:sliceY}];
+  }
+  function onMove(e){
+    e.preventDefault();
+    if(!isSlicing) return;
+    const p=getPos(e,canvas);
+    prevSliceX=sliceX; prevSliceY=sliceY;
+    sliceX=p.x; sliceY=p.y;
+    slashTrail.push({x:sliceX,y:sliceY});
+    checkSlice(prevSliceX,prevSliceY,sliceX,sliceY);
+  }
+  function onEnd(e){
+    e.preventDefault();
+    isSlicing=false; slashTrail=[];
+  }
+
+  canvas.addEventListener('mousedown',onStart);
+  canvas.addEventListener('mousemove',onMove);
+  canvas.addEventListener('mouseup',onEnd);
+  canvas.addEventListener('touchstart',onStart,{passive:false});
+  canvas.addEventListener('touchmove',onMove,{passive:false});
+  canvas.addEventListener('touchend',onEnd,{passive:false});
+
+  // 計時器
+  gameTimerInterval=setInterval(()=>{
+    if(!gameRunning) return;
+    timeLeft--;
+    const tw=document.getElementById('fnTime');
+    if(tw) tw.textContent=timeLeft;
+    document.getElementById('gameTimerBar').style.width=`${(timeLeft/totalTime)*100}%`;
+    if(timeLeft<=0){endFruitNinja();}
+  },1000);
+
+  // 難度遞增
+  diffInterval=setInterval(()=>{
+    if(!gameRunning){clearInterval(diffInterval);return;}
+    if(spawnDelay>1000) spawnDelay-=120;
+    if(maxFruitsPerSpawn<3) maxFruitsPerSpawn++;
+  },18000);
+
+  // 生成水果
+  function scheduleSpawn(){
+    if(!gameRunning) return;
+    spawnFruit();
+    spawnInterval=setTimeout(scheduleSpawn, spawnDelay+Math.random()*400);
+  }
+  scheduleSpawn();
+  loop();
+
+  function endFruitNinja(){
+    gameRunning=false;
+    clearInterval(gameTimerInterval);
+    clearInterval(diffInterval);
+    clearTimeout(spawnInterval);
+    cancelAnimationFrame(animFrame);
+    canvas.removeEventListener('mousedown',onStart);
+    canvas.removeEventListener('mousemove',onMove);
+    canvas.removeEventListener('mouseup',onEnd);
+    canvas.removeEventListener('touchstart',onStart);
+    canvas.removeEventListener('touchmove',onMove);
+    canvas.removeEventListener('touchend',onEnd);
+    showGameEnd();
+  }
+}
+
+/* =====================================================
+   Grammar Picnic 獨立學習系統
+   ===================================================== */
+const GP_UNITS = [
+  {id:'gp01', unit:'Unit 1', title:'Nouns 名詞', icon:'📖', color:'#3b82f6', colorDark:'#1d4ed8',
+   desc:'Person / Thing / Animal / Place'},
+  {id:'gp02', unit:'Unit 2', title:'A & An 冠詞', icon:'🔤', color:'#8b5cf6', colorDark:'#6d28d9',
+   desc:'子音用a，母音用an'},
+  {id:'gp03', unit:'Unit 3', title:'Plural Nouns 複數', icon:'🐝', color:'#10b981', colorDark:'#059669',
+   desc:'加-s 或 -es'},
+  {id:'gp04', unit:'Unit 4', title:'Personal Pronouns 代名詞', icon:'👤', color:'#f59e0b', colorDark:'#d97706',
+   desc:'He / She / It / They'},
+  {id:'gp05', unit:'Review 1', title:'Units 1-4 總複習', icon:'📝', color:'#ec4899', colorDark:'#db2777',
+   desc:'Unit 1~4 綜合測驗'},
+  {id:'gp06', unit:'Unit 5', title:'Pronoun + Be 動詞', icon:'⚡', color:'#06b6d4', colorDark:'#0891b2',
+   desc:'am / is / are'},
+  {id:'gp07', unit:'Unit 6', title:'Be + Not 否定句', icon:'🚫', color:'#ef4444', colorDark:'#dc2626',
+   desc:'isn&#39;t / aren&#39;t'},
+  {id:'gp08', unit:'Unit 7', title:'Yes/No Questions', icon:'❓', color:'#a855f7', colorDark:'#9333ea',
+   desc:'Are you...? Yes, I am.'},
+  {id:'gp09', unit:'Unit 8', title:'What/Who Questions', icon:'🔎', color:'#f97316', colorDark:'#ea580c',
+   desc:'What問物 / Who問人'},
+  {id:'gp10', unit:'Review 2', title:'Units 5-8 總複習', icon:'📝', color:'#84cc16', colorDark:'#65a30d',
+   desc:'Be動詞、否定、問句總測驗'},
+  {id:'gp11', unit:'Unit 9', title:'Demonstrative Pronouns 指示代名詞', icon:'👉', color:'#06b6d4', colorDark:'#0891b2',
+   desc:'This/That/These/Those'},
+  {id:'gp12', unit:'Unit 10', title:'Adjectives 形容詞', icon:'🎨', color:'#d946ef', colorDark:'#a21caf',
+   desc:'big/small/red/blue/round/square'},
+];
+
+// Grammar Picnic 進度儲存（獨立於主課程）
+let gpState = {
+  completed: {},   // {gp01: true, gp02: true, ...}
+  progress: {},    // {gp01: 3, ...} 完成了幾個 unit
+};
+
+function gpSave(){
+  try{
+    localStorage.setItem(SAVE_KEY+'_gp', JSON.stringify(gpState));
+  }catch(e){}
+}
+function gpLoad(){
+  try{
+    const d = localStorage.getItem(SAVE_KEY+'_gp');
+    if(d){
+      const p = JSON.parse(d);
+      gpState.completed = p.completed||{};
+      gpState.progress = p.progress||{};
+    }
+  }catch(e){}
+}
+
+function renderGrammarPicnic(){
+  const el = document.getElementById('grammarPicnicContent');
+  if(!el) return;
+  const totalUnits = GP_UNITS.length;
+  const doneCount = Object.keys(gpState.completed).filter(k=>gpState.completed[k]).length;
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div>
+        <div style="font-size:1.05rem;font-weight:900;color:white;">📚 Grammar Picnic 文法課</div>
+        <div style="font-size:0.75rem;color:#93c5fd;font-weight:700;margin-top:2px;">系統化英文文法學習</div>
+      </div>
+      <div style="text-align:center;background:rgba(59,130,246,0.25);border-radius:12px;padding:8px 12px;border:1.5px solid #3b82f6;">
+        <div style="font-size:1.4rem;font-weight:900;color:#fbbf24;">${doneCount}/${totalUnits}</div>
+        <div style="font-size:0.7rem;color:#93c5fd;font-weight:700;">完成</div>
+      </div>
+    </div>
+    <!-- 總進度條 -->
+    <div style="height:7px;background:rgba(255,255,255,0.1);border-radius:8px;overflow:hidden;margin-bottom:14px;">
+      <div style="height:100%;width:${Math.round(doneCount/totalUnits*100)}%;background:linear-gradient(90deg,#3b82f6,#8b5cf6);border-radius:8px;transition:width 0.5s;"></div>
+    </div>
+    <!-- Unit 卡片清單 -->
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${(function(){
+        return GP_UNITS.map(function(u,i){
+          var done = !!gpState.completed[u.id];
+          var prev = i===0 || !!gpState.completed[GP_UNITS[i-1].id];
+          var locked = !prev && !done;
+          var bg = done ? u.color+'33' : 'rgba(255,255,255,0.06)';
+          var border = done ? u.color : locked ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.15)';
+          var cursor = locked ? 'default' : 'pointer';
+          var opacity = locked ? '0.45' : '1';
+          var icon = done ? '✅' : locked ? '🔒' : u.icon;
+          var unitColor = done ? u.color : '#64748b';
+          var titleColor = done ? 'white' : locked ? '#475569' : '#e2e8f0';
+          var dataAttr = locked ? '' : 'data-gpunit="'+u.id+'"';
+          var hoverAttr = locked ? '' : '';
+          var badge = done
+            ? '<div style="background:'+u.color+';border-radius:8px;padding:4px 10px;font-size:0.7rem;font-weight:900;color:white;">完成 ✓</div>'
+            : locked
+            ? '<div style="font-size:0.7rem;color:#475569;font-weight:700;">先完成上一章</div>'
+            : '<div style="background:'+u.color+';border-radius:8px;padding:4px 10px;font-size:0.7rem;font-weight:900;color:white;">去學習 ▶</div>';
+          return '<div '+dataAttr+' '+hoverAttr+' style="display:flex;align-items:center;gap:12px;background:'+bg+';border-radius:14px;padding:12px 14px;border:2px solid '+border+';cursor:'+cursor+';transition:all 0.2s;opacity:'+opacity+';">'
+            +'<div style="font-size:1.6rem;flex-shrink:0;">'+icon+'</div>'
+            +'<div style="flex:1;min-width:0;">'
+            +'<div style="font-size:0.72rem;font-weight:900;color:'+unitColor+';margin-bottom:1px;">'+u.unit+'</div>'
+            +'<div style="font-size:0.88rem;font-weight:900;color:'+titleColor+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+u.title+'</div>'
+            +'<div style="font-size:0.7rem;color:'+unitColor+';font-weight:700;">'+u.desc+'</div>'
+            +'</div>'
+            +'<div style="flex-shrink:0;">'+badge+'</div>'
+            +'</div>';
+        }).join('');
+      })()}
+    </div>
+    <div style="margin-top:10px;background:rgba(59,130,246,0.1);border-radius:10px;padding:8px 12px;font-size:0.75rem;color:#93c5fd;font-weight:700;text-align:center;">
+      ${doneCount===0?'📖 從 Unit 1 開始學習英文文法！':doneCount<totalUnits?`🌟 已完成 ${doneCount} 個單元，繼續加油！`:'🏆 全部完成！Grammar Picnic 文法大師！'}
+    </div>`;
+}
+
+function openGPUnit(unitId){
+  try{
+  sfxClick();
+  const u = GP_UNITS.find(x=>x.id===unitId);
+  if(!u) return;
+  // 找對應的課程章節
+  const unitMap = {
+    gp01:'📖 Unit 1：Nouns 名詞！',
+    gp02:'📖 Unit 2：A & An 冠詞！',
+    gp03:'📖 Unit 3：Plural Nouns 複數名詞！',
+    gp04:'📖 Unit 4：Personal Pronouns 人稱代名詞！',
+    gp05:'📝 Review 1：Units 1-4 總複習！',
+    gp06:'📖 Unit 5：Pronoun + Be 動詞！',
+    gp07:'📖 Unit 6：Be + Not 否定句！',
+    gp08:'📖 Unit 7：Yes/No Questions！',
+    gp09:'📖 Unit 8：What/Who Questions！',
+    gp10:'📝 Review 2：Units 5-8 總複習！',
+    gp11:'📖 Unit 9：Demonstrative Pronouns 指示代名詞！',
+    gp12:'📖 Unit 10：Adjectives 形容詞！',
+  };
+  const chapterTitle = unitMap[unitId];
+  const chIdx = COURSES_ALL.english.findIndex(c=>c.chapter===chapterTitle);
+  if(chIdx === -1){
+    alert('課程內容準備中！'); return;
+  }
+  // 啟動 Grammar Picnic 學習模式
+  currentSubject = 'english';
+  currentChapterIdx = chIdx;
+  currentUnitIdx = 0;
+  isMakeupMode = false;
+  sessionBadges = 0; wrongCount = 0; retryMode = false; retryUnits = [];
+  sessionCorrect = 0; sessionTotal = 0;
+  // 標記當前進行的 GP Unit
+  window._currentGPUnit = unitId;
+  const screen = document.getElementById('learnScreen');
+  if(!screen){ console.warn('learnScreen not found'); return; }
+  screen.className = 'learn-screen-enter english-theme';
+  screen.classList.remove('hidden');
+  const learnTitle = document.getElementById('learnTitle');
+  if(learnTitle) learnTitle.textContent = `📚 ${u.unit}：${u.title}`;
+  const sessionBadgesEl = document.getElementById('sessionBadges');
+  if(sessionBadgesEl) sessionBadgesEl.textContent = 0;
+  // 隱藏主畫面
+  const mainScreen = document.getElementById('mainScreen');
+  if(mainScreen) mainScreen.classList.add('hidden');
+  renderUnit();
+  }catch(err){ console.error('openGPUnit error:', err); }
+}
+
+// 事件委派：GP Unit 卡片點擊
+document.addEventListener('click', function(e){
+  try{
+    const el = e.target && e.target.closest ? e.target.closest('[data-gpunit]') : null;
+    if(el){
+      const uid = el.getAttribute('data-gpunit');
+      if(uid) openGPUnit(uid);
+    }
+  }catch(err){}
 });
+// iOS touchend 防止 click 延遲雙重觸發
+document.addEventListener('touchend', function(e){
+  try{
+    const el = e.target && e.target.closest ? e.target.closest('[data-gpunit]') : null;
+    if(el){
+      e.preventDefault();
+      const uid = el.getAttribute('data-gpunit');
+      if(uid) openGPUnit(uid);
+    }
+  }catch(err){}
+}, {passive:false});
 
-// 飄分數字
-for(let i=scoreTexts.length-1;i>=0;i--){
-  const st=scoreTexts[i];
-  st.y+=st.vy; st.opacity-=0.03;
-  if(st.opacity<=0){scoreTexts.splice(i,1);continue;}
-  ctx.save();
-  ctx.globalAlpha=st.opacity;
-  ctx.font='bold 20px Nunito,sans-serif';
-  ctx.fillStyle=st.color||'#fbbf24';
-  ctx.textAlign='center';
-  ctx.fillText(st.txt,st.x,st.y);
-  ctx.restore();
-}
+// GP 初始化由主 window load 事件統一執行（見下方 load handler 內的 gpLoad() 呼叫）
 
-// 繪製切割軌跡
-if(isSlicing && slashTrail.length>1){
-  ctx.save();
-  ctx.strokeStyle='rgba(255,255,255,0.85)';
-  ctx.lineWidth=3;
-  ctx.lineCap='round';
-  ctx.lineJoin='round';
-  ctx.shadowColor='rgba(200,220,255,0.8)';
-  ctx.shadowBlur=12;
-  ctx.beginPath();
-  ctx.moveTo(slashTrail[0].x,slashTrail[0].y);
-  for(let i=1;i<slashTrail.length;i++){
-    ctx.lineTo(slashTrail[i].x,slashTrail[i].y);
-  }
-  ctx.stroke();
-  ctx.restore();
-}
-slashTrail=slashTrail.slice(-12);
-
-animFrame=requestAnimationFrame(loop);
-```
-
-}
-
-// 事件監聽
-function onStart(e){
-e.preventDefault();
-isSlicing=true;
-const p=getPos(e,canvas);
-sliceX=p.x; sliceY=p.y;
-slashTrail=[{x:sliceX,y:sliceY}];
-}
-function onMove(e){
-e.preventDefault();
-if(!isSlicing) return;
-const p=getPos(e,canvas);
-prevSliceX=sliceX; prevSliceY=sliceY;
-sliceX=p.x; sliceY=p.y;
-slashTrail.push({x:sliceX,y:sliceY});
-checkSlice(prevSliceX,prevSliceY,sliceX,sliceY);
-}
-function onEnd(e){
-e.preventDefault();
-isSlicing=false; slashTrail=[];
-}
-
-canvas.addEventListener(‘mousedown’,onStart);
-canvas.addEventListener(‘mousemove’,onMove);
-canvas.addEventListener(‘mouseup’,onEnd);
-canvas.addEventListener(‘touchstart’,onStart,{passive:false});
-canvas.addEventListener(‘touchmove’,onMove,{passive:false});
-canvas.addEventListener(‘touchend’,onEnd,{passive:false});
-
-// 計時器
-gameTimerInterval=setInterval(()=>{
-if(!gameRunning) return;
-timeLeft–;
-const tw=document.getElementById(‘fnTime’);
-if(tw) tw.textContent=timeLeft;
-document.getElementById(‘gameTimerBar’).style.width=`${(timeLeft/totalTime)*100}%`;
-if(timeLeft<=0){endFruitNinja();}
-},1000);
-
-// 難度遞增
-diffInterval=setInterval(()=>{
-if(!gameRunning){clearInterval(diffInterval);return;}
-if(spawnDelay>1000) spawnDelay-=120;
-if(maxFruitsPerSpawn<3) maxFruitsPerSpawn++;
-},18000);
-
-// 生成水果
-function scheduleSpawn(){
-if(!gameRunning) return;
-spawnFruit();
-spawnInterval=setTimeout(scheduleSpawn, spawnDelay+Math.random()*400);
-}
-scheduleSpawn();
-loop();
-
-function endFruitNinja(){
-gameRunning=false;
-clearInterval(gameTimerInterval);
-clearInterval(diffInterval);
-clearTimeout(spawnInterval);
-cancelAnimationFrame(animFrame);
-canvas.removeEventListener(‘mousedown’,onStart);
-canvas.removeEventListener(‘mousemove’,onMove);
-canvas.removeEventListener(‘mouseup’,onEnd);
-canvas.removeEventListener(‘touchstart’,onStart);
-canvas.removeEventListener(‘touchmove’,onMove);
-canvas.removeEventListener(‘touchend’,onEnd);
-showGameEnd();
-}
-}
 /* 粒子背景 */
 function initParticles(){
-const c=document.getElementById(‘bgParticles’);
-const items=[‘🍀’,‘⭐’,‘✨’,‘🌸’,‘🦋’,‘🌟’,‘💫’,‘🔍’];
-for(let i=0;i<18;i++){
-const p=document.createElement(‘div’);
-p.style.cssText=`position:absolute;font-size:${1+Math.random()*1.5}rem;left:${Math.random()*100}%;top:${Math.random()*100}%;animation:float${Math.floor(Math.random()*3)+1} ${6+Math.random()*8}s ease-in-out ${Math.random()*5}s infinite;opacity:${0.15+Math.random()*0.2};pointer-events:none;`;
-p.textContent=items[Math.floor(Math.random()*items.length)];c.appendChild(p);
-}
-const style=document.createElement(‘style’);
-style.textContent=`@keyframes float1{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-30px) rotate(15deg)}}@keyframes float2{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-20px) rotate(-10deg)}}@keyframes float3{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-25px) scale(1.1)}}`;
-document.head.appendChild(style);
+  const c=document.getElementById('bgParticles');
+  const items=['🍀','⭐','✨','🌸','🦋','🌟','💫','🔍'];
+  for(let i=0;i<18;i++){
+    const p=document.createElement('div');
+    p.style.cssText=`position:absolute;font-size:${1+Math.random()*1.5}rem;left:${Math.random()*100}%;top:${Math.random()*100}%;animation:float${Math.floor(Math.random()*3)+1} ${6+Math.random()*8}s ease-in-out ${Math.random()*5}s infinite;opacity:${0.15+Math.random()*0.2};pointer-events:none;`;
+    p.textContent=items[Math.floor(Math.random()*items.length)];c.appendChild(p);
+  }
+  const style=document.createElement('style');
+  style.textContent=`@keyframes float1{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-30px) rotate(15deg)}}@keyframes float2{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-20px) rotate(-10deg)}}@keyframes float3{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-25px) scale(1.1)}}`;
+  document.head.appendChild(style);
 }
 /* =====================================================
-初始化
-===================================================== */
+   初始化
+   ===================================================== */
 function startApp(){
-const name=document.getElementById(‘nameInput’).value.trim()||‘小蛹’;
-S.name=name;
-S.hasVisited=true;
-if(!S.startDate){
-S.startDate=‘2025-03-01’;
+  const name=document.getElementById('nameInput').value.trim()||'小蛹';
+  S.name=name;
+  S.hasVisited=true;
+  if(!S.startDate){
+    S.startDate='2025-03-01';
+  }
+  checkDay();save();
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  document.getElementById('mainScreen').classList.remove('hidden');
+  setBoppyEl('welcomeBoppy',100,'happy','',true);
+  sfxStart();updateUI();
+  setTimeout(()=>{
+    setBoppyEl('playerAvatar',52,'happy',getActiveCostume().badge,false);
+    setBoppyEl('encAvatar',36,'normal','',false);
+  },100);
 }
-checkDay();save();
-document.getElementById(‘welcomeScreen’).classList.add(‘hidden’);
-document.getElementById(‘mainScreen’).classList.remove(‘hidden’);
-setBoppyEl(‘welcomeBoppy’,100,‘happy’,’’,true);
-sfxStart();updateUI();
-setTimeout(()=>{
-setBoppyEl(‘playerAvatar’,52,‘happy’,getActiveCostume().badge,false);
-setBoppyEl(‘encAvatar’,36,‘normal’,’’,false);
-},100);
-}
-window.addEventListener(‘load’,()=>{
-load(); initParticles();
-// 先設 emoji，然後嘗試載入 SVG
-const wb = document.getElementById(‘welcomeBoppy’);
-if(wb) wb.innerHTML = ‘<div style="font-size:80px;line-height:1;">🌸</div>’;
-setTimeout(()=>{
-setBoppyEl(‘welcomeBoppy’,100,‘happy’,’’,true);
-// 如果 SVG 沒有內容，維持 emoji
-const wb2 = document.getElementById(‘welcomeBoppy’);
-if(wb2 && (!wb2.innerHTML || !wb2.innerHTML.includes(’<svg’))) {
-wb2.innerHTML = ‘<div style="font-size:80px;line-height:1;animation:hamsterWelcome 2.5s ease-in-out infinite;">🌸</div>’;
-}
-}, 200);
-const ni=document.getElementById(‘nameInput’);
-if(ni){
-if(S.name&&S.name!==‘小蛹’) ni.value=S.name;
-ni.addEventListener(‘keydown’,e=>{if(e.key===‘Enter’)startApp();});
-}
-const startBtn = document.getElementById(‘startBtn’);
-if(startBtn){
-startBtn.addEventListener(‘click’, function(e){
-e.preventDefault();
-startApp();
-});
-startBtn.addEventListener(‘touchend’, function(e){
-e.preventDefault();
-startApp();
-}, {passive:false});
-}
-if(S.hasVisited && S.name && S.name!==‘小蛹’){
-checkDay();
-document.getElementById(‘welcomeScreen’).classList.add(‘hidden’);
-document.getElementById(‘mainScreen’).classList.remove(‘hidden’);
-updateUI();
-// 延遲設定頭像確保 DOM 已更新
-setTimeout(()=>{
-setBoppyEl(‘playerAvatar’,52,‘happy’,getActiveCostume().badge,false);
-setBoppyEl(‘encAvatar’,36,‘normal’,’’,false);
-},100);
-}
+window.addEventListener('load',()=>{
+  load(); gpLoad(); initParticles();
+  // 先設 emoji，然後嘗試載入 SVG
+  const wb = document.getElementById('welcomeBoppy');
+  if(wb) wb.innerHTML = '<div style="font-size:80px;line-height:1;">🌸</div>';
+  setTimeout(()=>{
+    setBoppyEl('welcomeBoppy',100,'happy','',true);
+    // 如果 SVG 沒有內容，維持 emoji
+    const wb2 = document.getElementById('welcomeBoppy');
+    if(wb2 && (!wb2.innerHTML || !wb2.innerHTML.includes('<svg'))) {
+      wb2.innerHTML = '<div style="font-size:80px;line-height:1;animation:hamsterWelcome 2.5s ease-in-out infinite;">🌸</div>';
+    }
+  }, 200);
+  const ni=document.getElementById('nameInput');
+  if(ni){
+    if(S.name&&S.name!=='小蛹') ni.value=S.name;
+    ni.addEventListener('keydown',e=>{if(e.key==='Enter')startApp();});
+  }
+  const startBtn = document.getElementById('startBtn');
+  if(startBtn){
+    startBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    startApp();
+    });
+    startBtn.addEventListener('touchend', function(e){
+    e.preventDefault();
+    startApp();
+    }, {passive:false});
+  }
+  if(S.hasVisited && S.name && S.name!=='小蛹'){
+    checkDay();
+    document.getElementById('welcomeScreen').classList.add('hidden');
+    document.getElementById('mainScreen').classList.remove('hidden');
+    updateUI();
+    // 延遲設定頭像確保 DOM 已更新
+    setTimeout(()=>{
+      setBoppyEl('playerAvatar',52,'happy',getActiveCostume().badge,false);
+      setBoppyEl('encAvatar',36,'normal','',false);
+    },100);
+  }
 });
 </script>
-
 </body>
 </html>
