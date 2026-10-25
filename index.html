@@ -6667,6 +6667,25 @@ const BT_GYMS=[
   {id:'g15',name:'冠軍殿堂',emoji:'👑',bg:'linear-gradient(160deg,#1e1b4b,#f59e0b)',maxCh:99,champion:true,
    mons:[{n:'貓頭鷹博士',e:'🦉',w:'chinese'},{n:'獨角獸',e:'🦄',w:'english'},{n:'混亂之王',e:'🐲',w:'math',boss:true}]},
 ];
+/* 道館寶物：第一次通關該道館就永久獲得，商店買不到 */
+const BT_TREASURES={
+  g1:{e:'🌾',n:'豐收號角',desc:'每打倒一隻怪獸額外 +5 金幣'},
+  g2:{e:'🪵',n:'森林盾牌',desc:'每場戰鬥開始自動附一個免費護盾'},
+  g3:{e:'💧',n:'河流之淚',desc:'每打倒一隻怪獸回復 15 HP'},
+  g4:{e:'🔥',n:'火山之心',desc:'連擊達 3 以上時，每次攻擊額外 +10 傷害'},
+  g5:{e:'❄️',n:'冰霜沙漏',desc:'答題時間永久 +10 秒'},
+  g6:{e:'🏺',n:'沙漠神燈',desc:'每場戰鬥第一次答錯，怪獸不會反擊'},
+  g7:{e:'🪽',n:'天空之翼',desc:'速度加成放寬到 12 秒內，而且加成變 +12 傷害'},
+  g8:{e:'🔱',n:'海神三叉戟',desc:'打中弱點的傷害從 2 倍變 2.5 倍'},
+  g9:{e:'💎',n:'水晶之眼',desc:'每場戰鬥開打時，自動看出第一隻怪獸的弱點'},
+  g10:{e:'🍭',n:'無限棒棒糖',desc:'藥水回復量 40 變 70'},
+  g11:{e:'🦴',n:'恐龍骨棒',desc:'火焰炸彈傷害 40 變 80，每場開打再送一顆炸彈'},
+  g12:{e:'⚙️',n:'機械核心',desc:'所有經驗值永久 +50%'},
+  g13:{e:'🕯️',n:'幽靈燭火',desc:'每場戰鬥 HP 歸零時免費復活一次，回復三成 HP'},
+  g14:{e:'🛰️',n:'星際羅盤',desc:'所有金幣永久 +50%'},
+  g15:{e:'👑',n:'冠軍王冠',desc:'所有攻擊永久 +15 傷害'},
+};
+function btHas(id){ return btState().cleared.includes(id); }
 const BT_ALL_MONS=BT_GYMS.flatMap((g,gi)=>g.mons.map((m,mi)=>({...m,id:g.id+'_'+mi,gym:gi})));
 let BT={screen:'home',gym:null,round:0,enemy:null,hp:0,maxHp:0,combo:0,q:null,timer:null,tLeft:0,busy:false,arena:false,streak:0,recent:[],revealed:{},stats:{correct:0,wrong:0,dmg:0}};
 function btState(){
@@ -6677,8 +6696,8 @@ function btState(){
 function btLevel(){return Math.floor(Math.sqrt((btState().exp||0)/40))+1;}
 function btExpToNext(){const l=btLevel();return {cur:btState().exp-40*(l-1)*(l-1),need:40*l*l-40*(l-1)*(l-1)};}
 function btMaxHp(){return 90+btLevel()*10+(btState().hearts||0)*20;}
-function btTimerSec(){return 25+(btState().boots||0)*5;}
-function btCoin(n){ const b=btState(); const g=Math.round(n*(1+0.25*(b.clovers||0))); b.coins=(b.coins||0)+g; if(BT.stats) BT.stats.coins=(BT.stats.coins||0)+g; return g; }
+function btTimerSec(){return 25+(btState().boots||0)*5+(btHas('g5')?10:0);}
+function btCoin(n){ const b=btState(); const g=Math.round(n*(1+0.25*(b.clovers||0)+(btHas('g14')?0.5:0))); b.coins=(b.coins||0)+g; if(BT.stats) BT.stats.coins=(BT.stats.coins||0)+g; return g; }
 function btRank(){const l=btLevel();return l>=15?'傳說訓練家':l>=10?'大師訓練家':l>=6?'資深訓練家':l>=3?'見習訓練家':'新手訓練家';}
 function btBoppy(size,expr){return boppySVG(size,expr||'happy',getActiveCostume().badge,false);}
 /* ── 道具商店 ── */
@@ -6775,7 +6794,7 @@ function btHomeHTML(){
   const gyms=BT_GYMS.map((g,i)=>{
     const cleared=b.cleared.includes(g.id); const locked=!cleared&&i!==nextIdx;
     return `<div class="bt-gym ${cleared?'cleared':''} ${locked?'locked':''} ${i===nextIdx?'next':''}" onclick="${locked?'btLockedMsg('+i+')':'btStartGym('+i+')'}">
-      ${cleared?'<div class="g-badge">🏅</div>':''}
+      ${cleared?'<div class="g-badge">🏅</div><div class="g-badge" style="left:-6px;right:auto;">'+BT_TREASURES[g.id].e+'</div>':''}
       <div class="g-emoji">${locked?'🔒':g.emoji}</div><div class="g-name">${g.name}</div>
       <div class="g-sub">${cleared?'已通關・可再戰':locked?'先打贏前一館':i===nextIdx?'▶ 下一關':''}</div></div>`;
   }).join('');
@@ -6789,6 +6808,7 @@ function btHomeHTML(){
       <div class="bt-stats"><div class="bt-stat"><b>${b.cleared.length}/${BT_GYMS.length}</b><span>道館徽章</span></div><div class="bt-stat"><b>${b.dex.length}/${BT_ALL_MONS.length}</b><span>圖鑑</span></div><div class="bt-stat"><b>${b.bestStreak||0}</b><span>最高連勝</span></div><div class="bt-stat"><b>${b.answered?Math.round(b.correct/b.answered*100):0}%</b><span>命中率</span></div></div>
     </div>
     ${btEvoRoadHTML()}
+    ${btTreasureHTML()}
     <div class="bt-modes">
       <button class="bt-mode" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="btStartGym(${nextIdx<0?0:nextIdx})">🏟️ 道館挑戰<small>${nextIdx<0?'全部通關！':'下一關：'+BT_GYMS[nextIdx].name}</small></button>
       <button class="bt-mode" style="background:linear-gradient(135deg,#ec4899,#be185d);" onclick="btStartArena()">🔥 無限競技場<small>怪獸越來越強，拚連勝</small></button>
@@ -6817,7 +6837,7 @@ function btStartArena(){
   sfxStart(); BT.gym=null; BT.arena=true; BT.round=0; BT.hp=btMaxHp(); BT.maxHp=BT.hp; BT.combo=0; BT.streak=0; BT.stats={correct:0,wrong:0,dmg:0,coins:0}; BT.recent=[]; btUseBook();
   btSpawn();
 }
-function btUseBook(){ const b=btState(); BT.expBoost=1; if(b.books>0){ b.books--; BT.expBoost=2; save(); } }
+function btUseBook(){ const b=btState(); BT.expBoost=1; if(b.books>0){ b.books--; BT.expBoost=2; save(); } BT.freeShield=btHas('g2'); BT.firstMiss=btHas('g6'); BT.freeRevive=btHas('g13'); BT.tempBombs=btHas('g11')?1:0; }
 function btSpawn(){
   let m,gi;
   if(BT.arena){ const r=BT.round; gi=Math.min(BT_GYMS.length-1,Math.floor(r/2)); const pool=BT_ALL_MONS.filter(x=>x.gym<=gi); m=pool[Math.floor(Math.random()*pool.length)];
@@ -6825,7 +6845,8 @@ function btSpawn(){
   else { gi=BT.gymIdx; const base=BT.gym.mons[BT.round]; m={...base,id:BT.gym.id+'_'+BT.round,gym:gi};
     const hp=base.boss?(120+gi*26):(72+gi*15); BT.enemy={...m,hp,maxHp:hp,atk:(base.boss?12:8)+Math.round(gi*1.6),maxCh:BT.gym.maxCh}; }
   BT.screen='battle'; BT.q=null; BT.busy=false;
-  btRenderBattle(`野生的 <span class="hl">${BT.enemy.n}</span> 出現了！${BT.enemy.boss?'這是館主，小心！':''}${BT.round===0&&BT.expBoost>1?'📖 智慧之書生效，這一場經驗加倍！':''}選一個科目攻擊吧！`);
+  if(BT.round===0&&btHas('g9')) BT.revealed[BT.enemy.id]=true;
+  btRenderBattle(`野生的 <span class="hl">${BT.enemy.n}</span> 出現了！${BT.enemy.boss?'這是館主，小心！':''}${BT.round===0&&BT.expBoost>1?'📖 智慧之書生效，這一場經驗加倍！':''}${BT.round===0&&btHas('g9')?'💎 水晶之眼看出牠的弱點了！':''}${BT.round===0&&BT.freeShield?'🪵 森林盾牌已就位！':''}選一個科目攻擊吧！`);
 }
 /* ── 戰鬥畫面 ── */
 function btHpClass(p){return p<=0.25?'low':p<=0.55?'mid':'';}
@@ -6852,17 +6873,17 @@ function btRenderActions(){
   const a=document.getElementById('btAction');
   a.innerHTML=`<div class="bt-actions">${['chinese','english','math'].map(s=>`<button class="bt-atk ${s} ${known&&e.w===s?'super':''}" onclick="btAttack('${s}')">${BT_SUBJ[s].e} ${BT_SUBJ[s].n}攻擊<small>${known&&e.w===s?'傷害 ×2':'答對就出招'}${b.stones[s]?' ＋'+(b.stones[s]*4):''}</small></button>`).join('')}</div>
     <div class="bt-items">
-      <button class="bt-item" onclick="btUsePotion()" ${b.potions<=0||BT.hp>=BT.maxHp?'disabled':''}>🧪 ×${b.potions}<small>藥水 +40</small></button>
+      <button class="bt-item" onclick="btUsePotion()" ${b.potions<=0||BT.hp>=BT.maxHp?'disabled':''}>🧪 ×${b.potions}<small>藥水 +${btHas('g10')?70:40}</small></button>
       <button class="bt-item" onclick="btUseBigPotion()" ${b.bigPotions<=0||BT.hp>=BT.maxHp?'disabled':''}>🍶 ×${b.bigPotions}<small>大藥水 全滿</small></button>
-      <button class="bt-item" onclick="btUseBomb()" ${b.bombs<=0?'disabled':''}>💣 ×${b.bombs}<small>炸彈 40 傷</small></button>
+      <button class="bt-item" onclick="btUseBomb()" ${(b.bombs+(BT.tempBombs||0))<=0?'disabled':''}>💣 ×${b.bombs+(BT.tempBombs||0)}<small>炸彈 ${btHas('g11')?80:40} 傷</small></button>
       <button class="bt-item" onclick="btUseLens()" ${b.lenses<=0||known?'disabled':''}>🔎 ×${b.lenses}<small>看弱點</small></button>
     </div>
     <div style="font-size:0.72rem;color:#c7d2fe;font-weight:800;margin-top:6px;text-align:center;">答題時可用：💡 提示 ×${b.hints}　⏳ 沙漏 ×${b.hourglasses}　｜　自動：🛡️ 護盾 ×${b.shields}　🪶 羽毛 ×${b.feathers}</div>`;
 }
-function btUsePotion(){ const b=btState(); if(b.potions<=0||BT.hp>=BT.maxHp||BT.busy) return; sfxLevelUp(); b.potions--; BT.hp=Math.min(BT.maxHp,BT.hp+40); save(); btFloat('btBoppySprite','+40','#4ade80'); btRenderBattle('波比喝了藥水，精神百倍！💪 繼續選科目攻擊！'); }
+function btUsePotion(){ const b=btState(); if(b.potions<=0||BT.hp>=BT.maxHp||BT.busy) return; sfxLevelUp(); const heal=btHas('g10')?70:40; b.potions--; BT.hp=Math.min(BT.maxHp,BT.hp+heal); save(); btFloat('btBoppySprite','+'+heal,'#4ade80'); btRenderBattle('波比喝了藥水，精神百倍！💪 繼續選科目攻擊！'); }
 function btUseBigPotion(){ const b=btState(); if(b.bigPotions<=0||BT.hp>=BT.maxHp||BT.busy) return; sfxLevelUp(); b.bigPotions--; const h=BT.maxHp-BT.hp; BT.hp=BT.maxHp; save(); btFloat('btBoppySprite','+'+h,'#4ade80'); btRenderBattle('🍶 大藥水！HP 全滿！繼續選科目攻擊！'); }
 function btUseLens(){ const b=btState(); if(b.lenses<=0||BT.busy) return; sfxFlip(); b.lenses--; BT.revealed[BT.enemy.id]=true; save(); btRenderBattle(`🔎 放大鏡看出來了！${BT.enemy.n} 的弱點是 <span class="hl">${BT_SUBJ[BT.enemy.w].e}${BT_SUBJ[BT.enemy.w].n}</span>！用這科攻擊傷害加倍！`); }
-function btUseBomb(){ const b=btState(); if(b.bombs<=0||BT.busy) return; BT.busy=true; sfxCorrect(); b.bombs--; const e=BT.enemy; const dmg=40; e.hp-=dmg; BT.stats.dmg+=dmg; save();
+function btUseBomb(){ const b=btState(); if((b.bombs+(BT.tempBombs||0))<=0||BT.busy) return; BT.busy=true; sfxCorrect(); if(BT.tempBombs>0) BT.tempBombs--; else b.bombs--; const e=BT.enemy; const dmg=btHas('g11')?80:40; e.hp-=dmg; BT.stats.dmg+=dmg; save();
   const es=document.getElementById('btEnemySprite'); if(es){es.classList.add('hit');} btFloat('btEnemySprite','💥-'+dmg,'#fb923c'); btSetHp();
   document.getElementById('btMsg').innerHTML=`💣 火焰炸彈！${e.n} 受到 <span class="hl">${dmg}</span> 傷害！`;
   if(e.hp<=0){ setTimeout(()=>btEnemyDown(),900); return; }
@@ -6929,33 +6950,38 @@ function btResolve(ok,prefix){
   if(ok){
     sfxCorrect(); b.correct=(b.correct||0)+1; BT.combo++; BT.streak++; BT.stats.correct++;
     const sec=(Date.now()-q.start)/1000; const superHit=q.subj===e.w;
-    const stoneBonus=(b.stones[q.subj]||0)*4; let dmg=Math.round(16*(superHit?2:1)*(1+(b.bracelets?0.3:0.2)*Math.min(BT.combo-1,4))+(sec<8?5:0)+Math.round(btLevel()*1.5)+stoneBonus);
+    const stoneBonus=(b.stones[q.subj]||0)*4; const fastSec=btHas('g7')?12:8, fastBonus=btHas('g7')?12:5; const superMul=btHas('g8')?2.5:2;
+    let dmg=Math.round(16*(superHit?superMul:1)*(1+(b.bracelets?0.3:0.2)*Math.min(BT.combo-1,4))+(sec<fastSec?fastBonus:0)+Math.round(btLevel()*1.5)+stoneBonus+(btHas('g4')&&BT.combo>=3?10:0)+(btHas('g15')?15:0));
     const coinGain=btCoin(superHit?6:3);
     if(superHit){ BT.revealed[e.id]=true; }
     e.hp-=dmg; BT.stats.dmg+=dmg;
     const sp=document.getElementById('btBoppySprite'), es=document.getElementById('btEnemySprite');
     if(sp){sp.classList.add('attack');} setTimeout(()=>{ if(es){es.classList.remove('attack');es.classList.add('hit');} btFloat('btEnemySprite','-'+dmg,superHit?'#fde68a':'#fff'); btSetHp(); },300);
-    msg.innerHTML=`${prefix}🎯 命中！造成 <span class="hl">${dmg}</span> 傷害${superHit?'，<span class="hl">效果絕佳！</span>（'+BT_SUBJ[q.subj].n+'是牠的弱點）':''}${stoneBonus?'　'+(q.subj==='chinese'?'📕':q.subj==='english'?'📘':'📗')+' 石頭 +'+stoneBonus:''}${BT.combo>=2?'　🔥 '+BT.combo+' 連擊！':''}${sec<8?'　⚡ 速度加成':''}　🪙 +${coinGain}`;
+    msg.innerHTML=`${prefix}🎯 命中！造成 <span class="hl">${dmg}</span> 傷害${superHit?'，<span class="hl">效果絕佳！</span>（'+BT_SUBJ[q.subj].n+'是牠的弱點）':''}${stoneBonus?'　'+(q.subj==='chinese'?'📕':q.subj==='english'?'📘':'📗')+' 石頭 +'+stoneBonus:''}${BT.combo>=2?'　🔥 '+BT.combo+' 連擊！':''}${btHas('g4')&&BT.combo>=3?'　🔥 火山之心 +10':''}${sec<fastSec?'　⚡ 速度加成 +'+fastBonus:''}${btHas('g15')?'　👑 +15':''}　🪙 +${coinGain}`;
     if(e.hp<=0){ setTimeout(()=>btEnemyDown(),1100); return; }
     setTimeout(()=>{ BT.busy=false; BT.q=null; document.getElementById('btMsg').innerHTML=`${e.n} 還有 ${e.hp} HP！${!BT.revealed[e.id]&&!b.dex.includes(e.id)?'再試試別的科目，找出牠的弱點！':'繼續用弱點科目攻擊！'}`; btRenderActions(); },1500);
   } else {
     sfxWrong(); BT.combo=0; BT.streak=0; BT.stats.wrong++;
     let dmg=e.atk+Math.floor(Math.random()*6); let blocked=false;
-    if(b.shields>0){ b.shields--; blocked=true; dmg=0; }
+    let blockBy='';
+    if(BT.freeShield){ BT.freeShield=false; blocked=true; dmg=0; blockBy='🪵 森林盾牌擋下了！'; }
+    else if(BT.firstMiss){ BT.firstMiss=false; blocked=true; dmg=0; blockBy='🏺 沙漠神燈：這一場第一次答錯不算！'; }
+    else if(b.shields>0){ b.shields--; blocked=true; dmg=0; blockBy='🛡️ 護盾擋下了！（剩 '+b.shields+' 個）'; }
     const es=document.getElementById('btEnemySprite'), sp=document.getElementById('btBoppySprite');
     if(es){es.classList.add('enemy-attack');} setTimeout(()=>{ if(blocked){ btFloat('btBoppySprite','🛡️','#60a5fa'); } else { if(sp){sp.classList.add('hit');} BT.hp-=dmg; btFloat('btBoppySprite','-'+dmg,'#f87171'); } btSetHp(); },300);
-    msg.innerHTML=`${prefix}💥 沒打中！${e.n} 反擊${blocked?'，<span class="hl">🛡️ 護盾擋下了！</span>（剩 '+b.shields+' 個）':'，波比受到 <span class="hl">'+dmg+'</span> 傷害'}。正確答案是「<span class="hl">${q.ans}</span>」${q.explain?'<br><span style="font-size:0.82rem;color:#c7d2fe;">'+String(q.explain).replace(/<[^>]+>/g,'')+'</span>':''}`;
-    setTimeout(()=>{ if(BT.hp<=0){ if(b.feathers>0){ b.feathers--; BT.hp=Math.round(BT.maxHp/2); save(); sfxLevelUp(); btFloat('btBoppySprite','🪶','#fde68a'); btSetHp(); BT.busy=false; BT.q=null; btRenderBattle(`🪶 <span class="hl">復活羽毛發光了！</span>波比回復 ${BT.hp} HP，再戰！`); return; } btLose(); return; } BT.busy=false; BT.q=null; btRenderActions(); const m=document.getElementById('btMsg'); m.innerHTML+='<br>記住這題，下次就打得中！選科目再攻擊！'; },2600);
+    msg.innerHTML=`${prefix}💥 沒打中！${e.n} 反擊${blocked?'，<span class="hl">'+blockBy+'</span>':'，波比受到 <span class="hl">'+dmg+'</span> 傷害。'}正確答案是「<span class="hl">${q.ans}</span>」${q.explain?'<br><span style="font-size:0.82rem;color:#c7d2fe;">'+String(q.explain).replace(/<[^>]+>/g,'')+'</span>':''}`;
+    setTimeout(()=>{ if(BT.hp<=0){ if(b.feathers>0){ b.feathers--; BT.hp=Math.round(BT.maxHp/2); save(); sfxLevelUp(); btFloat('btBoppySprite','🪶','#fde68a'); btSetHp(); BT.busy=false; BT.q=null; btRenderBattle(`🪶 <span class="hl">復活羽毛發光了！</span>波比回復 ${BT.hp} HP，再戰！`); return; } if(BT.freeRevive){ BT.freeRevive=false; BT.hp=Math.round(BT.maxHp*0.3); sfxLevelUp(); btFloat('btBoppySprite','🕯️','#fde68a'); btSetHp(); BT.busy=false; BT.q=null; btRenderBattle(`🕯️ <span class="hl">幽靈燭火亮了！</span>波比回復 ${BT.hp} HP，再戰！`); return; } btLose(); return; } BT.busy=false; BT.q=null; btRenderActions(); const m=document.getElementById('btMsg'); m.innerHTML+='<br>記住這題，下次就打得中！選科目再攻擊！'; },2600);
   }
   save();
 }
 function btEnemyDown(){
   const e=BT.enemy; const b=btState(); const es=document.getElementById('btEnemySprite'); if(es){es.classList.remove('hit');es.classList.add('faint');}
   const newCatch=!b.dex.includes(e.id); if(newCatch) b.dex.push(e.id);
-  const exp=((e.boss?30:15)+e.gym*5+(BT.arena?BT.round*2:0))*(BT.expBoost||1); const coin=btCoin(e.boss?25:10); const before=btLevel(); const stBefore=boppyStageByLevel(before); b.exp=(b.exp||0)+exp; const lvUp=btLevel()>before; const stAfter=boppyStage();
+  const exp=Math.round(((e.boss?30:15)+e.gym*5+(BT.arena?BT.round*2:0))*(BT.expBoost||1)*(btHas('g12')?1.5:1)); const coin=btCoin((e.boss?25:10)+(btHas('g1')?5:0)); const before=btLevel();
+  if(btHas('g3')&&BT.hp<BT.maxHp){ BT.hp=Math.min(BT.maxHp,BT.hp+15); setTimeout(()=>{btFloat('btBoppySprite','💧+15','#60a5fa');btSetHp();},200); } const stBefore=boppyStageByLevel(before); b.exp=(b.exp||0)+exp; const lvUp=btLevel()>before; const stAfter=boppyStage();
   if(BT.arena){ BT.streak=BT.round+1; if(BT.streak>(b.bestStreak||0)) b.bestStreak=BT.streak; }
   save(); sfxLevelUp();
-  const msg=document.getElementById('btMsg'); msg.innerHTML=`🎉 打倒了 ${e.n}！${newCatch?'<span class="hl">收服成功，加入圖鑑！</span>':''} 經驗 +${exp}${BT.expBoost>1?'（📖 加倍）':''}　🪙 +${coin}${lvUp?'　<span class="hl">⬆️ 升級！Lv.'+btLevel()+'</span>':''}`;
+  const msg=document.getElementById('btMsg'); msg.innerHTML=`🎉 打倒了 ${e.n}！${newCatch?'<span class="hl">收服成功，加入圖鑑！</span>':''} 經驗 +${exp}${BT.expBoost>1?'（📖 加倍）':''}${btHas('g12')?'（⚙️ +50%）':''}　🪙 +${coin}${btHas('g1')?'（🌾 號角）':''}${lvUp?'　<span class="hl">⬆️ 升級！Lv.'+btLevel()+'</span>':''}`;
   const a=document.getElementById('btAction');
   a.innerHTML=`<div class="bt-result" style="padding:8px;"><div class="bt-capture">${e.e}</div>${lvUp?'<div class="bt-reward">⬆️ 波比升到 Lv.'+btLevel()+'，HP 上限 '+btMaxHp()+'</div>':''}</div>`;
   if(lvUp){ BT.maxHp=btMaxHp(); BT.hp=Math.min(BT.maxHp,BT.hp+10); }
@@ -6973,6 +6999,7 @@ function btWinGym(){
     <div class="big">${allDone&&first?'🏆':'🏅'}</div>
     <h3>${g.champion?'你是新的冠軍！':'拿到 '+g.name+'徽章！'}</h3>
     <p>${first?(g.champion?'十五枚徽章全部到手，波比成為冠軍訓練家！去跟爸爸媽媽說這件事吧！':'第一次通關！館主 '+g.mons[2].n+' 認輸了。'):'再一次漂亮通關！'}</p>
+    ${first&&BT_TREASURES[g.id]?`<div style="margin:12px auto;max-width:300px;background:linear-gradient(135deg,rgba(253,224,71,0.25),rgba(251,146,60,0.15));border:2px solid #fbbf24;border-radius:16px;padding:12px;animation:popIn 0.6s ease;"><div style="font-size:0.7rem;font-weight:900;color:#fde68a;letter-spacing:2px;">道館寶物</div><div style="font-size:2.6rem;line-height:1.2;">${BT_TREASURES[g.id].e}</div><div style="font-weight:900;font-size:1.05rem;color:#fff7ed;">${BT_TREASURES[g.id].n}</div><div style="font-size:0.8rem;color:#fde68a;font-weight:700;margin-top:3px;">${BT_TREASURES[g.id].desc}</div></div>`:''}
     <div style="margin:10px 0;">${first?'<span class="bt-reward">🏅 道館徽章</span><span class="bt-reward">⭐ 迷你波 +1</span><span class="bt-reward">🧪 藥水 +1</span><span class="bt-reward">💡 提示 +1</span><span class="bt-reward">🪙 +'+gymCoin+'</span>':'<span class="bt-reward">🪙 +'+gymCoin+'</span>'}</div>
     <p style="font-size:0.82rem;">這一館：答對 ${BT.stats.correct} 題、答錯 ${BT.stats.wrong} 題、總傷害 ${BT.stats.dmg}、賺到 🪙 ${BT.stats.coins}</p>
     <button class="bt-btn gray" onclick="btGo('shop')">🛒 去商店買道具</button>
@@ -6999,6 +7026,13 @@ function btConfirmLeave(){
 }
 
 /* ── 進化之路（對戰學院首頁）＋ 進化演出 ── */
+function btTreasureHTML(){
+  const b=btState(); const got=BT_GYMS.filter(g=>b.cleared.includes(g.id)).length;
+  return `<div class="bt-card"><div style="font-weight:900;margin-bottom:8px;display:flex;justify-content:space-between;"><span>🏺 道館寶物</span><span style="font-size:0.78rem;color:#c7d2fe;">${got}/${BT_GYMS.length}</span></div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">${BT_GYMS.map(g=>{const t=BT_TREASURES[g.id]; const has=b.cleared.includes(g.id); return `<div title="${t.n}：${t.desc}" onclick="btTreasureInfo('${g.id}')" style="text-align:center;background:${has?'rgba(253,224,71,0.14)':'rgba(255,255,255,0.05)'};border:2px solid ${has?'#fbbf24':'rgba(255,255,255,0.12)'};border-radius:12px;padding:7px 2px 5px;cursor:pointer;"><div style="font-size:1.6rem;line-height:1.1;${has?'':'filter:brightness(0) opacity(0.45);'}">${t.e}</div><div style="font-size:0.58rem;font-weight:900;margin-top:3px;color:${has?'#fef3c7':'#64748b'};line-height:1.2;">${has?t.n:g.name.replace('道館','')}</div></div>`;}).join('')}</div>
+    <div id="btTreasureInfo" style="font-size:0.78rem;color:#e0e7ff;font-weight:700;margin-top:8px;line-height:1.5;">第一次打贏一座道館，就能拿到那座道館的專屬寶物，效果永久有效，商店買不到。點圖示看說明。</div></div>`;
+}
+function btTreasureInfo(id){ const t=BT_TREASURES[id]; const g=BT_GYMS.find(x=>x.id===id); const has=btHas(id); const el=document.getElementById('btTreasureInfo'); if(el) el.innerHTML=`${t.e} <b style="color:#fde047;">${t.n}</b>（${g.name}）：${t.desc}${has?'　<span style="color:#86efac;">✓ 已擁有</span>':'　<span style="color:#fca5a5;">尚未取得，打贏 '+g.name+' 就是你的！</span>'}`; sfxClick(); }
 function btEvoRoadHTML(){
   const cur=boppyStage(); const lv=btLevel();
   return `<div class="bt-card"><div style="font-weight:900;margin-bottom:10px;">🧬 波比進化之路</div>
