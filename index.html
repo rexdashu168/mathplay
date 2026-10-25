@@ -869,51 +869,111 @@ window.addEventListener('unhandledrejection', function(e){
 /* =====================================================
    波比 SVG 吉祥物
    ===================================================== */
-function boppySVG(size=56,expr='normal',badge='',glowing=false){
+/* =====================================================
+   波比 SVG 吉祥物（五階段進化版）
+   階段由對戰等級決定：Lv.1 小芽波比 → Lv.3 靈耳波比 → Lv.6 蝶翼波比 → Lv.10 冠冕波比 → Lv.15 彩虹傳說波比
+   ===================================================== */
+const BOPPY_STAGES=[
+  {stage:1,lv:1, name:'小芽波比',   desc:'剛孵化的波比，頭上冒出一片小芽。',           body:['#fce4ec','#f48fb1','#e91e63'], mouth:'#c2185b'},
+  {stage:2,lv:3, name:'靈耳波比',   desc:'長出一對靈敏的耳朵，聽得見題目裡的線索。',     body:['#fff3e0','#ffab91','#f4511e'], mouth:'#bf360c'},
+  {stage:3,lv:6, name:'蝶翼波比',   desc:'破蛹而出！背上展開一對半透明的蝶翼。',         body:['#ede7f6','#b39ddb','#7e57c2'], mouth:'#4527a0'},
+  {stage:4,lv:10,name:'冠冕波比',   desc:'戴上金色王冠、披上披風，是道館公認的強者。',   body:['#fff8e1','#ffd54f','#f9a825'], mouth:'#e65100'},
+  {stage:5,lv:15,name:'彩虹傳說波比',desc:'全身閃著彩虹光，翅膀像極光一樣，傳說中的波比。',body:['#ffffff','#f9a8d4','#a78bfa'], mouth:'#be185d'},
+];
+function boppyStageByLevel(lv){ let s=BOPPY_STAGES[0]; BOPPY_STAGES.forEach(x=>{ if(lv>=x.lv) s=x; }); return s; }
+function boppyStage(){ try{ return boppyStageByLevel(typeof btLevel==='function'?btLevel():1); }catch(e){ return BOPPY_STAGES[0]; } }
+function boppySVG(size=56,expr='normal',badge='',glowing=false,stage=null){
+  const st=(typeof stage==='number')?(BOPPY_STAGES[stage-1]||BOPPY_STAGES[0]):(stage||boppyStage());
+  const sn=st.stage;
   const r=size*0.46,cx=size*0.5,cy=size*0.48;
   boppySVG._cnt = ((boppySVG._cnt||0)+1) % 9999;
   const gid='bp'+(size|0)+expr.slice(0,2)+boppySVG._cnt;
+  glowing = glowing || sn>=5;
   const glow=glowing?`<circle cx="${cx}" cy="${cy}" r="${r*1.55}" fill="url(#glow${gid})" />`:'';
   let eyes='';
   const ex=cx,ey=cy-r*0.1;
+  const eyeInk=sn>=4?'#3b2a00':'#1a1a2e';
   if(expr==='happy'){
-    eyes=`<path d="M ${ex-r*0.42} ${ey} Q ${ex-r*0.22} ${ey-r*0.22} ${ex-r*0.02} ${ey}" stroke="#1a1a2e" stroke-width="${r*0.13}" fill="none" stroke-linecap="round"/>
-    <path d="M ${ex+r*0.02} ${ey} Q ${ex+r*0.22} ${ey-r*0.22} ${ex+r*0.42} ${ey}" stroke="#1a1a2e" stroke-width="${r*0.13}" fill="none" stroke-linecap="round"/>`;
+    eyes=`<path d="M ${ex-r*0.42} ${ey} Q ${ex-r*0.22} ${ey-r*0.22} ${ex-r*0.02} ${ey}" stroke="${eyeInk}" stroke-width="${r*0.13}" fill="none" stroke-linecap="round"/>
+    <path d="M ${ex+r*0.02} ${ey} Q ${ex+r*0.22} ${ey-r*0.22} ${ex+r*0.42} ${ey}" stroke="${eyeInk}" stroke-width="${r*0.13}" fill="none" stroke-linecap="round"/>`;
   }else if(expr==='sad'){
-    eyes=`<circle cx="${ex-r*0.3}" cy="${ey}" r="${r*0.24}" fill="#1a1a2e"/>
-    <circle cx="${ex+r*0.3}" cy="${ey}" r="${r*0.24}" fill="#1a1a2e"/>
+    eyes=`<circle cx="${ex-r*0.3}" cy="${ey}" r="${r*0.24}" fill="${eyeInk}"/>
+    <circle cx="${ex+r*0.3}" cy="${ey}" r="${r*0.24}" fill="${eyeInk}"/>
     <circle cx="${ex-r*0.22}" cy="${ey-r*0.08}" r="${r*0.09}" fill="white"/>
     <circle cx="${ex+r*0.38}" cy="${ey-r*0.08}" r="${r*0.09}" fill="white"/>
     <ellipse cx="${ex-r*0.3}" cy="${ey+r*0.25}" rx="${r*0.07}" ry="${r*0.12}" fill="#90caf9" opacity="0.8"/>
     <ellipse cx="${ex+r*0.3}" cy="${ey+r*0.25}" rx="${r*0.07}" ry="${r*0.12}" fill="#90caf9" opacity="0.8"/>`;
   }else{
-    eyes=`<circle cx="${ex-r*0.3}" cy="${ey}" r="${r*0.24}" fill="#1a1a2e"/>
-    <circle cx="${ex+r*0.3}" cy="${ey}" r="${r*0.24}" fill="#1a1a2e"/>
+    eyes=`<circle cx="${ex-r*0.3}" cy="${ey}" r="${r*0.24}" fill="${eyeInk}"/>
+    <circle cx="${ex+r*0.3}" cy="${ey}" r="${r*0.24}" fill="${eyeInk}"/>
     <circle cx="${ex-r*0.22}" cy="${ey-r*0.08}" r="${r*0.09}" fill="white"/>
     <circle cx="${ex+r*0.38}" cy="${ey-r*0.08}" r="${r*0.09}" fill="white"/>`;
   }
   const mx=cx,my=cy+r*0.18;
   let mouth=expr==='sad'
-    ?`<path d="M ${mx-r*0.28} ${my+r*0.12} Q ${mx} ${my} ${mx+r*0.28} ${my+r*0.12}" stroke="#c2185b" stroke-width="${r*0.1}" fill="none" stroke-linecap="round"/>`
-    :`<path d="M ${mx-r*0.28} ${my} Q ${mx} ${my+r*0.22} ${mx+r*0.28} ${my}" stroke="#c2185b" stroke-width="${r*0.1}" fill="none" stroke-linecap="round"/>`;
+    ?`<path d="M ${mx-r*0.28} ${my+r*0.12} Q ${mx} ${my} ${mx+r*0.28} ${my+r*0.12}" stroke="${st.mouth}" stroke-width="${r*0.1}" fill="none" stroke-linecap="round"/>`
+    :`<path d="M ${mx-r*0.28} ${my} Q ${mx} ${my+r*0.22} ${mx+r*0.28} ${my}" stroke="${st.mouth}" stroke-width="${r*0.1}" fill="none" stroke-linecap="round"/>`;
   const badgeEl=badge?`<text x="${cx+r*0.55}" y="${cy-r*0.6}" font-size="${r*0.55}" text-anchor="middle" dominant-baseline="central">${badge}</text>`:'';
-  const blush=`<ellipse cx="${cx-r*0.44}" cy="${cy+r*0.2}" rx="${r*0.26}" ry="${r*0.16}" fill="#f06292" opacity="0.4"/>
-    <ellipse cx="${cx+r*0.44}" cy="${cy+r*0.2}" rx="${r*0.26}" ry="${r*0.16}" fill="#f06292" opacity="0.4"/>`;
+  const blushColor=sn===2?'#ff7043':sn===3?'#ab47bc':sn===4?'#fb8c00':'#f06292';
+  const blush=`<ellipse cx="${cx-r*0.44}" cy="${cy+r*0.2}" rx="${r*0.26}" ry="${r*0.16}" fill="${blushColor}" opacity="0.4"/>
+    <ellipse cx="${cx+r*0.44}" cy="${cy+r*0.2}" rx="${r*0.26}" ry="${r*0.16}" fill="${blushColor}" opacity="0.4"/>`;
   const limbs=`<ellipse cx="${cx-r*0.78}" cy="${cy+r*0.22}" rx="${r*0.26}" ry="${r*0.18}" fill="url(#${gid})" transform="rotate(-22 ${cx-r*0.78} ${cy+r*0.22})"/>
     <ellipse cx="${cx+r*0.78}" cy="${cy+r*0.22}" rx="${r*0.26}" ry="${r*0.18}" fill="url(#${gid})" transform="rotate(22 ${cx+r*0.78} ${cy+r*0.22})"/>
     <ellipse cx="${cx-r*0.28}" cy="${cy+r*0.85}" rx="${r*0.24}" ry="${r*0.16}" fill="url(#${gid})" transform="rotate(-18 ${cx-r*0.28} ${cy+r*0.85})"/>
     <ellipse cx="${cx+r*0.28}" cy="${cy+r*0.85}" rx="${r*0.24}" ry="${r*0.16}" fill="url(#${gid})" transform="rotate(18 ${cx+r*0.28} ${cy+r*0.85})"/>`;
+  /* ── 階段零件 ── */
+  // 第1階：頭頂小芽
+  const sprout=sn===1?`<path d="M ${cx} ${cy-r*0.98} Q ${cx+r*0.05} ${cy-r*1.2} ${cx} ${cy-r*1.32}" stroke="#43a047" stroke-width="${r*0.09}" fill="none" stroke-linecap="round"/>
+    <ellipse cx="${cx-r*0.17}" cy="${cy-r*1.26}" rx="${r*0.2}" ry="${r*0.11}" fill="#66bb6a" transform="rotate(-35 ${cx-r*0.17} ${cy-r*1.26})"/>
+    <ellipse cx="${cx+r*0.18}" cy="${cy-r*1.3}" rx="${r*0.2}" ry="${r*0.11}" fill="#81c784" transform="rotate(35 ${cx+r*0.18} ${cy-r*1.3})"/>`:'';
+  // 第2階起：耳朵（第4階起變成小一點的尖耳，讓位給王冠）
+  const earS=sn>=4?0.75:1;
+  const ears=sn>=2?`<path d="M ${cx-r*0.72} ${cy-r*0.55} L ${cx-r*0.95*earS-r*0.05} ${cy-r*1.25*earS} L ${cx-r*0.2} ${cy-r*0.92} Z" fill="url(#${gid})" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>
+    <path d="M ${cx-r*0.62} ${cy-r*0.65} L ${cx-r*0.8*earS-r*0.05} ${cy-r*1.08*earS} L ${cx-r*0.3} ${cy-r*0.9} Z" fill="#ffcdd2" opacity="0.8"/>
+    <path d="M ${cx+r*0.72} ${cy-r*0.55} L ${cx+r*0.95*earS+r*0.05} ${cy-r*1.25*earS} L ${cx+r*0.2} ${cy-r*0.92} Z" fill="url(#${gid})" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>
+    <path d="M ${cx+r*0.62} ${cy-r*0.65} L ${cx+r*0.8*earS+r*0.05} ${cy-r*1.08*earS} L ${cx+r*0.3} ${cy-r*0.9} Z" fill="#ffcdd2" opacity="0.8"/>`:'';
+  // 第2～3階：圍巾
+  const scarfColor=sn===2?'#26a69a':'#ff8a65';
+  const scarf=(sn===2||sn===3)?`<path d="M ${cx-r*0.82} ${cy+r*0.42} Q ${cx} ${cy+r*0.78} ${cx+r*0.82} ${cy+r*0.42}" stroke="${scarfColor}" stroke-width="${r*0.17}" fill="none" stroke-linecap="round"/>
+    <path d="M ${cx+r*0.55} ${cy+r*0.6} q ${r*0.1} ${r*0.3} ${r*0.3} ${r*0.42}" stroke="${scarfColor}" stroke-width="${r*0.14}" fill="none" stroke-linecap="round"/>`:'';
+  // 第3階起：蝶翼（第5階更大、極光色）
+  const wS=sn>=5?1.35:sn>=4?1.15:1;
+  const wings=sn>=3?`<g opacity="${sn>=5?0.95:0.85}">
+    <ellipse cx="${cx-r*0.95*wS}" cy="${cy-r*0.35*wS}" rx="${r*0.55*wS}" ry="${r*0.42*wS}" fill="url(#wing${gid})" stroke="white" stroke-width="${r*0.05}" transform="rotate(-28 ${cx-r*0.95*wS} ${cy-r*0.35*wS})"/>
+    <ellipse cx="${cx-r*0.85*wS}" cy="${cy+r*0.42*wS}" rx="${r*0.4*wS}" ry="${r*0.3*wS}" fill="url(#wing${gid})" stroke="white" stroke-width="${r*0.05}" transform="rotate(18 ${cx-r*0.85*wS} ${cy+r*0.42*wS})"/>
+    <ellipse cx="${cx+r*0.95*wS}" cy="${cy-r*0.35*wS}" rx="${r*0.55*wS}" ry="${r*0.42*wS}" fill="url(#wing${gid})" stroke="white" stroke-width="${r*0.05}" transform="rotate(28 ${cx+r*0.95*wS} ${cy-r*0.35*wS})"/>
+    <ellipse cx="${cx+r*0.85*wS}" cy="${cy+r*0.42*wS}" rx="${r*0.4*wS}" ry="${r*0.3*wS}" fill="url(#wing${gid})" stroke="white" stroke-width="${r*0.05}" transform="rotate(-18 ${cx+r*0.85*wS} ${cy+r*0.42*wS})"/>
+    ${sn>=4?`<circle cx="${cx-r*1.0*wS}" cy="${cy-r*0.4*wS}" r="${r*0.12}" fill="white" opacity="0.7"/><circle cx="${cx+r*1.0*wS}" cy="${cy-r*0.4*wS}" r="${r*0.12}" fill="white" opacity="0.7"/>`:''}
+    </g>`:'';
+  // 第3階起：觸角
+  const ant=sn>=3?`<path d="M ${cx-r*0.25} ${cy-r*0.9} Q ${cx-r*0.45} ${cy-r*1.35} ${cx-r*0.62} ${cy-r*1.3}" stroke="${st.mouth}" stroke-width="${r*0.07}" fill="none" stroke-linecap="round"/>
+    <circle cx="${cx-r*0.64}" cy="${cy-r*1.31}" r="${r*0.09}" fill="${sn>=5?'#fde047':st.mouth}"/>
+    <path d="M ${cx+r*0.25} ${cy-r*0.9} Q ${cx+r*0.45} ${cy-r*1.35} ${cx+r*0.62} ${cy-r*1.3}" stroke="${st.mouth}" stroke-width="${r*0.07}" fill="none" stroke-linecap="round"/>
+    <circle cx="${cx+r*0.64}" cy="${cy-r*1.31}" r="${r*0.09}" fill="${sn>=5?'#fde047':st.mouth}"/>`:'';
+  // 第4階起：披風（在身體後面）
+  const cape=sn>=4?`<path d="M ${cx-r*0.7} ${cy-r*0.2} Q ${cx-r*1.25} ${cy+r*0.9} ${cx-r*0.55} ${cy+r*1.05} L ${cx+r*0.55} ${cy+r*1.05} Q ${cx+r*1.25} ${cy+r*0.9} ${cx+r*0.7} ${cy-r*0.2} Z" fill="${sn>=5?'url(#cape'+gid+')':'#c62828'}" opacity="0.92"/>`:'';
+  // 第4階起：王冠
+  const crown=sn>=4?`<path d="M ${cx-r*0.5} ${cy-r*0.78} L ${cx-r*0.52} ${cy-r*1.22} L ${cx-r*0.25} ${cy-r*0.98} L ${cx} ${cy-r*1.32} L ${cx+r*0.25} ${cy-r*0.98} L ${cx+r*0.52} ${cy-r*1.22} L ${cx+r*0.5} ${cy-r*0.78} Z" fill="#fbc02d" stroke="#f57f17" stroke-width="${r*0.04}"/>
+    <circle cx="${cx}" cy="${cy-r*0.95}" r="${r*0.09}" fill="${sn>=5?'#e040fb':'#e53935'}"/><circle cx="${cx-r*0.3}" cy="${cy-r*0.88}" r="${r*0.06}" fill="#29b6f6"/><circle cx="${cx+r*0.3}" cy="${cy-r*0.88}" r="${r*0.06}" fill="#29b6f6"/>`:'';
+  // 第5階：星光
+  const stars=sn>=5?[[-1.35,-0.9],[1.4,-0.7],[-1.2,0.7],[1.25,0.85],[0,-1.6]].map(([dx,dy],i)=>`<text x="${cx+r*dx}" y="${cy+r*dy}" font-size="${r*0.32}" text-anchor="middle" dominant-baseline="central" fill="#fde047">✦<animate attributeName="opacity" values="1;0.2;1" dur="${1.2+i*0.3}s" repeatCount="indefinite"/></text>`).join(''):'';
+  const bodyGrad=sn>=5
+    ?`<linearGradient id="${gid}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fda4af"/><stop offset="30%" stop-color="#fde68a"/><stop offset="60%" stop-color="#6ee7b7"/><stop offset="100%" stop-color="#a78bfa"/></linearGradient>`
+    :`<radialGradient id="${gid}" cx="38%" cy="33%"><stop offset="0%" stop-color="${st.body[0]}"/><stop offset="60%" stop-color="${st.body[1]}"/><stop offset="100%" stop-color="${st.body[2]}"/></radialGradient>`;
+  const wingGrad=sn>=5
+    ?`<linearGradient id="wing${gid}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#67e8f9"/><stop offset="50%" stop-color="#c4b5fd"/><stop offset="100%" stop-color="#f9a8d4"/></linearGradient>`
+    :sn>=4?`<linearGradient id="wing${gid}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fff59d"/><stop offset="100%" stop-color="#ffb74d"/></linearGradient>`
+    :`<linearGradient id="wing${gid}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e1bee7"/><stop offset="100%" stop-color="#81d4fa"/></linearGradient>`;
+  const capeGrad=sn>=5?`<linearGradient id="cape${gid}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#db2777"/></linearGradient>`:'';
   return `<svg width="${size}" height="${size*1.1}" viewBox="0 0 ${size} ${size*1.1}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
   <defs>
-    <radialGradient id="${gid}" cx="38%" cy="33%">
-    <stop offset="0%" stop-color="#fce4ec"/><stop offset="60%" stop-color="#f48fb1"/><stop offset="100%" stop-color="#e91e63"/>
-    </radialGradient>
-    ${glowing?`<radialGradient id="glow${gid}" cx="50%" cy="50%"><stop offset="0%" stop-color="#ffd700" stop-opacity="0.4"/><stop offset="100%" stop-color="#ffd700" stop-opacity="0"/></radialGradient>`:''}
+    ${bodyGrad}${wingGrad}${capeGrad}
+    ${glowing?`<radialGradient id="glow${gid}" cx="50%" cy="50%"><stop offset="0%" stop-color="${sn>=5?'#f0abfc':'#ffd700'}" stop-opacity="0.45"/><stop offset="100%" stop-color="#ffd700" stop-opacity="0"/></radialGradient>`:''}
   </defs>
-  ${glow}${limbs}
+  ${glow}${wings}${cape}${limbs}${ears}
   <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${gid})"/>
   <ellipse cx="${cx}" cy="${cy-r*0.1}" rx="${r*0.55}" ry="${r*0.2}" fill="white" opacity="0.18" transform="rotate(-20 ${cx} ${cy-r*0.1})"/>
-  ${blush}${eyes}${mouth}${badgeEl}
+  ${scarf}${sprout}${ant}${crown}${blush}${eyes}${mouth}${stars}${badgeEl}
 </svg>`;
 }
 function setBoppyEl(id,size=56,expr='normal',badge='',glowing=false){
@@ -6585,7 +6645,7 @@ function btLevel(){return Math.floor(Math.sqrt((btState().exp||0)/40))+1;}
 function btExpToNext(){const l=btLevel();return {cur:btState().exp-40*(l-1)*(l-1),need:40*l*l-40*(l-1)*(l-1)};}
 function btMaxHp(){return 90+btLevel()*10;}
 function btRank(){const l=btLevel();return l>=15?'傳說訓練家':l>=10?'大師訓練家':l>=6?'資深訓練家':l>=3?'見習訓練家':'新手訓練家';}
-function btBoppy(size,expr){const l=btLevel();return boppySVG(size,expr||'happy',l>=10?'👑':l>=5?'⭐':getActiveCostume().badge,l>=10);}
+function btBoppy(size,expr){return boppySVG(size,expr||'happy',getActiveCostume().badge,false);}
 /* ── 入口卡（主畫面）── */
 function renderBattleCard(){
   const el=document.getElementById('battleEntryContent'); if(!el) return;
@@ -6637,6 +6697,7 @@ function btHomeHTML(){
       <div class="bt-hptxt">經驗 ${nx.cur}/${nx.need}　再 ${nx.need-nx.cur} 點升級</div>
       <div class="bt-stats"><div class="bt-stat"><b>${b.cleared.length}/9</b><span>道館徽章</span></div><div class="bt-stat"><b>${b.dex.length}/${BT_ALL_MONS.length}</b><span>圖鑑</span></div><div class="bt-stat"><b>${b.bestStreak||0}</b><span>最高連勝</span></div><div class="bt-stat"><b>${b.answered?Math.round(b.correct/b.answered*100):0}%</b><span>命中率</span></div></div>
     </div>
+    ${btEvoRoadHTML()}
     <div class="bt-modes">
       <button class="bt-mode" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="btStartGym(${nextIdx<0?0:nextIdx})">🏟️ 道館挑戰<small>${nextIdx<0?'全部通關！':'下一關：'+BT_GYMS[nextIdx].name}</small></button>
       <button class="bt-mode" style="background:linear-gradient(135deg,#ec4899,#be185d);" onclick="btStartArena()">🔥 無限競技場<small>怪獸越來越強，拚連勝</small></button>
@@ -6782,14 +6843,15 @@ function btResolve(ok,prefix){
 function btEnemyDown(){
   const e=BT.enemy; const b=btState(); const es=document.getElementById('btEnemySprite'); if(es){es.classList.remove('hit');es.classList.add('faint');}
   const newCatch=!b.dex.includes(e.id); if(newCatch) b.dex.push(e.id);
-  const exp=(e.boss?30:15)+e.gym*5+(BT.arena?BT.round*2:0); const before=btLevel(); b.exp=(b.exp||0)+exp; const lvUp=btLevel()>before;
+  const exp=(e.boss?30:15)+e.gym*5+(BT.arena?BT.round*2:0); const before=btLevel(); const stBefore=boppyStageByLevel(before); b.exp=(b.exp||0)+exp; const lvUp=btLevel()>before; const stAfter=boppyStage();
   if(BT.arena){ BT.streak=BT.round+1; if(BT.streak>(b.bestStreak||0)) b.bestStreak=BT.streak; }
   save(); sfxLevelUp();
   const msg=document.getElementById('btMsg'); msg.innerHTML=`🎉 打倒了 ${e.n}！${newCatch?'<span class="hl">收服成功，加入圖鑑！</span>':''} 經驗 +${exp}${lvUp?'　<span class="hl">⬆️ 升級！Lv.'+btLevel()+'</span>':''}`;
   const a=document.getElementById('btAction');
   a.innerHTML=`<div class="bt-result" style="padding:8px;"><div class="bt-capture">${e.e}</div>${lvUp?'<div class="bt-reward">⬆️ 波比升到 Lv.'+btLevel()+'，HP 上限 '+btMaxHp()+'</div>':''}</div>`;
   if(lvUp){ BT.maxHp=btMaxHp(); BT.hp=Math.min(BT.maxHp,BT.hp+10); }
-  setTimeout(()=>{ BT.round++; if(BT.arena){ btSpawn(); } else if(BT.round>=BT.gym.mons.length){ btWinGym(); } else { btSpawn(); } },1600);
+  const go=()=>{ BT.round++; if(BT.arena){ btSpawn(); } else if(BT.round>=BT.gym.mons.length){ btWinGym(); } else { btSpawn(); } };
+  setTimeout(()=>{ if(stAfter.stage!==stBefore.stage) btShowEvolution(stBefore,stAfter,go); else go(); },1600);
 }
 function btWinGym(){
   const g=BT.gym; const b=btState(); const first=!b.cleared.includes(g.id);
@@ -6823,6 +6885,31 @@ function btConfirmLeave(){
   btStopTimer();
   const a=document.getElementById('btAction'); if(!a) { btGo('home'); return; }
   a.innerHTML=`<div class="bt-card" style="text-align:center;"><div style="font-weight:900;margin-bottom:8px;">現在離開，這一館要重新打喔！</div><button class="bt-btn gray" onclick="btGo('home')">還是要離開</button><button class="bt-btn green" onclick="BT.busy=false;BT.q=null;btRenderBattle('繼續戰鬥！選一個科目攻擊！')">⚔️ 繼續戰鬥</button></div>`;
+}
+
+/* ── 進化之路（對戰學院首頁）＋ 進化演出 ── */
+function btEvoRoadHTML(){
+  const cur=boppyStage(); const lv=btLevel();
+  return `<div class="bt-card"><div style="font-weight:900;margin-bottom:10px;">🧬 波比進化之路</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">${BOPPY_STAGES.map(s=>{const got=lv>=s.lv; return `<div style="text-align:center;background:${s.stage===cur.stage?'rgba(253,224,71,0.18)':'rgba(255,255,255,0.06)'};border:2px solid ${s.stage===cur.stage?'#fde047':'rgba(255,255,255,0.14)'};border-radius:12px;padding:8px 2px 6px;${got?'':'filter:grayscale(1) brightness(0.45);'}">
+      <div style="display:flex;justify-content:center;">${boppySVG(40,'happy','',false,s.stage)}</div>
+      <div style="font-size:0.6rem;font-weight:900;margin-top:4px;line-height:1.2;">${got?s.name:'？？？'}</div><div style="font-size:0.58rem;color:#c7d2fe;font-weight:800;">Lv.${s.lv}</div></div>`;}).join('')}</div>
+    <div style="font-size:0.78rem;color:#e0e7ff;font-weight:700;margin-top:10px;line-height:1.5;">現在是 <b style="color:#fde047;">${cur.name}</b>：${cur.desc}${lv<15?'<br>再升到 Lv.'+BOPPY_STAGES.find(s=>s.lv>lv).lv+' 就會進化成「'+BOPPY_STAGES.find(s=>s.lv>lv).name+'」！':''}</div></div>`;
+}
+function btShowEvolution(fromStage,toStage,next){
+  const w=document.getElementById('battleWrap'); BT.screen='evo'; sfxLevelUp(); setTimeout(sfxLevelUp,600);
+  w.innerHTML=`<div class="bt-card bt-result" style="margin-top:30px;background:radial-gradient(circle at 50% 30%,rgba(253,224,71,0.25),rgba(255,255,255,0.05) 70%);">
+    <div style="font-size:0.9rem;color:#fde68a;font-weight:900;letter-spacing:2px;">✨ 進化中 ✨</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin:14px 0;">
+      <div style="opacity:0.55;transform:scale(0.8);">${boppySVG(70,'happy','',false,fromStage.stage)}</div>
+      <div style="font-size:1.6rem;color:#fde047;">➜</div>
+      <div style="animation:popIn 0.9s ease;">${boppySVG(110,'happy','',true,toStage.stage)}</div>
+    </div>
+    <h3>${S.name} 的波比進化成「${toStage.name}」！</h3>
+    <p>${toStage.desc}</p>
+    <button class="bt-btn green" id="btEvoNext">太帥了！繼續 ▶</button></div>`;
+  document.getElementById('btEvoNext').onclick=()=>{ sfxClick(); next(); };
+  try{document.getElementById('battleOverlay').scrollTo(0,0);}catch(e){}
 }
 
 /* 粒子背景 */
