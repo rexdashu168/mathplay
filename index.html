@@ -6686,11 +6686,26 @@ const BT_TREASURES={
   g15:{e:'👑',n:'冠軍王冠',desc:'所有攻擊永久 +15 傷害'},
 };
 function btHas(id){ return btState().cleared.includes(id); }
+/* 小伙伴：收服的怪獸可以選一隻跟著出戰；用進化石進化，閃光→王者 */
+const BT_PARTNER_STAGES=[{n:'',pre:'',bonus:12,passive:2},{n:'閃光',pre:'✨',bonus:24,passive:4},{n:'王者',pre:'👑',bonus:40,passive:6}];
+const BT_EVO_STONE={chinese:{key:'moonStones',e:'🌙',n:'月之石'},english:{key:'waterStones',e:'💧',n:'水之石'},math:{key:'thunderStones',e:'⚡',n:'雷之石'}};
+function btPartner(){ const b=btState(); if(!b.partner) return null; const m=BT_ALL_MONS.find(x=>x.id===b.partner); if(!m||!b.dex.includes(m.id)) return null; const st=b.partnerStage[m.id]||0; const ps=BT_PARTNER_STAGES[st]; return {...m,stage:st,label:(ps.n?ps.n:'')+m.n,pre:ps.pre,bonus:ps.bonus,passive:ps.passive}; }
+function btPartnerStageOf(id){ return btState().partnerStage[id]||0; }
+function btSetPartner(id){ const b=btState(); b.partner=(b.partner===id?'':id); b.partnerHits=0; save(); sfxFlip(); btGo('dex'); }
+function btEvolvePartner(id){ const b=btState(); const m=BT_ALL_MONS.find(x=>x.id===id); if(!m||!b.dex.includes(id)) return; const st=b.partnerStage[id]||0; if(st>=2) return; const stone=BT_EVO_STONE[m.w]; const need=st+1; if(b[stone.key]<need){ sfxWrong(); btDexMsg(`需要 ${need} 顆${stone.e}${stone.n}，去商店買吧！`); return; }
+  b[stone.key]-=need; b.partnerStage[id]=st+1; if(!b.partner) b.partner=id; save(); sfxLevelUp();
+  const ps=BT_PARTNER_STAGES[st+1]; const w=document.getElementById('battleWrap'); BT.screen='evo';
+  w.innerHTML=`<div class="bt-card bt-result" style="margin-top:30px;background:radial-gradient(circle at 50% 30%,rgba(253,224,71,0.25),rgba(255,255,255,0.05) 70%);"><div style="font-size:0.9rem;color:#fde68a;font-weight:900;letter-spacing:2px;">✨ 夥伴進化中 ✨</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin:14px 0;"><div style="font-size:3rem;opacity:0.55;">${m.e}</div><div style="font-size:1.6rem;color:#fde047;">➜</div><div style="font-size:4.5rem;animation:popIn 0.9s ease;position:relative;">${m.e}<span style="position:absolute;top:-10px;right:-14px;font-size:1.8rem;">${ps.pre}</span></div></div>
+    <h3>${m.n} 進化成「${ps.n}${m.n}」！</h3><p>夥伴攻擊 ${ps.bonus} 傷害，${BT_SUBJ[m.w].n}攻擊額外 +${ps.passive}。</p>
+    <button class="bt-btn green" onclick="btGo('dex')">太棒了！</button></div>`; }
+function btDexMsg(t){ const el=document.getElementById('btDexMsg'); if(el) el.textContent=t; }
+function btPartnerHTML(small){ const p=btPartner(); if(!p) return ''; return `<span class="bt-type" style="background:rgba(253,224,71,0.25);">${p.pre}${p.e} ${p.label}</span>`; }
 const BT_ALL_MONS=BT_GYMS.flatMap((g,gi)=>g.mons.map((m,mi)=>({...m,id:g.id+'_'+mi,gym:gi})));
 let BT={screen:'home',gym:null,round:0,enemy:null,hp:0,maxHp:0,combo:0,q:null,timer:null,tLeft:0,busy:false,arena:false,streak:0,recent:[],revealed:{},stats:{correct:0,wrong:0,dmg:0}};
 function btState(){
   if(!S.battle) S.battle={exp:0,cleared:[],dex:[],potions:2,hints:2,bestStreak:0,wins:0,losses:0,answered:0,correct:0,coins:60,stones:{chinese:0,english:0,math:0},shields:0,books:0};
-  const b=S.battle; b.cleared=b.cleared||[]; b.dex=b.dex||[]; if(b.potions==null)b.potions=2; if(b.hints==null)b.hints=2; if(b.coins==null)b.coins=60; b.stones=b.stones||{chinese:0,english:0,math:0}; ['shields','books','hearts','clovers','boots','bigPotions','bombs','hourglasses','lenses','feathers','bracelets'].forEach(k=>{ if(b[k]==null) b[k]=0; }); b.hats=b.hats||[]; if(b.hat==null) b.hat='';
+  const b=S.battle; b.cleared=b.cleared||[]; b.dex=b.dex||[]; if(b.potions==null)b.potions=2; if(b.hints==null)b.hints=2; if(b.coins==null)b.coins=60; b.stones=b.stones||{chinese:0,english:0,math:0}; ['shields','books','hearts','clovers','boots','bigPotions','bombs','hourglasses','lenses','feathers','bracelets'].forEach(k=>{ if(b[k]==null) b[k]=0; }); b.hats=b.hats||[]; if(b.hat==null) b.hat=''; if(b.adventure==null) b.adventure=0; if(b.partner==null) b.partner=''; b.partnerStage=b.partnerStage||{}; ['moonStones','waterStones','thunderStones','rareCandies'].forEach(k=>{ if(b[k]==null) b[k]=0; }); if(b.partnerHits==null) b.partnerHits=0;
   return b;
 }
 function btLevel(){return Math.floor(Math.sqrt((btState().exp||0)/40))+1;}
@@ -6720,6 +6735,10 @@ const BT_SHOP=[
   {cat:'use',id:'feather',e:'🪶',n:'復活羽毛',desc:'HP 歸零時自動復活一次，回復一半 HP',price:90,kind:'count',key:'feathers'},
   {cat:'use',id:'candy',e:'🍬',n:'經驗糖果',desc:'立刻獲得 60 經驗值',price:60,kind:'candy'},
   {cat:'use',id:'book',e:'📖',n:'智慧之書',desc:'下一場道館或競技場，經驗值加倍',price:80,kind:'count',key:'books'},
+  {cat:'evo',id:'moon',e:'🌙',n:'月之石',desc:'國語系夥伴的進化石（弱點是國語的怪獸）',price:150,kind:'count',key:'moonStones'},
+  {cat:'evo',id:'water',e:'💧',n:'水之石',desc:'英文系夥伴的進化石（弱點是英文的怪獸）',price:150,kind:'count',key:'waterStones'},
+  {cat:'evo',id:'thunder',e:'⚡',n:'雷之石',desc:'數學系夥伴的進化石（弱點是數學的怪獸）',price:150,kind:'count',key:'thunderStones'},
+  {cat:'evo',id:'rare',e:'🍭',n:'神奇糖果',desc:'波比立刻升一級',price:150,kind:'rare'},
   {cat:'hat',id:'hat_cap',e:'🧢',n:'棒球帽',desc:'運動風波比',price:60,kind:'hat'},
   {cat:'hat',id:'hat_bow',e:'🎀',n:'蝴蝶結',desc:'可愛風波比',price:60,kind:'hat'},
   {cat:'hat',id:'hat_glasses',e:'🕶️',n:'墨鏡',desc:'酷酷的波比',price:80,kind:'hat'},
@@ -6728,7 +6747,7 @@ const BT_SHOP=[
   {cat:'hat',id:'hat_headphone',e:'🎧',n:'耳機',desc:'聽音樂的波比',price:120,kind:'hat'},
   {cat:'hat',id:'hat_halo',e:'😇',n:'天使光環',desc:'天使波比',price:200,kind:'hat'},
 ];
-const BT_CATS={perm:'🏋️ 永久強化（買了一直有效）',use:'🎒 戰鬥道具（用掉就沒了）',hat:'🎩 波比造型（戴在頭上，全站都看得到）'};
+const BT_CATS={perm:'🏋️ 永久強化（買了一直有效）',use:'🎒 戰鬥道具（用掉就沒了）',evo:'🧬 進化道具（夥伴進化在圖鑑裡做）',hat:'🎩 波比造型（戴在頭上，全站都看得到）'};
 function btPrice(it){ const b=btState(); if(it.kind==='stone') return BT_STONE_PRICE[b.stones[it.subj]]||null; if(it.kind==='count'&&it.prices){ return it.prices[b[it.key]]||null; } if(it.kind==='hat') return b.hats.includes(it.id)?null:it.price; return it.price; }
 function btOwned(it){ const b=btState(); if(it.kind==='stone') return b.stones[it.subj]+'/5'; if(it.kind==='count') return it.max?b[it.key]+'/'+it.max:b[it.key]; if(it.kind==='hat') return b.hats.includes(it.id)?(b.hat===it.id?'裝備中':'已擁有'):''; return ''; }
 function btShopHTML(msg){
@@ -6750,6 +6769,7 @@ function btBuy(id){
   if(it.kind==='stone'){ b.stones[it.subj]++; msg=`${it.e} ${it.n} +1！${BT_SUBJ[it.subj].n}攻擊現在額外 +${b.stones[it.subj]*4} 傷害。`; }
   else if(it.kind==='candy'){ const before=btLevel(); b.exp+=60; msg=`🍬 經驗 +60！${btLevel()>before?'⬆️ 升級到 Lv.'+btLevel()+'！':''}`; }
   else if(it.kind==='hat'){ b.hats.push(it.id); b.hat=it.id; msg=`${it.e} 買到${it.n}，已經戴在波比頭上！`; }
+  else if(it.kind==='rare'){ const l=btLevel(); b.exp=40*l*l; msg=`🍭 神奇糖果！波比升到 Lv.${btLevel()}！`; }
   else if(it.kind==='count'){ b[it.key]++; const extra={hearts:'，HP 上限現在 '+btMaxHp(),clovers:'，金幣獲得 +'+(b.clovers*25)+'%',boots:'，答題時間現在 '+btTimerSec()+' 秒',bracelets:'，連擊加成升級'}[it.key]||''; msg=`${it.e} ${it.n} +1${extra}。`; }
   save(); sfxLevelUp();
   document.getElementById('battleWrap').innerHTML=btShopHTML(msg);
@@ -6761,7 +6781,7 @@ function renderBattleCard(){
   const b=btState(); const nextGym=BT_GYMS.find(g=>!b.cleared.includes(g.id));
   el.innerHTML=`<div class="t">⚔️ 波比對戰學院 <span style="font-size:0.7rem;background:#fbbf24;color:#1e1b4b;border-radius:8px;padding:2px 7px;">NEW</span></div>
     <div class="d">答對題目＝波比出招！找出每隻怪獸的弱點科目，打倒道館館主、收服怪獸、集滿十五枚道館徽章！</div>
-    <div class="row"><span>Lv.${btLevel()} ${btRank()}</span><span>🏅 道館 ${b.cleared.length}/${BT_GYMS.length}</span><span>📖 圖鑑 ${b.dex.length}/${BT_ALL_MONS.length}</span><span>🔥 最高連勝 ${b.bestStreak||0}</span></div>
+    <div class="row"><span>Lv.${btLevel()} ${btRank()}</span><span>🏅 道館 ${b.cleared.length}/${BT_GYMS.length}</span><span>📖 圖鑑 ${b.dex.length}/${BT_ALL_MONS.length}</span><span>🔥 最高連勝 ${b.bestStreak||0}</span><span>🗺️ 冒險 ${b.adventure||0} 關</span></div>
     <button onclick="openBattle()">⚔️ ${nextGym?'挑戰 '+nextGym.emoji+' '+nextGym.name:'進入競技場'}</button>`;
 }
 function openBattle(screen){
@@ -6808,13 +6828,14 @@ function btHomeHTML(){
       <div class="bt-stats"><div class="bt-stat"><b>${b.cleared.length}/${BT_GYMS.length}</b><span>道館徽章</span></div><div class="bt-stat"><b>${b.dex.length}/${BT_ALL_MONS.length}</b><span>圖鑑</span></div><div class="bt-stat"><b>${b.bestStreak||0}</b><span>最高連勝</span></div><div class="bt-stat"><b>${b.answered?Math.round(b.correct/b.answered*100):0}%</b><span>命中率</span></div></div>
     </div>
     ${btEvoRoadHTML()}
-    ${btTreasureHTML()}
     <div class="bt-modes">
       <button class="bt-mode" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="btStartGym(${nextIdx<0?0:nextIdx})">🏟️ 道館挑戰<small>${nextIdx<0?'全部通關！':'下一關：'+BT_GYMS[nextIdx].name}</small></button>
       <button class="bt-mode" style="background:linear-gradient(135deg,#ec4899,#be185d);" onclick="btStartArena()">🔥 無限競技場<small>怪獸越來越強，拚連勝</small></button>
       <button class="bt-mode" style="background:linear-gradient(135deg,#10b981,#047857);" onclick="btGo('shop')">🛒 道具商店<small>🪙 ${b.coins} 金幣</small></button>
-      <button class="bt-mode" style="background:linear-gradient(135deg,#6366f1,#4338ca);" onclick="btGo('dex')">📖 怪獸圖鑑<small>收服了 ${b.dex.length} 隻</small></button>
+      <button class="bt-mode" style="background:linear-gradient(135deg,#6366f1,#4338ca);" onclick="btGo('dex')">📖 圖鑑與夥伴<small>收服 ${b.dex.length} 隻${btPartner()?'・夥伴 '+btPartner().e:''}</small></button>
     </div>
+    ${btAdventureHTML()}
+    ${btTreasureHTML()}
     <div class="bt-card"><div style="font-weight:900;margin-bottom:10px;">🗺️ 道館地圖</div><div class="bt-gyms">${gyms}</div>
       <div style="font-size:0.76rem;color:#c7d2fe;font-weight:700;margin-top:10px;line-height:1.5;">🎒 🧪${b.potions} 🍶${b.bigPotions} 💣${b.bombs} 🔎${b.lenses} ⏳${b.hourglasses} 💡${b.hints} 🛡️${b.shields} 🪶${b.feathers} 📖${b.books}<br>🏋️ 📕${b.stones.chinese} 📘${b.stones.english} 📗${b.stones.math} 💗${b.hearts} 🍀${b.clovers} 👟${b.boots} 🔗${b.bracelets}<br>每隻怪獸都有一個弱點科目，用對科目攻擊傷害加倍。答錯怪獸會反擊，HP 歸零就要重來這一館喔！</div></div>`;
 }
@@ -6822,10 +6843,48 @@ function btLockedMsg(i){ sfxWrong(); const w=document.getElementById('battleWrap
 /* ── 圖鑑 ── */
 function btDexHTML(){
   const b=btState();
-  const cards=BT_ALL_MONS.map(m=>{const c=b.dex.includes(m.id);return `<div class="bt-dexc ${c?'caught':'unknown'}"><div class="e">${m.e}</div><div class="n">${c?m.n:'？？？'}</div>${c?`<div style="font-size:0.6rem;color:#fde68a;font-weight:800;">弱點 ${BT_SUBJ[m.w].e}${BT_SUBJ[m.w].n}</div>`:`<div style="font-size:0.6rem;color:#64748b;">${BT_GYMS[m.gym].name}</div>`}</div>`;}).join('');
+  const p=btPartner();
+  const cards=BT_ALL_MONS.map(m=>{const c=b.dex.includes(m.id); const st=b.partnerStage[m.id]||0; const ps=BT_PARTNER_STAGES[st]; const isP=p&&p.id===m.id; const stone=BT_EVO_STONE[m.w];
+    return `<div class="bt-dexc ${c?'caught':'unknown'}" style="${isP?'box-shadow:0 0 0 2px #fde047;':''}position:relative;"><div class="e">${m.e}${st?`<span style="position:absolute;top:2px;right:4px;font-size:0.9rem;">${ps.pre}</span>`:''}</div><div class="n">${c?(ps.n+m.n):'？？？'}</div>${c?`<div style="font-size:0.6rem;color:#fde68a;font-weight:800;">弱點 ${BT_SUBJ[m.w].e}${BT_SUBJ[m.w].n}</div>
+      <button onclick="btSetPartner('${m.id}')" style="margin-top:4px;width:100%;border:none;border-radius:8px;padding:4px 0;font-size:0.62rem;font-weight:900;font-family:inherit;cursor:pointer;background:${isP?'linear-gradient(135deg,#86efac,#22c55e)':'rgba(255,255,255,0.15)'};color:${isP?'#14532d':'white'};">${isP?'✓ 夥伴':'選為夥伴'}</button>
+      ${st<2?`<button onclick="btEvolvePartner('${m.id}')" style="margin-top:3px;width:100%;border:none;border-radius:8px;padding:4px 0;font-size:0.6rem;font-weight:900;font-family:inherit;cursor:pointer;background:${b[stone.key]>=st+1?'linear-gradient(135deg,#fde68a,#fbbf24)':'rgba(255,255,255,0.08)'};color:${b[stone.key]>=st+1?'#1e1b4b':'#94a3b8'};">${stone.e}×${st+1} 進化</button>`:'<div style="font-size:0.58rem;color:#fde047;font-weight:900;margin-top:3px;">已是最終型態</div>'}`:`<div style="font-size:0.6rem;color:#64748b;">${BT_GYMS[m.gym].name}</div>`}</div>`;}).join('');
   BT.screen='dex';
   return `<div class="bt-top"><button class="bt-back" onclick="btGo('home')">← 返回</button><div class="bt-title">📖 怪獸圖鑑</div><div class="bt-chip">${b.dex.length}/${BT_ALL_MONS.length}</div></div>
-    <div class="bt-card"><div class="bt-dex">${cards}</div><div style="font-size:0.76rem;color:#c7d2fe;font-weight:700;margin-top:10px;">打倒怪獸就會收服進圖鑑，圖鑑會記住牠的弱點科目。</div></div>`;
+    <div class="bt-card" style="padding:10px 12px;"><div style="font-weight:900;font-size:0.9rem;">🤝 目前夥伴：${p?`${p.pre}${p.e} ${p.label}　<span style="font-size:0.74rem;color:#c7d2fe;">每答對 3 題補一擊 ${p.bonus} 傷害，${BT_SUBJ[p.w].n}攻擊 +${p.passive}</span>`:'<span style="color:#c7d2fe;font-size:0.8rem;">還沒選，點下面任一隻收服的怪獸「選為夥伴」</span>'}</div>
+      <div style="font-size:0.74rem;color:#fde68a;font-weight:800;margin-top:4px;">進化石：🌙 ${b.moonStones}（國語系）　💧 ${b.waterStones}（英文系）　⚡ ${b.thunderStones}（數學系）</div>
+      <div id="btDexMsg" style="font-size:0.78rem;color:#fca5a5;font-weight:800;min-height:16px;margin-top:3px;"></div></div>
+    <div class="bt-card"><div class="bt-dex">${cards}</div><div style="font-size:0.76rem;color:#c7d2fe;font-weight:700;margin-top:10px;line-height:1.5;">打倒怪獸就會收服進圖鑑。夥伴依弱點科目用不同進化石：第一次進化 1 顆變「閃光」，第二次 2 顆變「王者」，夥伴攻擊和加成都會變強。</div></div>`;
+}
+/* ── 冒險之路：無限關卡，越後面越強，每 5 關掉落道具 ── */
+const BT_ADV_TIERS=[{min:1,pre:'',tag:'普通'},{min:11,pre:'閃光',tag:'✨'},{min:21,pre:'暗影',tag:'🌑'},{min:41,pre:'傳說',tag:'🌟'},{min:71,pre:'神話',tag:'💫'}];
+function btAdvTier(n){ let t=BT_ADV_TIERS[0]; BT_ADV_TIERS.forEach(x=>{ if(n>=x.min) t=x; }); return t; }
+function btAdvMons(n){ const seed=n*9301+49297; const pick=i=>BT_ALL_MONS[(seed*(i+3)+n*7*(i+1))%BT_ALL_MONS.length]; const t=btAdvTier(n); return [0,1,2].map(i=>{ const m=pick(i); return {...m,n:t.pre+m.n,boss:i===2}; }); }
+function btStartAdventure(n){
+  const b=btState(); n=n||(b.adventure+1); const t=btAdvTier(n);
+  const g={id:'adv',adv:true,advN:n,name:`冒險之路 第 ${n} 關`,emoji:'🗺️',bg:n>=71?'linear-gradient(160deg,#111827,#7c3aed)':n>=41?'linear-gradient(160deg,#1e1b4b,#f59e0b)':n>=21?'linear-gradient(160deg,#0f172a,#4c1d95)':n>=11?'linear-gradient(160deg,#164e63,#22d3ee)':'linear-gradient(160deg,#14532d,#4ade80)',maxCh:n>=6?99:Math.min(10,4+n),mons:btAdvMons(n)};
+  sfxStart(); BT.gym=g; BT.gymIdx=Math.min(BT_GYMS.length-1,Math.floor(n/2)); BT.arena=false; BT.round=0; BT.hp=btMaxHp(); BT.maxHp=BT.hp; BT.combo=0; BT.streak=0; BT.stats={correct:0,wrong:0,dmg:0,coins:0}; BT.recent=[]; btUseBook(); btSpawn();
+}
+function btAdventureHTML(){
+  const b=btState(); const n=b.adventure+1; const t=btAdvTier(n); const mons=btAdvMons(n);
+  const next=[0,1,2,3,4].map(i=>{const k=n+i; const tt=btAdvTier(k); return `<div style="text-align:center;background:${i===0?'rgba(253,224,71,0.18)':'rgba(255,255,255,0.05)'};border:2px solid ${i===0?'#fde047':'rgba(255,255,255,0.12)'};border-radius:12px;padding:6px 2px;"><div style="font-size:0.6rem;font-weight:900;color:#c7d2fe;">第 ${k} 關</div><div style="font-size:1.3rem;line-height:1.2;${i===0?'':'filter:brightness(0.5);'}">${btAdvMons(k).map(m=>m.e).join('')}</div><div style="font-size:0.58rem;color:#fde68a;font-weight:800;">${tt.tag}${k%5===0?' 🎁':''}</div></div>`;}).join('');
+  return `<div class="bt-card" style="border-color:rgba(253,224,71,0.5);"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div style="font-weight:900;">🗺️ 冒險之路</div><div class="bt-chip">已通過 ${b.adventure} 關</div></div>
+    <div style="font-size:0.78rem;color:#e0e7ff;font-weight:700;line-height:1.5;margin-bottom:8px;">沒有盡頭的關卡！每一關三隻怪獸，越後面血越厚、攻擊越痛：第 11 關起是「閃光」、21 關「暗影」、41 關「傳說」、71 關「神話」。每 5 關打完掉落一件道具 🎁。</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px;">${next}</div>
+    <button class="bt-btn green" style="margin-top:0;" onclick="btStartAdventure()">⚔️ 挑戰第 ${n} 關（${t.pre||'普通'}：${mons.map(m=>m.e).join(' ')}）</button></div>`;
+}
+const BT_ADV_DROPS=['potions','bigPotions','bombs','lenses','hourglasses','hints','shields','feathers','books','moonStones','waterStones','thunderStones'];
+const BT_ADV_DROP_NAME={potions:'🧪 藥水',bigPotions:'🍶 大藥水',bombs:'💣 火焰炸彈',lenses:'🔎 放大鏡',hourglasses:'⏳ 沙漏',hints:'💡 提示',shields:'🛡️ 護盾',feathers:'🪶 復活羽毛',books:'📖 智慧之書',moonStones:'🌙 月之石',waterStones:'💧 水之石',thunderStones:'⚡ 雷之石'};
+function btWinAdventure(){
+  const g=BT.gym; const b=btState(); const n=g.advN; const first=n>b.adventure; if(first) b.adventure=n;
+  const coin=btCoin(30+n*6); const exp=Math.round((20+n*4)*(BT.expBoost||1)*(btHas('g12')?1.5:1)); const before=btLevel(); b.exp+=exp; const lvUp=btLevel()>before;
+  let drop=''; if(first&&n%5===0){ const k=BT_ADV_DROPS[(n*7+3)%BT_ADV_DROPS.length]; b[k]=(b[k]||0)+1; drop=BT_ADV_DROP_NAME[k]; }
+  b.wins=(b.wins||0)+1; save(); sfxLevelUp();
+  const w=document.getElementById('battleWrap'); BT.screen='result';
+  w.innerHTML=`<div class="bt-card bt-result" style="margin-top:30px;"><div class="big">🗺️</div><h3>第 ${n} 關通過！</h3>
+    <p>${btAdvTier(n+1).min===n+1?'<span style="color:#fde047;">下一關開始是「'+btAdvTier(n+1).pre+'」等級的怪獸，更強了！</span><br>':''}這一關：答對 ${BT.stats.correct} 題、答錯 ${BT.stats.wrong} 題、總傷害 ${BT.stats.dmg}</p>
+    <div style="margin:10px 0;"><span class="bt-reward">🪙 +${coin}</span><span class="bt-reward">經驗 +${exp}</span>${lvUp?'<span class="bt-reward">⬆️ Lv.'+btLevel()+'</span>':''}${drop?'<span class="bt-reward" style="border-color:#fde047;">🎁 掉落 '+drop+'</span>':''}</div>
+    <button class="bt-btn green" onclick="btStartAdventure()">▶ 繼續 第 ${b.adventure+1} 關</button>
+    <button class="bt-btn gray" onclick="btGo('shop')">🛒 去商店</button><button class="bt-btn purple" onclick="btGo('home')">🗺️ 回地圖</button></div>`;
 }
 /* ── 開始道館／競技場 ── */
 function btStartGym(i){
@@ -6842,6 +6901,7 @@ function btSpawn(){
   let m,gi;
   if(BT.arena){ const r=BT.round; gi=Math.min(BT_GYMS.length-1,Math.floor(r/2)); const pool=BT_ALL_MONS.filter(x=>x.gym<=gi); m=pool[Math.floor(Math.random()*pool.length)];
     const hp=50+r*18; BT.enemy={...m,hp,maxHp:hp,atk:8+r*2,maxCh:r>=10?99:Math.min(10,3+Math.floor(r/2))}; }
+  else if(BT.gym.adv){ const n=BT.gym.advN; const base=BT.gym.mons[BT.round]; m={...base}; const hp=base.boss?(150+n*22):(90+n*14); BT.enemy={...m,hp,maxHp:hp,atk:(base.boss?14:10)+Math.round(n*1.3),maxCh:BT.gym.maxCh}; }
   else { gi=BT.gymIdx; const base=BT.gym.mons[BT.round]; m={...base,id:BT.gym.id+'_'+BT.round,gym:gi};
     const hp=base.boss?(120+gi*26):(72+gi*15); BT.enemy={...m,hp,maxHp:hp,atk:(base.boss?12:8)+Math.round(gi*1.6),maxCh:BT.gym.maxCh}; }
   BT.screen='battle'; BT.q=null; BT.busy=false;
@@ -6861,7 +6921,7 @@ function btRenderBattle(msg){
         <div class="bt-hpbar"><div class="bt-hpfill ${btHpClass(e.hp/e.maxHp)}" id="btEnemyHp" style="width:${Math.max(0,e.hp/e.maxHp*100)}%"></div></div><div class="bt-hptxt" id="btEnemyHpTxt">HP ${Math.max(0,e.hp)}/${e.maxHp}</div></div></div>
       <div class="bt-vs">VS</div>
       <div class="bt-fighter"><div class="bt-sprite" id="btBoppySprite">${btBoppy(76,BT.hp/BT.maxHp<0.3?'sad':'happy')}</div>
-        <div class="bt-info"><div class="bt-name">${S.name} 的波比 <span class="bt-type">Lv.${btLevel()}</span></div>
+        <div class="bt-info"><div class="bt-name">${S.name} 的波比 <span class="bt-type">Lv.${btLevel()}</span>${btPartnerHTML()}</div>
         <div class="bt-hpbar"><div class="bt-hpfill ${btHpClass(BT.hp/BT.maxHp)}" id="btBoppyHp" style="width:${Math.max(0,BT.hp/BT.maxHp*100)}%"></div></div><div class="bt-hptxt" id="btBoppyHpTxt">HP ${Math.max(0,BT.hp)}/${BT.maxHp}</div></div></div>
     </div>
     <div class="bt-msg" id="btMsg">${msg}</div>
@@ -6950,14 +7010,16 @@ function btResolve(ok,prefix){
   if(ok){
     sfxCorrect(); b.correct=(b.correct||0)+1; BT.combo++; BT.streak++; BT.stats.correct++;
     const sec=(Date.now()-q.start)/1000; const superHit=q.subj===e.w;
-    const stoneBonus=(b.stones[q.subj]||0)*4; const fastSec=btHas('g7')?12:8, fastBonus=btHas('g7')?12:5; const superMul=btHas('g8')?2.5:2;
+    const partner=btPartner(); const partnerPassive=(partner&&partner.w===q.subj)?partner.passive:0;
+    const stoneBonus=(b.stones[q.subj]||0)*4+partnerPassive; const fastSec=btHas('g7')?12:8, fastBonus=btHas('g7')?12:5; const superMul=btHas('g8')?2.5:2;
     let dmg=Math.round(16*(superHit?superMul:1)*(1+(b.bracelets?0.3:0.2)*Math.min(BT.combo-1,4))+(sec<fastSec?fastBonus:0)+Math.round(btLevel()*1.5)+stoneBonus+(btHas('g4')&&BT.combo>=3?10:0)+(btHas('g15')?15:0));
     const coinGain=btCoin(superHit?6:3);
     if(superHit){ BT.revealed[e.id]=true; }
     e.hp-=dmg; BT.stats.dmg+=dmg;
+    let pHit=0; if(partner){ b.partnerHits=(b.partnerHits||0)+1; if(b.partnerHits%3===0){ pHit=partner.bonus; e.hp-=pHit; BT.stats.dmg+=pHit; setTimeout(()=>{ const es2=document.getElementById('btEnemySprite'); if(es2){es2.classList.remove('hit');void es2.offsetWidth;es2.classList.add('hit');} btFloat('btEnemySprite',partner.pre+partner.e+' -'+pHit,'#fde047'); btSetHp(); },850); } }
     const sp=document.getElementById('btBoppySprite'), es=document.getElementById('btEnemySprite');
     if(sp){sp.classList.add('attack');} setTimeout(()=>{ if(es){es.classList.remove('attack');es.classList.add('hit');} btFloat('btEnemySprite','-'+dmg,superHit?'#fde68a':'#fff'); btSetHp(); },300);
-    msg.innerHTML=`${prefix}🎯 命中！造成 <span class="hl">${dmg}</span> 傷害${superHit?'，<span class="hl">效果絕佳！</span>（'+BT_SUBJ[q.subj].n+'是牠的弱點）':''}${stoneBonus?'　'+(q.subj==='chinese'?'📕':q.subj==='english'?'📘':'📗')+' 石頭 +'+stoneBonus:''}${BT.combo>=2?'　🔥 '+BT.combo+' 連擊！':''}${btHas('g4')&&BT.combo>=3?'　🔥 火山之心 +10':''}${sec<fastSec?'　⚡ 速度加成 +'+fastBonus:''}${btHas('g15')?'　👑 +15':''}　🪙 +${coinGain}`;
+    msg.innerHTML=`${prefix}🎯 命中！造成 <span class="hl">${dmg}</span> 傷害${superHit?'，<span class="hl">效果絕佳！</span>（'+BT_SUBJ[q.subj].n+'是牠的弱點）':''}${stoneBonus?'　'+(q.subj==='chinese'?'📕':q.subj==='english'?'📘':'📗')+' 石頭 +'+stoneBonus:''}${BT.combo>=2?'　🔥 '+BT.combo+' 連擊！':''}${btHas('g4')&&BT.combo>=3?'　🔥 火山之心 +10':''}${sec<fastSec?'　⚡ 速度加成 +'+fastBonus:''}${btHas('g15')?'　👑 +15':''}${partnerPassive?'　🤝 夥伴 +'+partnerPassive:''}${pHit?'　<span class="hl">'+partner.pre+partner.e+' '+partner.label+'補一擊 -'+pHit+'！</span>':''}　🪙 +${coinGain}`;
     if(e.hp<=0){ setTimeout(()=>btEnemyDown(),1100); return; }
     setTimeout(()=>{ BT.busy=false; BT.q=null; document.getElementById('btMsg').innerHTML=`${e.n} 還有 ${e.hp} HP！${!BT.revealed[e.id]&&!b.dex.includes(e.id)?'再試試別的科目，找出牠的弱點！':'繼續用弱點科目攻擊！'}`; btRenderActions(); },1500);
   } else {
@@ -6985,7 +7047,7 @@ function btEnemyDown(){
   const a=document.getElementById('btAction');
   a.innerHTML=`<div class="bt-result" style="padding:8px;"><div class="bt-capture">${e.e}</div>${lvUp?'<div class="bt-reward">⬆️ 波比升到 Lv.'+btLevel()+'，HP 上限 '+btMaxHp()+'</div>':''}</div>`;
   if(lvUp){ BT.maxHp=btMaxHp(); BT.hp=Math.min(BT.maxHp,BT.hp+10); }
-  const go=()=>{ BT.round++; if(BT.arena){ btSpawn(); } else if(BT.round>=BT.gym.mons.length){ btWinGym(); } else { btSpawn(); } };
+  const go=()=>{ BT.round++; if(BT.arena){ btSpawn(); } else if(BT.round>=BT.gym.mons.length){ if(BT.gym.adv) btWinAdventure(); else btWinGym(); } else { btSpawn(); } };
   setTimeout(()=>{ if(stAfter.stage!==stBefore.stage) btShowEvolution(stBefore,stAfter,go); else go(); },1600);
 }
 function btWinGym(){
@@ -7015,7 +7077,7 @@ function btLose(){
     <h3>波比累了⋯⋯</h3>
     <p>這一場賺到 🪙 ${BT.stats.coins}，可以去商店買護盾或屬性石再來！<br>${BT.arena?'競技場連勝 '+BT.round+' 場！'+(BT.round>=(b.bestStreak||0)&&BT.round>0?'<br>🔥 追平或刷新最高紀錄！':''):BT.gym.name+'這次沒過，沒關係，再想一次！'}<br>這一場：答對 ${BT.stats.correct} 題、答錯 ${BT.stats.wrong} 題。</p>
     <p style="font-size:0.84rem;color:#fde68a;">波比說：「答錯的那幾題，剛剛都告訴你答案了。記住它們，下一次牠就打不到你！」</p>
-    ${BT.arena?`<button class="bt-btn green" onclick="btStartArena()">🔥 再戰競技場</button>`:`<button class="bt-btn green" onclick="btStartGym(${BT.gymIdx})">🔁 再挑戰 ${BT.gym.name}</button>`}
+    ${BT.arena?`<button class="bt-btn green" onclick="btStartArena()">🔥 再戰競技場</button>`:BT.gym.adv?`<button class="bt-btn green" onclick="btStartAdventure(${BT.gym.advN})">🔁 再挑戰第 ${BT.gym.advN} 關</button>`:`<button class="bt-btn green" onclick="btStartGym(${BT.gymIdx})">🔁 再挑戰 ${BT.gym.name}</button>`}
     <button class="bt-btn purple" onclick="btGo('home')">🗺️ 回道館地圖</button></div>`;
 }
 function btConfirmLeave(){
