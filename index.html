@@ -6721,6 +6721,37 @@ const BT_CHAPTERS=[
   {n:'第一章 波比大陸',from:0,to:14},{n:'第二章 幻境群島',from:15,to:19},{n:'第三章 魔法王國',from:20,to:24},
   {n:'第四章 遠古遺跡',from:25,to:29},{n:'第五章 元素祕境',from:30,to:34},{n:'第六章 星辰之巔',from:35,to:39},
 ];
+/* 第七章起：主題變體道館（怪獸是前 120 隻的主題版本，圖鑑仍算同一隻），一路到第 100 座 */
+const BT_HANDMADE=BT_GYMS.length;
+const BT_THEMES=[
+  {n:'烈焰荒原',pre:'烈焰',e:'🔥',bg:'linear-gradient(160deg,#7f1d1d,#f97316)'},
+  {n:'冰霜王國',pre:'冰霜',e:'❄️',bg:'linear-gradient(160deg,#1e3a8a,#bae6fd)'},
+  {n:'黃金沙海',pre:'黃金',e:'✨',bg:'linear-gradient(160deg,#713f12,#fde047)'},
+  {n:'幻影迷宮',pre:'幻影',e:'🌫️',bg:'linear-gradient(160deg,#3f3f46,#a1a1aa)'},
+  {n:'機械都市',pre:'機械',e:'⚙️',bg:'linear-gradient(160deg,#0f172a,#38bdf8)'},
+  {n:'暗影深淵',pre:'暗影',e:'🌑',bg:'linear-gradient(160deg,#020617,#4c1d95)'},
+  {n:'雷霆高原',pre:'雷霆',e:'⚡',bg:'linear-gradient(160deg,#1e293b,#facc15)'},
+  {n:'夢境花園',pre:'夢境',e:'🌸',bg:'linear-gradient(160deg,#831843,#f9a8d4)'},
+  {n:'時空裂縫',pre:'時空',e:'🌀',bg:'linear-gradient(160deg,#164e63,#c084fc)'},
+  {n:'龍之巢穴',pre:'龍族',e:'🐲',bg:'linear-gradient(160deg,#14532d,#dc2626)'},
+  {n:'神殿之頂',pre:'神聖',e:'🌟',bg:'linear-gradient(160deg,#78350f,#fef3c7)'},
+  {n:'無盡星海',pre:'星海',e:'🌌',bg:'linear-gradient(160deg,#0f172a,#818cf8)'},
+];
+const BT_SUBNAMES=['入口','深處','祭壇','王座','之心'];
+const BT_CHN=['七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八'];
+(function(){
+  const base=BT_GYMS.flatMap((g,gi)=>g.mons.map((m,mi)=>({...m,baseId:g.id+'_'+mi,baseGym:gi})));
+  BT_THEMES.forEach((t,ti)=>{
+    const from=BT_GYMS.length;
+    BT_SUBNAMES.forEach((sub,k)=>{
+      const idx=BT_GYMS.length; const seed=idx*7919;
+      const pick=i=>base[(seed+i*31+ti*13+k*5)%base.length];
+      const mons=[0,1,2].map(i=>{ const m=pick(i); return {n:t.pre+m.n,e:m.e,w:m.w,boss:i===2,baseId:m.baseId,baseGym:m.baseGym}; });
+      BT_GYMS.push({id:'g'+(idx+1),name:t.pre+sub,emoji:t.e,bg:t.bg,maxCh:99,mons,theme:ti,champion:idx+1===100});
+    });
+    BT_CHAPTERS.push({n:'第'+BT_CHN[ti]+'章 '+t.n,from,to:BT_GYMS.length-1});
+  });
+})();
 /* 道館寶物：第一次通關該道館就永久獲得，商店買不到 */
 const BT_TREASURES={
   g1:{e:'🌾',n:'豐收號角',desc:'每打倒一隻怪獸額外 +5 金幣'},
@@ -6761,7 +6792,7 @@ function btEvolvePartner(id){ const b=btState(); const m=BT_ALL_MONS.find(x=>x.i
     <button class="bt-btn green" onclick="btGo('dex')">太棒了！</button></div>`; }
 function btDexMsg(t){ const el=document.getElementById('btDexMsg'); if(el) el.textContent=t; }
 function btPartnerHTML(small){ const p=btPartner(); if(!p) return ''; return `<span class="bt-type" style="background:rgba(253,224,71,0.25);">${p.pre}${p.e} ${p.label}</span>`; }
-const BT_ALL_MONS=BT_GYMS.flatMap((g,gi)=>g.mons.map((m,mi)=>({...m,id:g.id+'_'+mi,gym:gi})));
+const BT_ALL_MONS=BT_GYMS.slice(0,BT_HANDMADE).flatMap((g,gi)=>g.mons.map((m,mi)=>({...m,id:g.id+'_'+mi,gym:gi})));
 let BT={screen:'home',gym:null,round:0,enemy:null,hp:0,maxHp:0,combo:0,q:null,timer:null,tLeft:0,busy:false,arena:false,streak:0,recent:[],revealed:{},stats:{correct:0,wrong:0,dmg:0}};
 function btState(){
   if(!S.battle) S.battle={exp:0,cleared:[],dex:[],potions:2,hints:2,bestStreak:0,wins:0,losses:0,answered:0,correct:0,coins:60,stones:{chinese:0,english:0,math:0},shields:0,books:0};
@@ -6927,7 +6958,7 @@ function renderBattleCard(){
   const el=document.getElementById('battleEntryContent'); if(!el) return;
   const b=btState(); const nextGym=BT_GYMS.find(g=>!b.cleared.includes(g.id));
   el.innerHTML=`<div class="t">⚔️ 波比對戰學院 <span style="font-size:0.7rem;background:#fbbf24;color:#1e1b4b;border-radius:8px;padding:2px 7px;">NEW</span></div>
-    <div class="d">答對題目＝波比出招！找出每隻怪獸的弱點科目，打倒道館館主、收服怪獸、打遍六大章節四十座道館！</div>
+    <div class="d">答對題目＝波比出招！找出每隻怪獸的弱點科目，打倒道館館主、收服怪獸、打遍 ${BT_GYMS.length} 座道館！</div>
     <div class="row"><span>Lv.${btLevel()} ${btRank()}</span><span>🏅 道館 ${b.cleared.length}/${BT_GYMS.length}</span><span>📖 圖鑑 ${b.dex.length}/${BT_ALL_MONS.length}</span><span>🔥 最高連勝 ${b.bestStreak||0}</span><span>🗺️ 冒險 ${b.adventure||0} 關</span><span>🥋 ${djBelt().n}</span></div>
     <button onclick="openBattle()">⚔️ ${nextGym?'挑戰 '+nextGym.emoji+' '+nextGym.name:'進入競技場'}</button>`;
 }
@@ -7054,8 +7085,8 @@ function btSpawn(){
   if(BT.arena){ const r=BT.round; gi=Math.min(BT_GYMS.length-1,Math.floor(r/2)); const pool=BT_ALL_MONS.filter(x=>x.gym<=gi); m=pool[Math.floor(Math.random()*pool.length)];
     const hp=50+r*18; BT.enemy={...m,hp,maxHp:hp,atk:8+r*2,maxCh:r>=10?99:Math.min(10,3+Math.floor(r/2))}; }
   else if(BT.gym.adv){ const n=BT.gym.advN; const base=BT.gym.mons[BT.round]; m={...base}; const hp=base.boss?(150+n*22):(90+n*14); BT.enemy={...m,hp,maxHp:hp,atk:(base.boss?14:10)+Math.round(n*1.3),maxCh:BT.gym.maxCh}; }
-  else { gi=BT.gymIdx; const base=BT.gym.mons[BT.round]; m={...base,id:BT.gym.id+'_'+BT.round,gym:gi};
-    const hp=base.boss?(120+gi*26):(72+gi*15); BT.enemy={...m,hp,maxHp:hp,atk:(base.boss?12:8)+Math.round(gi*1.6),maxCh:BT.gym.maxCh}; }
+  else { gi=BT.gymIdx; const base=BT.gym.mons[BT.round]; m={...base,id:base.baseId||(BT.gym.id+'_'+BT.round),gym:(base.baseGym!=null?base.baseGym:gi)};
+    const hp=base.boss?(120+gi*15):(72+gi*9); BT.enemy={...m,hp,maxHp:hp,atk:(base.boss?12:8)+Math.round(gi*1.0),maxCh:BT.gym.maxCh}; }
   BT.screen='battle'; BT.q=null; BT.busy=false;
   if(BT.round===0&&btHas('g9')) BT.revealed[BT.enemy.id]=true;
   if(BT.round===0&&btHas('g20')){ BT.enemy.hp-=50; }
@@ -7209,14 +7240,14 @@ function btWinGym(){
   const gymCoin=btCoin(first?50:20);
   let chest='';
   if(first){ b.cleared.push(g.id); b.potions+=1; b.hints+=1; S.badges.mini=(S.badges.mini||0)+1;
-    if(!BT_TREASURES[g.id]){ const gi=BT_GYMS.findIndex(x=>x.id===g.id); const stoneK=['moonStones','waterStones','thunderStones'][gi%3]; const itemK=BT_ADV_DROPS[(gi*5+1)%BT_ADV_DROPS.length]; b[stoneK]=(b[stoneK]||0)+1; b[itemK]=(b[itemK]||0)+1; const c=btCoin(BT_CHEST.coins); chest=`🪙 ${c}、${BT_ADV_DROP_NAME[stoneK]}、${BT_ADV_DROP_NAME[itemK]}`; } }
+    if(!BT_TREASURES[g.id]){ const gi=BT_GYMS.findIndex(x=>x.id===g.id); const big=BT_CHAPTERS.some(ch=>ch.to===gi); const stoneK=['moonStones','waterStones','thunderStones'][gi%3]; const itemK=BT_ADV_DROPS[(gi*5+1)%BT_ADV_DROPS.length]; const n=big?2:1; b[stoneK]=(b[stoneK]||0)+n; b[itemK]=(b[itemK]||0)+n; const c=btCoin(big?300:BT_CHEST.coins); let extra=''; if(big){ b.hearts=Math.min(5,(b.hearts||0)+1); extra='、💗 生命之心'; } chest=`${big?'章末大寶箱：':''}🪙 ${c}、${BT_ADV_DROP_NAME[stoneK]}×${n}、${BT_ADV_DROP_NAME[itemK]}×${n}${extra}`; } }
   b.wins=(b.wins||0)+1; save(); sfxLevelUp();
   const allDone=b.cleared.length>=BT_GYMS.length;
   const w=document.getElementById('battleWrap'); BT.screen='result';
   w.innerHTML=`<div class="bt-card bt-result" style="margin-top:30px;">
     <div class="big">${allDone&&first?'🏆':'🏅'}</div>
     <h3>${g.champion?'你是新的冠軍！':'拿到 '+g.name+'徽章！'}</h3>
-    <p>${first?(g.champion?'四十座道館全部打完，波比站上傳說之巔！去跟爸爸媽媽說這件事吧！':'第一次通關！館主 '+g.mons[2].n+' 認輸了。'):'再一次漂亮通關！'}</p>
+    <p>${first?(g.champion?'一百座道館全部打完，波比成為無盡星海的傳說！去跟爸爸媽媽說這件事吧！':'第一次通關！館主 '+g.mons[2].n+' 認輸了。'):'再一次漂亮通關！'}</p>
     ${chest?`<div style="margin:12px auto;max-width:300px;background:linear-gradient(135deg,rgba(167,139,250,0.25),rgba(251,191,36,0.15));border:2px solid #a78bfa;border-radius:16px;padding:12px;animation:popIn 0.6s ease;"><div style="font-size:0.7rem;font-weight:900;color:#ddd6fe;letter-spacing:2px;">道館寶箱</div><div style="font-size:2.6rem;line-height:1.2;">🎁</div><div style="font-size:0.84rem;color:#fef3c7;font-weight:800;margin-top:3px;">${chest}</div></div>`:''}
     ${first&&BT_TREASURES[g.id]?`<div style="margin:12px auto;max-width:300px;background:linear-gradient(135deg,rgba(253,224,71,0.25),rgba(251,146,60,0.15));border:2px solid #fbbf24;border-radius:16px;padding:12px;animation:popIn 0.6s ease;"><div style="font-size:0.7rem;font-weight:900;color:#fde68a;letter-spacing:2px;">道館寶物</div><div style="font-size:2.6rem;line-height:1.2;">${BT_TREASURES[g.id].e}</div><div style="font-weight:900;font-size:1.05rem;color:#fff7ed;">${BT_TREASURES[g.id].n}</div><div style="font-size:0.8rem;color:#fde68a;font-weight:700;margin-top:3px;">${BT_TREASURES[g.id].desc}</div></div>`:''}
     <div style="margin:10px 0;">${first?'<span class="bt-reward">🏅 道館徽章</span><span class="bt-reward">⭐ 迷你波 +1</span><span class="bt-reward">🧪 藥水 +1</span><span class="bt-reward">💡 提示 +1</span><span class="bt-reward">🪙 +'+gymCoin+'</span>':'<span class="bt-reward">🪙 +'+gymCoin+'</span>'}</div>
