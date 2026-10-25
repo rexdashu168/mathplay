@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>🌟 波比魔法學院 — 小蛹三年級版</title>
+<title>🌟 波比魔法學院 — 小蛹四年級版（對戰學院）</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -483,6 +483,117 @@ position:relative;;
 .mission-go-btn.go-info{background:linear-gradient(135deg,#6366f1,#4f46e5);}
 @keyframes missionBtnGlow{from{filter:brightness(1);}to{filter:brightness(1.12);}}
 @media(max-width:400px){.big-char{font-size:7rem;}.big-letter{font-size:8rem;}.big-emoji{font-size:5.5rem;}.opt-btn{padding:16px 9px;font-size:1.35rem;}.welcome-title{font-size:1.8rem;}}
+/* ===== 波比對戰學院 ===== */
+#battleOverlay{position:fixed;inset:0;z-index:6000;background:linear-gradient(180deg,#0f172a 0%,#1e1b4b 60%,#312e81 100%);overflow-y:auto;-webkit-overflow-scrolling:touch;font-family:'Nunito',sans-serif;color:#f8fafc;}
+.bt-wrap{max-width:520px;margin:0 auto;padding:12px 14px 40px;position:relative;}
+.bt-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.bt-back{background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.25);color:white;border-radius:12px;padding:8px 14px;font-weight:900;font-size:0.95rem;cursor:pointer;font-family:inherit;}
+.bt-title{font-weight:900;font-size:1.05rem;text-align:center;flex:1;}
+.bt-chip{background:rgba(255,255,255,0.12);border-radius:10px;padding:5px 10px;font-size:0.8rem;font-weight:800;white-space:nowrap;}
+.bt-card{background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.16);border-radius:18px;padding:14px;margin-bottom:12px;}
+.bt-hero{text-align:center;padding:18px 10px 10px;}
+.bt-hero h2{font-size:1.5rem;font-weight:900;margin:6px 0 4px;background:linear-gradient(90deg,#fde68a,#fb7185,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.bt-hero p{font-size:0.88rem;color:#c7d2fe;font-weight:700;line-height:1.5;}
+.bt-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+.bt-stat{background:rgba(255,255,255,0.08);border-radius:12px;padding:8px 4px;text-align:center;}
+.bt-stat b{display:block;font-size:1.1rem;color:#fde68a;}
+.bt-stat span{font-size:0.68rem;color:#c7d2fe;font-weight:800;}
+.bt-modes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+.bt-mode{border:none;border-radius:14px;padding:12px 6px;font-weight:900;font-size:0.9rem;color:white;cursor:pointer;font-family:inherit;box-shadow:0 4px 0 rgba(0,0,0,0.3);transition:transform 0.1s;}
+.bt-mode:active{transform:translateY(3px);box-shadow:none;}
+.bt-mode small{display:block;font-size:0.68rem;font-weight:700;opacity:0.9;margin-top:2px;}
+.bt-gyms{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.bt-gym{position:relative;border-radius:16px;padding:12px 6px 10px;text-align:center;border:2.5px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);cursor:pointer;transition:transform 0.15s;}
+.bt-gym:active{transform:scale(0.96);}
+.bt-gym .g-emoji{font-size:2.2rem;line-height:1.1;}
+.bt-gym .g-name{font-size:0.8rem;font-weight:900;margin-top:4px;}
+.bt-gym .g-sub{font-size:0.66rem;color:#c7d2fe;font-weight:700;margin-top:2px;}
+.bt-gym.locked{opacity:0.45;filter:grayscale(0.6);}
+.bt-gym.locked .g-emoji{filter:blur(1px);}
+.bt-gym.cleared{border-color:#fbbf24;background:linear-gradient(135deg,rgba(251,191,36,0.22),rgba(251,191,36,0.06));}
+.bt-gym.next{border-color:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,0.25),0 0 18px rgba(74,222,128,0.4);animation:btPulse 1.6s ease-in-out infinite;}
+@keyframes btPulse{0%,100%{box-shadow:0 0 0 3px rgba(74,222,128,0.25)}50%{box-shadow:0 0 0 6px rgba(74,222,128,0.12),0 0 24px rgba(74,222,128,0.5)}}
+.bt-gym .g-badge{position:absolute;top:-8px;right:-6px;font-size:1.2rem;}
+/* 戰鬥場 */
+.bt-arena{position:relative;border-radius:20px;padding:14px 12px 10px;margin-bottom:10px;overflow:hidden;border:2px solid rgba(255,255,255,0.18);}
+.bt-fighter{display:flex;align-items:center;gap:10px;}
+.bt-fighter.enemy{justify-content:flex-end;text-align:right;flex-direction:row-reverse;}
+.bt-sprite{font-size:4.2rem;line-height:1;filter:drop-shadow(0 6px 10px rgba(0,0,0,0.45));transition:transform 0.15s;display:flex;align-items:center;justify-content:center;min-width:84px;min-height:84px;}
+.bt-sprite.hit{animation:btHit 0.45s ease;}
+.bt-sprite.attack{animation:btLunge 0.4s ease;}
+.bt-sprite.enemy-attack{animation:btLungeL 0.4s ease;}
+.bt-sprite.faint{animation:btFaint 0.8s ease forwards;}
+@keyframes btHit{0%{transform:translateX(0);filter:brightness(1)}20%{transform:translateX(-10px);filter:brightness(3)}40%{transform:translateX(10px)}60%{transform:translateX(-6px);filter:brightness(2)}100%{transform:translateX(0);filter:brightness(1)}}
+@keyframes btLunge{0%{transform:translate(0,0)}40%{transform:translate(26px,-14px) scale(1.1)}100%{transform:translate(0,0)}}
+@keyframes btLungeL{0%{transform:translate(0,0)}40%{transform:translate(-26px,14px) scale(1.1)}100%{transform:translate(0,0)}}
+@keyframes btFaint{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(40px) rotate(90deg);opacity:0}}
+.bt-info{flex:1;min-width:0;}
+.bt-name{font-weight:900;font-size:0.98rem;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.bt-fighter.enemy .bt-name{justify-content:flex-end;}
+.bt-type{font-size:0.66rem;font-weight:900;padding:2px 7px;border-radius:8px;background:rgba(255,255,255,0.18);}
+.bt-hpbar{height:12px;border-radius:8px;background:rgba(0,0,0,0.35);overflow:hidden;margin-top:5px;border:1.5px solid rgba(255,255,255,0.25);}
+.bt-hpfill{height:100%;border-radius:8px;background:linear-gradient(90deg,#4ade80,#22c55e);transition:width 0.5s cubic-bezier(.4,0,.2,1);}
+.bt-hpfill.mid{background:linear-gradient(90deg,#fbbf24,#f59e0b);}
+.bt-hpfill.low{background:linear-gradient(90deg,#f87171,#ef4444);}
+.bt-hptxt{font-size:0.7rem;font-weight:800;color:#e2e8f0;margin-top:2px;}
+.bt-vs{text-align:center;font-weight:900;font-size:0.9rem;color:#fde68a;margin:4px 0;letter-spacing:2px;}
+.bt-float{position:absolute;font-weight:900;font-size:1.6rem;pointer-events:none;animation:btFloat 0.9s ease-out forwards;text-shadow:0 2px 6px rgba(0,0,0,0.6);z-index:5;}
+@keyframes btFloat{0%{transform:translateY(0) scale(0.6);opacity:0}20%{opacity:1;transform:translateY(-10px) scale(1.2)}100%{transform:translateY(-60px) scale(1);opacity:0}}
+.bt-msg{background:rgba(0,0,0,0.35);border:2px solid rgba(255,255,255,0.2);border-radius:14px;padding:10px 12px;font-size:0.92rem;font-weight:800;line-height:1.5;min-height:46px;margin-bottom:10px;}
+.bt-msg .hl{background:rgba(253,224,71,0.35);border-radius:4px;padding:0 3px;}
+.bt-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;}
+.bt-atk{border:none;border-radius:14px;padding:12px 6px;color:white;font-weight:900;font-size:0.95rem;cursor:pointer;font-family:inherit;box-shadow:0 4px 0 rgba(0,0,0,0.35);transition:transform 0.1s;position:relative;}
+.bt-atk:active{transform:translateY(3px);box-shadow:none;}
+.bt-atk small{display:block;font-size:0.66rem;font-weight:700;opacity:0.92;margin-top:2px;}
+.bt-atk.chinese{background:linear-gradient(135deg,#f87171,#dc2626);}
+.bt-atk.english{background:linear-gradient(135deg,#60a5fa,#2563eb);}
+.bt-atk.math{background:linear-gradient(135deg,#2dd4bf,#0d9488);}
+.bt-atk.super::after{content:'效果絕佳！';position:absolute;top:-10px;right:-4px;background:#fde68a;color:#78350f;font-size:0.6rem;font-weight:900;padding:2px 6px;border-radius:8px;transform:rotate(6deg);}
+.bt-items{display:flex;gap:8px;}
+.bt-item{flex:1;background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.22);border-radius:12px;padding:8px;color:white;font-weight:900;font-size:0.85rem;cursor:pointer;font-family:inherit;}
+.bt-item:disabled{opacity:0.4;}
+/* 題目 */
+.bt-q{background:rgba(255,255,255,0.96);color:#1f2937;border-radius:18px;padding:14px;margin-bottom:10px;animation:popIn 0.3s ease;}
+.bt-q-tag{display:inline-block;font-size:0.68rem;font-weight:900;padding:3px 9px;border-radius:8px;color:white;margin-bottom:8px;}
+.bt-q-text{font-size:1.05rem;font-weight:900;line-height:1.5;color:#111827;margin-bottom:8px;}
+.bt-q-hint{font-size:0.78rem;color:#92400e;background:#fef3c7;border-radius:8px;padding:5px 9px;font-weight:700;margin-bottom:8px;}
+.bt-timer{height:8px;border-radius:6px;background:#e5e7eb;overflow:hidden;margin-bottom:10px;}
+.bt-timer div{height:100%;background:linear-gradient(90deg,#22c55e,#fbbf24,#ef4444);background-size:300% 100%;width:100%;transition:width 0.25s linear;}
+.bt-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.bt-opt{background:white;border:3px solid #e5e7eb;border-radius:14px;padding:12px 8px;font-size:1rem;font-weight:900;color:#1f2937;cursor:pointer;font-family:inherit;line-height:1.35;transition:all 0.15s;}
+.bt-opt:active{transform:scale(0.97);}
+.bt-opt.ok{background:#dcfce7;border-color:#22c55e;color:#166534;}
+.bt-opt.bad{background:#fee2e2;border-color:#ef4444;color:#991b1b;}
+.bt-opt.dim{opacity:0.35;pointer-events:none;}
+.bt-opt:disabled{pointer-events:none;}
+/* 結果 */
+.bt-result{text-align:center;padding:18px 10px;}
+.bt-result .big{font-size:4.5rem;line-height:1.1;animation:popIn 0.5s ease;}
+.bt-result h3{font-size:1.4rem;font-weight:900;margin:8px 0 6px;color:#fde68a;}
+.bt-result p{font-size:0.9rem;color:#e0e7ff;font-weight:700;line-height:1.6;}
+.bt-reward{display:inline-block;background:rgba(253,224,71,0.18);border:1.5px solid rgba(253,224,71,0.5);border-radius:10px;padding:5px 10px;margin:3px;font-size:0.82rem;font-weight:900;color:#fef3c7;}
+.bt-btn{width:100%;border:none;border-radius:16px;padding:15px;font-size:1.1rem;font-weight:900;color:white;cursor:pointer;font-family:inherit;margin-top:10px;box-shadow:0 5px 0 rgba(0,0,0,0.35);}
+.bt-btn.green{background:linear-gradient(135deg,#22c55e,#16a34a);}
+.bt-btn.purple{background:linear-gradient(135deg,#8b5cf6,#6d28d9);}
+.bt-btn.gray{background:rgba(255,255,255,0.14);box-shadow:none;border:2px solid rgba(255,255,255,0.25);}
+/* 圖鑑 */
+.bt-dex{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.bt-dexc{background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.16);border-radius:14px;padding:8px 4px;text-align:center;}
+.bt-dexc .e{font-size:2rem;line-height:1.1;}
+.bt-dexc .n{font-size:0.66rem;font-weight:900;margin-top:3px;}
+.bt-dexc.unknown .e{filter:brightness(0) opacity(0.55);}
+.bt-dexc.unknown .n{color:#94a3b8;}
+.bt-dexc.caught{border-color:#fbbf24;}
+/* 捕獲動畫 */
+.bt-capture{font-size:3rem;animation:btCapture 1.2s ease forwards;display:inline-block;}
+@keyframes btCapture{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.3) rotate(-15deg)}60%{transform:scale(0.2) rotate(360deg);opacity:0.6}100%{transform:scale(1) rotate(720deg);opacity:1}}
+/* 主畫面入口卡 */
+.bt-entry{background:linear-gradient(135deg,#1e1b4b,#312e81 60%,#4c1d95);border:2.5px solid #a78bfa;color:white;padding:16px 18px;}
+.bt-entry .t{font-size:1.05rem;font-weight:900;display:flex;align-items:center;gap:8px;}
+.bt-entry .d{font-size:0.82rem;color:#c7d2fe;font-weight:700;margin:6px 0 10px;line-height:1.5;}
+.bt-entry .row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.bt-entry .row span{background:rgba(255,255,255,0.12);border-radius:8px;padding:3px 8px;font-size:0.74rem;font-weight:800;}
+.bt-entry button{width:100%;border:none;border-radius:14px;padding:13px;font-weight:900;font-size:1.05rem;color:#1e1b4b;background:linear-gradient(135deg,#fde68a,#fbbf24);cursor:pointer;font-family:inherit;box-shadow:0 4px 0 #b45309;}
 </style>
 </head>
 <body>
@@ -494,13 +605,13 @@ position:relative;;
   <div class="welcome-cloud card">
     <div id="welcomeBoppy" class="hamster-hero">🌸</div>
     <div class="welcome-title">🌟 波比魔法學院</div>
-    <div class="welcome-sub">✨ 小蛹的三年級大冒險 ✨</div>
+    <div class="welcome-sub">✨ 小蛹的四年級大冒險 ✨</div>
     <div class="story-box">
-      <p>「等等⋯⋯你是小蛹？」</p>
-      <p>波比從草叢裡探出頭來，眼睛亮了！🌟<br>
-      「我聽說你一個早上就找到了三個別人沒發現的問題——<b>這是偵探才有的眼力！</b>」</p>
-      <p>「三年級的課程比以前難很多，但我覺得⋯⋯」波比歪著頭想了想，<br>
-      「<b>對你來說，最有趣的部分才剛開始。</b>✨」</p>
+      <p>「小蛹！你回來了！」</p>
+      <p>波比從草叢裡跳出來，繞著你轉了三圈！🌟<br>
+      「三年級的祕密你全都找到了——<b>偵探的眼力又升級了！</b>」</p>
+      <p>「四年級有更大的數字、更長的文章、更多的英文句子⋯⋯」波比壓低聲音，<br>
+      「<b>但我偷偷告訴你：規律藏得越深，找到的時候越過癮。</b>✨」</p>
       <p>答錯了嗎？沒關係，波比會說：「<b>等一下，我們再想一次</b>」。<br>
       答對了？波比會說：「<b>就知道你看得出來！</b>」🎉</p>
       <p>收集徽章 → 解鎖波比的新造型 → 集滿🌈超級波比去找爸媽領神秘禮物！<br>
@@ -561,6 +672,8 @@ position:relative;;
   <div class="card" id="todayCourseCard" style="background:linear-gradient(135deg,rgba(240,253,244,0.98),rgba(220,252,231,0.98));border:2.5px solid #4ade80;padding:16px 18px;">
     <div id="todayCourseContent"></div>
   </div>
+  <!-- 波比對戰學院 入口 -->
+  <div class="card bt-entry" id="battleEntryCard"><div id="battleEntryContent"></div></div>
   <!-- 本週學習紀錄（暫時隱藏，之後要開啟把 display:none 移除即可）-->
   <div class="card" id="parentSummaryCard" style="display:none;background:linear-gradient(135deg,rgba(255,247,237,0.98),rgba(254,243,199,0.95));border:2.5px solid #f97316;padding:16px 18px;">
     <div id="parentSummary"></div>
@@ -637,6 +750,8 @@ position:relative;;
   </div>
 </div>
 </div><!-- /wrap -->
+<!-- 波比對戰學院 -->
+<div id="battleOverlay" class="hidden"><div class="bt-wrap" id="battleWrap"></div></div>
 <!-- 小考 -->
 <div id="quizOverlay" class="quiz-overlay hidden">
   <div class="quiz-header">
@@ -836,511 +951,415 @@ function sfxStart(){if(!soundOn)return;[[262,0],[330,0.1],[392,0.2],[523,0.3],[6
 function sfxFlip(){if(!soundOn)return;playTone(1200,'sine',0.12,0.15,0);playTone(900,'sine',0.1,0.12,0.1);}
 function toggleSound(){soundOn=!soundOn;document.getElementById('soundToggle').textContent=soundOn?'🔊':'🔇';if(soundOn)sfxClick();}
 /* =====================================================
-   三年級課程資料
+   四年級課程資料（2026-10 升級；Grammar Picnic 文法單元沿用）
    ===================================================== */
 const COURSES_ALL={
 chinese:[
-  {chapter:'📖 第1章：成語的祕密！',story:'四個字藏著一個故事——小蛹你的觀察力剛好能發現成語背後的規律！',
+  {chapter:'📖 第1章：學習態度的成語！',story:'四年級的成語更有深度！這一章的成語都在講「怎麼學習」，小蛹看看哪一個最像自己！',
    units:[
-    {type:'teach',char:'一石二鳥',emoji:'🐦',pinyin:'ㄧ ㄕˊ ㄦˋ ㄋㄧㄠˇ',meaning:'做一件事同時達到兩個目的',
-     talk:['今天學第一個成語！<span class="char-big">一石二鳥</span>！','用一顆石頭打到兩隻鳥，比喻做一件事同時達到兩個目的！','小蛹有沒有過一邊散步一邊想解題的經驗？那就是一石二鳥！'],
-     example:'我去圖書館借書順便查資料，真是<span class="hl">一石二鳥</span>！'},
-    {type:'practice',char:'一石二鳥',pinyin:'ㄧ ㄕˊ ㄦˋ ㄋㄧㄠˇ',q:'「一石二鳥」是什麼意思？',hint:'一顆石頭，兩隻鳥⋯⋯',
-     opts:[{t:'做一件事達到兩個目的',c:true},{t:'投擲石頭的技巧',c:false},{t:'很難達成的目標',c:false},{t:'非常勇敢的行為',c:false}],
-     okMsg:'對！一石二鳥！一件事兩個效果！',failMsg:'一顆石頭打到兩隻鳥，就是一件事做到兩個目的！'},
-    {type:'teach',char:'馬到成功',emoji:'🐎',pinyin:'ㄇㄚˇ ㄉㄠˋ ㄔㄥˊ ㄍㄨㄥ',meaning:'事情一開始就順利成功',
-     talk:['「<span class="char-big">馬到成功</span>」！','古代打仗，馬一到就勝利了，比喻做事非常順利！','考試前說「祝你馬到成功！」就是祝你順利成功！'],
-     example:'祝小蛹明天考試<span class="hl">馬到成功</span>！'},
-    {type:'teach',char:'七嘴八舌',emoji:'💬',pinyin:'ㄑㄧ ㄗㄨㄟˇ ㄅㄚ ㄕㄜˊ',meaning:'很多人同時說話，熱鬧非凡',
-     talk:['「<span class="char-big">七嘴八舌</span>」！','七個嘴、八個舌頭，形容很多人同時說話！','下課時同學們七嘴八舌討論，你觀察到了嗎？'],
-     example:'討論時間到，同學們<span class="hl">七嘴八舌</span>地分享想法！'},
-    {type:'observe',q:'🔍 觀察題：下面四個成語，哪一個和「眼睛看東西」有關？',hint:'注意每個成語字面意思，找和「目/眼睛」相關的',
-     opts:[{t:'目不轉睛（目=眼睛，專注地看）',c:true},{t:'七嘴八舌',c:false},{t:'馬到成功',c:false},{t:'一石二鳥',c:false}],
-     okMsg:'目不轉睛！「目」就是眼睛，不轉動地盯著看！觀察力太厲害了！',
-     failMsg:'「目」就是眼睛！目不轉睛 = 眼睛不轉動，專注地看！'},
-    {type:'observe',q:'🔍 找規律：「一石二鳥」「一箭雙鵰」「一舉兩得」，這三個成語有什麼共同規律？',hint:'看看結果的數字關係',
-     opts:[{t:'都表示一個動作達到兩個效果',c:true},{t:'都和動物有關',c:false},{t:'都是四個字',c:false},{t:'都有數字一',c:false}],
-     okMsg:'找到了！這三個成語都表示「一個動作，兩個收穫」！規律找到了！',
-     failMsg:'一石→二鳥、一箭→雙鵰、一舉→兩得，都是「一個動作，兩個效果」！'},
-    {type:'test',q:'「一石二鳥」的意思是？',opts:['一件事達到兩個目的','打鳥的方法','非常困難的任務','做事很慢'],ans:'一件事達到兩個目的',hint:'一顆石頭打到兩隻鳥⋯⋯'},
-    {type:'test',q:'「七嘴八舌」形容什麼？',opts:['很多人同時說話','吃東西很快','認真讀書','比賽努力'],ans:'很多人同時說話',hint:'七個嘴，八個舌頭⋯⋯'},
-    {type:'test',q:'考試前說「馬到成功」是什麼意思？',opts:['祝你順利成功','騎馬去考試','需要努力','很快寫完'],ans:'祝你順利成功',hint:'馬一到就⋯⋯'},
+    {type:'teach',char:'專心致志',emoji:'🎯',pinyin:'ㄓㄨㄢ ㄒㄧㄣ ㄓˋ ㄓˋ',meaning:'把心思全部集中在一件事情上',
+     talk:['第一個成語：<span class="char-big">專心致志</span>！','「致」是「達到」，「志」是「心意」——把心意全部放到一件事上！','小蛹解數學題的時候，是不是常常專心到忘了旁邊有人在叫你？那就是專心致志！'],
+     example:'小蛹<span class="hl">專心致志</span>地拼圖，連媽媽叫吃飯都沒聽到。'},
+    {type:'teach',char:'半途而廢',emoji:'🚧',pinyin:'ㄅㄢˋ ㄊㄨˊ ㄦˊ ㄈㄟˋ',meaning:'事情做到一半就放棄了',
+     talk:['「<span class="char-big">半途而廢</span>」！','「途」是路，「廢」是放棄——走到半路就不走了！','這是一個「反面」的成語，用來提醒人不要輕易放棄！'],
+     example:'學游泳不能<span class="hl">半途而廢</span>，再練幾次就會了。'},
+    {type:'teach',char:'鍥而不捨',emoji:'🪨',pinyin:'ㄑㄧㄝˋ ㄦˊ ㄅㄨˋ ㄕㄜˇ',meaning:'不停地雕刻，比喻有恆心、不放棄',
+     talk:['「<span class="char-big">鍥而不捨</span>」！','「鍥」是用刀雕刻。一直刻、一直刻，不放下刀子，再硬的石頭也能刻出花紋！','它剛好和「半途而廢」相反，是正面的成語！'],
+     example:'科學家<span class="hl">鍥而不捨</span>地做了上百次實驗，終於成功了。'},
+    {type:'practice',char:'聞雞起舞',pinyin:'ㄨㄣˊ ㄐㄧ ㄑㄧˇ ㄨˇ',q:'「聞雞起舞」是說古人聽到雞叫就起床練武。這個成語用來形容什麼？',hint:'雞叫是什麼時候？那時候就起床練習，代表⋯⋯',
+     opts:[{t:'勤奮努力，一早就起來練習',c:true},{t:'很會跳舞',c:false},{t:'喜歡養雞',c:false},{t:'起床太早睡不飽',c:false}],
+     okMsg:'對！天還沒亮雞一叫就起來練功，形容人勤奮努力！',failMsg:'聞雞起舞：雞一叫（天快亮）就起來練武，是形容勤奮努力！'},
+    {type:'observe',q:'🔍 找不同：「專心致志」「鍥而不捨」「聞雞起舞」「半途而廢」，哪一個和其他三個「意思方向」不一樣？',hint:'三個是稱讚人的，一個是提醒人的',
+     opts:[{t:'半途而廢（放棄，是反面的）',c:true},{t:'專心致志',c:false},{t:'鍥而不捨',c:false},{t:'聞雞起舞',c:false}],
+     okMsg:'找到了！另外三個都是稱讚人認真努力，只有半途而廢是在說「放棄」！',failMsg:'專心致志、鍥而不捨、聞雞起舞都是正面的努力；半途而廢是半路放棄，是反面的！'},
+    {type:'observe',q:'🔍 找規律：「鍥而不捨」「持之以恆」「堅持不懈」，這三個成語有什麼共同點？',hint:'它們都在講同一種態度',
+     opts:[{t:'都是「不放棄、一直堅持」的意思',c:true},{t:'都和刀子有關',c:false},{t:'都是反面的成語',c:false},{t:'都在講速度很快',c:false}],
+     okMsg:'對！三個成語都是「堅持到底」！意思相近的成語可以互相替換！',failMsg:'鍥而不捨、持之以恆、堅持不懈，都是「不放棄、一直做下去」！'},
+    {type:'test',q:'「專心致志」的意思是？',opts:['把心思全部集中在一件事上','做事做一半','一心想要出名','志向很遠大'],ans:'把心思全部集中在一件事上',hint:'專心＋達到心意⋯⋯'},
+    {type:'test',q:'哪一句話用「半途而廢」最適合？',opts:['他學鋼琴學了兩個月就不學了','他每天練琴一小時','他彈琴彈得很好聽','他終於學會了一首曲子'],ans:'他學鋼琴學了兩個月就不學了',hint:'半路就放棄的那一句⋯⋯'},
+    {type:'test',q:'「鍥而不捨」的「鍥」是什麼意思？',opts:['雕刻','休息','放棄','跑步'],ans:'雕刻',hint:'左邊是金字旁，和工具有關⋯⋯'},
   ]},
-  {chapter:'🔎 第2章：成語故事探案！',story:'每個成語背後都有故事！小蛹來當偵探，找出故事的線索！',
+  {chapter:'🔎 第2章：寓言成語探案！',story:'每個寓言成語背後都藏著一個笨笨的主角！小蛹來當偵探，找出他們到底哪裡做錯了！',
    units:[
-    {type:'teach',char:'守株待兔',emoji:'🐇',pinyin:'ㄕㄡˇ ㄓㄨ ㄉㄞˋ ㄊㄨˋ',meaning:'不努力，只等好事從天而降',
-     talk:['「<span class="char-big">守株待兔</span>」！','故事：農夫看到兔子撞樹死掉，就每天守著樹等兔子！','結果什麼都沒有！比喻不努力、只靠運氣！'],
-     example:'只等好運不努力，就像<span class="hl">守株待兔</span>，沒有結果的！'},
-    {type:'teach',char:'狐假虎威',emoji:'🦊',pinyin:'ㄏㄨˊ ㄐㄧㄚˇ ㄏㄨˇ ㄨㄟ',meaning:'借助別人的威勢來嚇人',
-     talk:['「<span class="char-big">狐假虎威</span>」！','故事：狐狸帶著老虎走，動物都嚇跑了！','其實動物怕老虎，不是怕狐狸！這叫借威勢！'],
-     example:'他仗著哥哥厲害就欺負人，真是<span class="hl">狐假虎威</span>！'},
-    {type:'observe',q:'🔍 故事推理：農夫守著樹一直等，第二隻兔子卻再也沒撞上來，為什麼？',hint:'仔細想想第一隻兔子為什麼會撞上去？',
-     opts:[{t:'第一隻是意外，兔子不會故意撞樹',c:true},{t:'農夫沒有每天守在那裡',c:false},{t:'那棵樹被砍掉了',c:false},{t:'兔子太聰明跑掉了',c:false}],
-     okMsg:'推理正確！意外不會重複發生！守株待兔就是不切實際地等待！',
-     failMsg:'第一隻兔子是偶然撞上的意外，意外不會每天都發生！'},
-    {type:'observe',q:'🔍 觀察：「狐假虎威」的故事裡，動物們到底在怕誰？',hint:'動物們看到的是什麼，才會逃跑？',
-     opts:[{t:'在怕老虎，不是怕狐狸',c:true},{t:'在怕狐狸',c:false},{t:'兩個都怕',c:false},{t:'什麼都不怕',c:false}],
-     okMsg:'觀察到了！老虎才是真正的威脅，狐狸只是借用老虎的威風！',
-     failMsg:'動物看到老虎在身後，當然是怕老虎！狐狸只是「假裝」很有威勢！'},
-    {type:'teach',char:'半途而廢',emoji:'🏃',pinyin:'ㄅㄢˋ ㄊㄨˊ ㄦˊ ㄈㄟˋ',meaning:'做事做到一半就放棄',
-     talk:['「<span class="char-big">半途而廢</span>」！','走到一半的路就停下來放棄！','做事要堅持到底，不能半途而廢！'],
-     example:'練習要有耐心，不能<span class="hl">半途而廢</span>！'},
-    {type:'observe',q:'🔍 找不同：哪個成語表達的意思和其他三個完全不同？',hint:'三個成語說的是壞習慣，一個說的是好結果',
-     opts:[{t:'馬到成功（好結果）',c:true},{t:'守株待兔（不努力等待）',c:false},{t:'半途而廢（放棄）',c:false},{t:'狐假虎威（借威勢）',c:false}],
-     okMsg:'找到了！馬到成功是好的結果，其他三個描述的都是不好的行為！',
-     failMsg:'守株待兔、半途而廢、狐假虎威都是負面的行為，馬到成功是正面的結果！'},
-    {type:'test',q:'「守株待兔」告訴我們什麼道理？',opts:['不努力只靠運氣沒用','要有耐心等待','保護動物','農夫很努力'],ans:'不努力只靠運氣沒用',hint:'守著樹等兔子⋯⋯'},
-    {type:'test',q:'「狐假虎威」比喻什麼行為？',opts:['借別人威勢嚇人','狐狸和老虎是好朋友','小心危險','勇敢面對困難'],ans:'借別人威勢嚇人',hint:'狐狸借老虎的⋯⋯'},
-    {type:'test',q:'做事做到一半就放棄是什麼成語？',opts:['半途而廢','馬到成功','守株待兔','七嘴八舌'],ans:'半途而廢',hint:'一半就停了⋯⋯'},
+    {type:'teach',char:'畫蛇添足',emoji:'🐍',pinyin:'ㄏㄨㄚˋ ㄕㄜˊ ㄊㄧㄢ ㄗㄨˊ',meaning:'多做了不必要的事，反而弄糟',
+     talk:['故事：幾個人比賽畫蛇，先畫完的人可以喝酒。','有一個人最快畫好，得意地說：「我還有時間幫蛇加幾隻腳！」','結果蛇根本沒有腳，別人說他畫的不是蛇，酒就被搶走了！','<span class="char-big">畫蛇添足</span>：多做了不該做的事，反而把事情弄糟！'],
+     example:'作文已經寫得很完整了，再硬加一段就是<span class="hl">畫蛇添足</span>。'},
+    {type:'teach',char:'自相矛盾',emoji:'🛡️',pinyin:'ㄗˋ ㄒㄧㄤ ㄇㄠˊ ㄉㄨㄣˋ',meaning:'自己說的話前後衝突',
+     talk:['故事：有人賣矛（長槍）和盾（盾牌）。','他說：「我的矛什麼盾都刺得穿！」又說：「我的盾什麼矛都刺不穿！」','有人問：「那用你的矛刺你的盾呢？」他答不出來了！','<span class="char-big">自相矛盾</span>：自己說的話前後打架！這正是小蛹最擅長找的「矛盾」！'],
+     example:'他說自己最討厭甜食，卻天天吃蛋糕，真是<span class="hl">自相矛盾</span>。'},
+    {type:'teach',char:'掩耳盜鈴',emoji:'🔔',pinyin:'ㄧㄢˇ ㄦˇ ㄉㄠˋ ㄌㄧㄥˊ',meaning:'自己騙自己，以為別人也不知道',
+     talk:['故事：小偷想偷一個大鈴鐺，但鈴鐺一碰就會響。','他想到一個「好辦法」：把自己的耳朵摀起來，就聽不到了！','結果鈴聲照樣響，大家都聽到，他當場被抓！','<span class="char-big">掩耳盜鈴</span>：摀住自己的耳朵偷鈴鐺，自己騙自己！'],
+     example:'考試作弊還以為老師不會發現，根本是<span class="hl">掩耳盜鈴</span>。'},
+    {type:'practice',char:'井底之蛙',pinyin:'ㄐㄧㄥˇ ㄉㄧˇ ㄓ ㄨㄚ',q:'井底的青蛙以為天空只有井口那麼大。「井底之蛙」形容什麼樣的人？',hint:'青蛙看到的世界只有井口大小⋯⋯',
+     opts:[{t:'見識很少，卻以為自己什麼都知道的人',c:true},{t:'很會游泳的人',c:false},{t:'住在很深地方的人',c:false},{t:'很喜歡看天空的人',c:false}],
+     okMsg:'對！井底的青蛙只看過井口那一小片天，就以為那是全世界——形容見識狹小！',failMsg:'井底之蛙只看過井口大的天，形容見識很少還自以為是的人！'},
+    {type:'observe',q:'🔍 找線索：賣矛和盾的人，到底說錯了什麼？',hint:'把他說的兩句話放在一起看',
+     opts:[{t:'「什麼都刺得穿」和「什麼都刺不穿」不可能同時成立',c:true},{t:'他的矛太短了',c:false},{t:'他不應該同時賣兩種東西',c:false},{t:'他的盾太貴了',c:false}],
+     okMsg:'偵探眼力！如果矛什麼都刺得穿，就一定刺得穿他的盾；兩句話不可能都對！',failMsg:'矛「什麼都刺得穿」、盾「什麼都刺不穿」，用矛刺盾的時候，兩句話必定有一句是假的！'},
+    {type:'observe',q:'🔍 找規律：「畫蛇添足」「掩耳盜鈴」「井底之蛙」「自相矛盾」，這四個成語的主角有什麼共同點？',hint:'他們都做了什麼樣的事？',
+     opts:[{t:'都做了傻事，成語用來提醒我們別犯同樣的錯',c:true},{t:'都是動物',c:false},{t:'都是很聰明的人',c:false},{t:'都住在井裡',c:false}],
+     okMsg:'對！寓言成語的主角都做了傻事，故事是用來「提醒」我們的！',failMsg:'四個故事的主角都犯了傻，成語就是把他們的錯誤記下來提醒後人！'},
+    {type:'test',q:'「畫蛇添足」的意思是？',opts:['多做了不必要的事反而弄糟','畫畫很厲害','蛇真的有腳','做事情很快'],ans:'多做了不必要的事反而弄糟',hint:'蛇本來就沒有腳，加了反而⋯⋯'},
+    {type:'test',q:'哪一句話是「自相矛盾」？',opts:['他說他從不說謊，但這句話就是謊話','他說他喜歡吃飯，也喜歡吃麵','他說今天很熱，明天會下雨','他說他很高，也很重'],ans:'他說他從不說謊，但這句話就是謊話',hint:'哪一句前後打架了？'},
+    {type:'test',q:'做錯事還以為沒人知道，可以用哪個成語？',opts:['掩耳盜鈴','井底之蛙','畫蛇添足','鍥而不捨'],ans:'掩耳盜鈴',hint:'摀住耳朵偷鈴鐺⋯⋯'},
   ]},
-  {chapter:'✏️ 第3章：關聯詞造句！',story:'用關聯詞讓句子更有邏輯！小蛹的觀察力能找出它們的差異！',
+  {chapter:'🌈 第3章：誇飾、排比、設問！',story:'三年級學了比喻和擬人，四年級再學三種修辭！學會了，作文就會像有魔法一樣！',
    units:[
-    {type:'teach',char:'因為所以',emoji:'🔗',pinyin:'ㄧㄣ ㄨㄟˋ ˙˙˙ ㄙㄨㄛˇ ㄧˇ',meaning:'表示因果關係',
-     talk:['「因為⋯⋯所以⋯⋯」是<span class="char-big">因果句</span>！','因為（原因）→ 所以（結果）！','「因為下雨，所以我帶傘」！'],
-     example:'<span class="hl">因為</span>今天是晴天，<span class="hl">所以</span>我們去郊遊！'},
-    {type:'teach',char:'雖然但是',emoji:'↔️',pinyin:'ㄙㄨㄟ ㄖㄢˊ ˙˙˙ ㄉㄢˋ ㄕˋ',meaning:'表示轉折關係',
-     talk:['「雖然⋯⋯但是⋯⋯」是<span class="char-big">轉折句</span>！','雖然（承認一件事），但是（轉折說相反的）！','「雖然很難，但是我不放棄！」'],
-     example:'<span class="hl">雖然</span>題目很難，<span class="hl">但是</span>我努力想出來了！'},
-    {type:'observe',q:'🔍 找不同：下面四個句子，哪一個用了「轉折關係」（前後意思相反）？',hint:'轉折句前後的意思是「相反」的',
-     opts:[{t:'雖然下雨了，但是我很開心',c:true},{t:'因為下雨了，所以我帶傘',c:false},{t:'下雨了，我帶傘出門',c:false},{t:'今天下雨又打雷',c:false}],
-     okMsg:'找到了！「雖然下雨⋯但是開心」前後相反，這是轉折！',
-     failMsg:'轉折句的特點是前後意思「相反」！雖然下雨（壞事）但是開心（好事）！'},
-    {type:'observe',q:'🔍 觀察題：「因為」和「雖然」最大的不同是什麼？',hint:'用了因為之後，後面的結果是「順著來」還是「相反的」？',
-     opts:[{t:'因為→結果順著來；雖然→結果卻相反',c:true},{t:'因為用在前面；雖然用在後面',c:false},{t:'兩個意思一樣',c:false},{t:'因為比雖然更正式',c:false}],
-     okMsg:'觀察到核心差異了！因果→順著；轉折→相反！這是造句的關鍵！',
-     failMsg:'因為...所以...結果是「順著原因來的」；雖然...但是...結果是「出乎意料相反的」！'},
-    {type:'practice',char:'因為所以',pinyin:'ㄧㄣ ㄨㄟˋ ˙˙˙ ㄙㄨㄛˇ ㄧˇ',q:'哪個「因為……所以」用法正確？',hint:'要有原因才有結果',
-     opts:[{t:'因為天氣好，所以心情愉快',c:true},{t:'因為所以我很快樂',c:false},{t:'所以因為下雨了',c:false},{t:'因為很快樂因為',c:false}],
-     okMsg:'因為天氣好，所以心情愉快！對了！',failMsg:'因為（原因）在前，所以（結果）在後！'},
-    {type:'test',q:'「因為下雨，___我帶傘」，空格填什麼？',opts:['所以','但是','雖然','而且'],ans:'所以',hint:'因果關係⋯⋯'},
-    {type:'test',q:'「___很難，但是我堅持」，空格填什麼？',opts:['雖然','因為','所以','而且'],ans:'雖然',hint:'轉折關係⋯⋯'},
-    {type:'test',q:'「雖然⋯⋯但是⋯⋯」是什麼關係？',opts:['轉折關係','因果關係','並列關係','條件關係'],ans:'轉折關係',hint:'前後意思相反⋯⋯'},
+    {type:'teach',char:'誇飾',emoji:'🌋',meaning:'故意把事情說得比真的更大或更小，讓感覺更強烈',
+     talk:['第一種：<span class="char-big">誇飾</span>！','故意「誇張」地說，讓讀的人感覺更強烈！','「我餓得可以吃下一頭牛！」——真的能吃一頭牛嗎？當然不能，但你感覺到「超級餓」了！','注意：誇飾不是說謊，而是故意讓感覺變大的寫法！'],
+     example:'教室安靜得連一根針掉在地上都聽得見。（<span class="hl">誇飾</span>）'},
+    {type:'teach',char:'排比',emoji:'🎼',meaning:'用三個以上結構相同的句子排在一起，讀起來有節奏',
+     talk:['第二種：<span class="char-big">排比</span>！','把<span class="hl">三個以上</span>句型一樣的句子排在一起，像在唱歌一樣有節奏！','「春天的風是溫柔的，春天的雨是細細的，春天的花是害羞的。」','三個句子都是「春天的○是○○的」，這就是排比！'],
+     example:'我愛閱讀，我愛畫畫，我愛觀察小小的蟲子。（<span class="hl">排比</span>）'},
+    {type:'teach',char:'設問',emoji:'❓',meaning:'自己先問一個問題，再自己回答，引起讀者注意',
+     talk:['第三種：<span class="char-big">設問</span>！','作者故意先「問」一個問題，然後自己「答」，讓讀者跟著想！','「什麼是真正的朋友？真正的朋友是在你難過時陪著你的人。」','先問再答，讀的人就會忍不住跟著想答案！'],
+     example:'為什麼天空是藍色的？因為陽光裡的藍光最容易被空氣散開。（<span class="hl">設問</span>）'},
+    {type:'observe',q:'🔍 觀察題：「他跑得比風還快！」用了哪一種修辭？',hint:'真的能比風快嗎？這是故意說得很大',
+     opts:[{t:'誇飾（故意誇大）',c:true},{t:'排比',c:false},{t:'設問',c:false},{t:'擬人',c:false}],
+     okMsg:'對！人不可能比風快，這是故意誇大來表現「跑得很快」，是誇飾！',failMsg:'比風還快是不可能的，故意說得很大就是誇飾！'},
+    {type:'observe',q:'🔍 找規律：下面哪一句是「排比」？',hint:'找三個以上句型一樣的句子',
+     opts:[{t:'風在唱歌，雨在跳舞，雲在微笑。',c:true},{t:'風吹來了，好涼快。',c:false},{t:'誰最愛我？媽媽最愛我。',c:false},{t:'我的書包重得像一座山。',c:false}],
+     okMsg:'找到了！「○在○○」重複三次，有節奏，是排比！（它同時也用了擬人喔！）',failMsg:'風在唱歌、雨在跳舞、雲在微笑——三個相同句型排在一起，是排比！'},
+    {type:'test',q:'「我的作業多到可以堆成一座山。」是哪一種修辭？',opts:['誇飾','排比','設問','比喻'],ans:'誇飾',hint:'作業真的能堆成山嗎？故意說得很大⋯⋯'},
+    {type:'test',q:'「誰是最辛苦的人？是每天早起做早餐的媽媽。」是哪一種修辭？',opts:['設問','誇飾','排比','擬人'],ans:'設問',hint:'先問再自己回答⋯⋯'},
+    {type:'test',q:'排比至少要有幾個句型相同的句子？',opts:['三個','兩個','一個','五個'],ans:'三個',hint:'「排」成一排要有幾個？比兩個多⋯⋯'},
   ]},
-  {chapter:'🌸 第4章：比喻和擬人！',story:'用比喻和擬人，讓你的作文讓老師驚艷！小蛹的觀察力剛好能發現這些技巧！',
+  {chapter:'🔗 第4章：關聯詞升級！',story:'三年級學過基本關聯詞，四年級再學更多組合！用對了，句子的邏輯才會清楚！',
    units:[
-    {type:'teach',char:'比喻',emoji:'🌙',pinyin:'ㄅㄧˇ ㄩˋ',meaning:'把一件事比作另一件相似的事',
-     talk:['<span class="char-big">比喻</span>讓文章更生動！','常用「像」、「好像」、「如」來比喻！','「月亮像一個大圓餅」！'],
-     example:'蝴蝶的翅膀<span class="hl">像</span>一幅美麗的彩色圖畫。'},
-    {type:'teach',char:'擬人',emoji:'🌱',pinyin:'ㄋㄧˇ ㄖㄣˊ',meaning:'把事物當作人，賦予人的動作或感情',
-     talk:['<span class="char-big">擬人</span>讓萬物有生命！','把花草、動物寫成像人一樣！','「花朵微笑著向我招手」！'],
-     example:'春天來了，小草<span class="hl">探出頭來</span>，好奇地看著世界。'},
-    {type:'observe',q:'🔍 找不同：下面四個句子，哪一個用了「擬人」（把東西當人寫）？',hint:'找動作或情感是「只有人才有的」的那句',
-     opts:[{t:'太陽公公笑著照耀大地',c:true},{t:'太陽很熱',c:false},{t:'天空像一塊藍色的布',c:false},{t:'天氣很好',c:false}],
-     okMsg:'找到了！太陽公公「笑」是把太陽當人寫，這就是擬人！',
-     failMsg:'「笑」是人才有的動作！太陽公公「笑」著，把太陽當人，這是擬人！'},
-    {type:'observe',q:'🔍 分辨：「彩虹像橋梁」和「彩虹伸出雙手迎接太陽」，有什麼不同？',hint:'哪個用了「像」比較？哪個讓彩虹有了人的動作？',
-     opts:[{t:'前句是比喻，後句是擬人',c:true},{t:'兩句都是比喻',c:false},{t:'兩句都是擬人',c:false},{t:'前句是擬人，後句是比喻',c:false}],
-     okMsg:'完全正確！用「像」比較是比喻，讓東西有人的動作是擬人！',
-     failMsg:'彩虹「像」橋梁→比喻；彩虹「伸出雙手」→擬人（手是人才有的）！'},
-    {type:'practice',char:'比喻',pinyin:'ㄅㄧˇ ㄩˋ',q:'哪個句子用了比喻？',hint:'找用「像」比較的句子',
-     opts:[{t:'彩虹像橋梁掛在天空',c:true},{t:'今天下了很大的雨',c:false},{t:'我昨天回家了',c:false},{t:'小明跑步很快',c:false}],
-     okMsg:'彩虹像橋梁！這是比喻！',failMsg:'比喻要用「像」把兩件事比較，「彩虹像橋梁」才是比喻！'},
-    {type:'observe',q:'🔍 找不同：「春天有花香，夏天有蟬鳴，秋天有楓紅」，這三句有什麼規律？',hint:'注意每句的結構',
-     opts:[{t:'每句都是「季節+有+事物」的相同結構，這是排比',c:true},{t:'每句都押韻',c:false},{t:'每句都有比喻',c:false},{t:'每句都有擬人',c:false}],
-     okMsg:'發現了！三個相同句式排列叫「排比」！讀起來很有力量！',
-     failMsg:'三句都是「季節+有+特徵」的相同結構，這就是「排比」修辭！'},
-    {type:'test',q:'「月亮像盤子一樣圓」用了什麼修辭？',opts:['比喻','擬人','排比','押韻'],ans:'比喻',hint:'用「像」比較⋯⋯'},
-    {type:'test',q:'「小草伸個懶腰迎接春天」用了什麼修辭？',opts:['擬人','比喻','排比','誇飾'],ans:'擬人',hint:'小草被寫成人⋯⋯'},
-    {type:'test',q:'三個或以上相同句式排列叫什麼修辭？',opts:['排比','比喻','擬人','押韻'],ans:'排比',hint:'相同句式重複⋯⋯'},
+    {type:'teach',char:'關聯詞',emoji:'🔗',meaning:'把兩個句子連起來，並表示它們關係的詞',
+     talk:['四年級的<span class="char-big">關聯詞</span>升級版！','<span class="hl">不但⋯⋯而且⋯⋯</span>：更進一步（不但會唱歌，而且會跳舞）','<span class="hl">雖然⋯⋯但是⋯⋯</span>：轉折（雖然下雨，但是我們還是去了）','<span class="hl">如果⋯⋯就⋯⋯</span>：假設（如果明天放晴，我們就去野餐）','<span class="hl">無論⋯⋯都⋯⋯</span>：不管怎樣都一樣（無論颳風下雨，他都準時到）'],
+     example:'小蛹<span class="hl">不但</span>會觀察，<span class="hl">而且</span>會推理。'},
+    {type:'teach',char:'與其⋯不如',emoji:'⚖️',meaning:'比較兩件事，選後面那一件比較好',
+     talk:['一組比較難的：<span class="char-big">與其⋯⋯不如⋯⋯</span>','意思是「做前面那件事，不如做後面那件事」！','「與其在家發呆，不如出去運動。」——選擇出去運動！','重點：「不如」後面那個，才是作者覺得比較好的！'],
+     example:'<span class="hl">與其</span>擔心考不好，<span class="hl">不如</span>現在開始複習。'},
+    {type:'practice',q:'「___天氣很冷，___他還是去晨跑。」要填哪一組關聯詞？',hint:'前後是「轉折」的關係：冷，卻還是去',
+     opts:[{t:'雖然⋯⋯但是⋯⋯',c:true},{t:'不但⋯⋯而且⋯⋯',c:false},{t:'如果⋯⋯就⋯⋯',c:false},{t:'因為⋯⋯所以⋯⋯',c:false}],
+     okMsg:'對！天氣冷「卻」還是去，前後轉折，用雖然⋯⋯但是⋯⋯！',failMsg:'冷是不想去的理由，但他還是去了，這是轉折，用雖然⋯⋯但是！'},
+    {type:'observe',q:'🔍 找錯誤：「因為他很努力，但是他考了第一名。」這句話哪裡怪怪的？',hint:'努力和考第一名是什麼關係？',
+     opts:[{t:'努力和考第一名是因果，應該用「所以」不是「但是」',c:true},{t:'應該用「雖然」',c:false},{t:'沒有錯',c:false},{t:'應該用「如果」',c:false}],
+     okMsg:'抓到了！因為努力「所以」考第一，是因果關係；「但是」是轉折，用錯了！',failMsg:'「因為」要配「所以」！努力→考第一名是因果關係，不是轉折！'},
+    {type:'observe',q:'🔍 推理題：「與其在家看電視，不如去圖書館看書。」作者比較想做哪一件事？',hint:'「不如」後面的那件事',
+     opts:[{t:'去圖書館看書',c:true},{t:'在家看電視',c:false},{t:'兩件都想做',c:false},{t:'兩件都不想做',c:false}],
+     okMsg:'對！「不如」後面的才是作者覺得比較好的選擇！',failMsg:'與其A不如B，意思是B比A好！作者想去圖書館看書！'},
+    {type:'test',q:'「___明天下雨，運動會___延期。」填哪一組？',opts:['如果⋯⋯就⋯⋯','雖然⋯⋯但是⋯⋯','不但⋯⋯而且⋯⋯','與其⋯⋯不如⋯⋯'],ans:'如果⋯⋯就⋯⋯',hint:'明天下雨是「假設」⋯⋯'},
+    {type:'test',q:'「___多忙，媽媽___會陪我讀書。」填哪一組？',opts:['無論⋯⋯都⋯⋯','如果⋯⋯就⋯⋯','因為⋯⋯所以⋯⋯','與其⋯⋯不如⋯⋯'],ans:'無論⋯⋯都⋯⋯',hint:'不管怎麼樣都一樣⋯⋯'},
+    {type:'test',q:'「他___會畫畫，___會彈琴。」填哪一組？',opts:['不但⋯⋯而且⋯⋯','雖然⋯⋯但是⋯⋯','如果⋯⋯就⋯⋯','與其⋯⋯不如⋯⋯'],ans:'不但⋯⋯而且⋯⋯',hint:'兩個都會，更進一步⋯⋯'},
   ]},
-  {chapter:'🔍 第5章：語詞填空挑戰！',story:'填空題要找最適合的詞！小蛹的觀察力能幫你看出哪個詞最對！',
+  {chapter:'👀 第5章：的得地、在再、做作！',story:'這些字長得像或唸起來一樣，連大人都常寫錯！小蛹的觀察力正好派上用場！',
    units:[
-    {type:'teach',char:'語境',emoji:'📋',pinyin:'ㄩˇ ㄐㄧㄥˋ',meaning:'語詞所在的句子環境，決定用哪個詞',
-     talk:['填空要看<span class="char-big">語境</span>！','「小蛹___地飛到花朵上」——前後文說的是飛翔，要選描述飛翔的詞！','「輕盈」比「沉重」更適合描述飛翔！'],
-     example:'小蛹<span class="hl">輕盈</span>地飛到花朵上。（輕盈符合飛翔的語境）'},
-    {type:'observe',q:'🔍 找不同：「輕盈、沉重、快速、緩慢」四個詞，哪個最適合描述蝴蝶飛翔？',hint:'蝴蝶的翅膀輕，飛起來是什麼感覺？',
-     opts:[{t:'輕盈（輕巧優雅）',c:true},{t:'沉重（很重很慢）',c:false},{t:'快速（很急很快）',c:false},{t:'緩慢（非常慢）',c:false}],
-     okMsg:'輕盈！蝴蝶翅膀薄而輕，飛起來優雅！觀察力準確！',
-     failMsg:'蝴蝶翅膀又薄又輕，飛起來是輕盈的感覺！'},
-    {type:'teach',char:'量詞',emoji:'🔢',pinyin:'ㄌㄧㄤˋ ㄘˊ',meaning:'計算數量時用的詞，不同東西用不同量詞',
-     talk:['<span class="char-big">量詞</span>要配對！','一「隻」蝴蝶，一「棵」樹，一「片」葉子，一「本」書！','不同東西用不同量詞，搞混了會很奇怪！'],
-     example:'花園裡有三<span class="hl">朵</span>花、兩<span class="hl">棵</span>樹和一<span class="hl">群</span>蝴蝶。'},
-    {type:'observe',q:'🔍 找錯誤：下面哪個量詞用法是「錯的」？',hint:'想想每個東西應該用什麼量詞',
-     opts:[{t:'一棵魚（魚要用「條」）',c:true},{t:'一條魚',c:false},{t:'一本書',c:false},{t:'一隻鳥',c:false}],
-     okMsg:'找到錯誤了！魚要用「條」，不能用「棵」（棵是植物的量詞）！',
-     failMsg:'「棵」是植物的量詞（一棵樹），魚要用「條」！一條魚才對！'},
-    {type:'observe',q:'🔍 配對觀察：「一___鳥」「一___花」「一___書」，正確量詞順序是？',hint:'想想鳥、花、書各應該用什麼量詞',
-     opts:[{t:'隻、朵、本',c:true},{t:'條、棵、冊',c:false},{t:'個、株、張',c:false},{t:'隻、棵、冊',c:false}],
-     okMsg:'全對！一隻鳥、一朵花、一本書！量詞配對完美！',
-     failMsg:'鳥→隻，花→朵，書→本！每種東西都有對應的量詞！'},
-    {type:'test',q:'「___的蝴蝶飛來飛去」，空格適合填入？',opts:['美麗','跑步','書本','而且'],ans:'美麗',hint:'形容蝴蝶的詞⋯⋯'},
-    {type:'test',q:'「一___書」的量詞應填？',opts:['本','條','朵','棵'],ans:'本',hint:'書用什麼計算？⋯⋯'},
-    {type:'test',q:'填空時最重要的是什麼？',opts:['看前後文的語境','選最長的詞','選最短的詞','選自己喜歡的詞'],ans:'看前後文的語境',hint:'語境決定用哪個詞⋯⋯'},
+    {type:'teach',char:'的/得/地',emoji:'🔤',meaning:'三個都唸ㄉㄜ˙，用法卻不一樣',
+     talk:['最常寫錯的三兄弟：<span class="char-big">的、得、地</span>！','<span class="hl">的</span>＋名詞：美麗的花、我的書','<span class="hl">地</span>＋動作：慢慢地走、開心地笑（「地」後面是在做什麼）','動作＋<span class="hl">得</span>＋怎麼樣：跑得很快、笑得很大聲（「得」前面是動作，後面說做得如何）','口訣：的後名詞、地後動作、得在動作後面補充！'],
+     example:'小蛹<span class="hl">開心地</span>跑向<span class="hl">美麗的</span>花園，跑<span class="hl">得</span>滿頭大汗。'},
+    {type:'teach',char:'在/再',emoji:'📍',meaning:'在＝地點或正在；再＝又一次、然後',
+     talk:['<span class="char-big">在</span> 和 <span class="char-big">再</span>！','<span class="hl">在</span>：表示「地點」或「正在」——我在學校、我在看書','<span class="hl">再</span>：表示「又一次」或「然後」——再來一次、吃完再玩','口訣：「在」有地方，「再」是再一次！'],
+     example:'我<span class="hl">在</span>公園等你，你吃完飯<span class="hl">再</span>來。'},
+    {type:'practice',q:'「他跑___很快。」要填哪個字？',hint:'「跑」是動作，後面補充跑得怎麼樣',
+     opts:[{t:'得',c:true},{t:'的',c:false},{t:'地',c:false},{t:'在',c:false}],
+     okMsg:'對！動作「跑」後面補充「很快」，用「得」！',failMsg:'跑（動作）＋得＋很快（怎麼樣）：動作後面補充用「得」！'},
+    {type:'practice',q:'「寫完功課___去玩。」要填哪個字？',hint:'先寫完，「然後」去玩',
+     opts:[{t:'再',c:true},{t:'在',c:false},{t:'載',c:false},{t:'栽',c:false}],
+     okMsg:'對！先寫完「然後」去玩，是「再」！',failMsg:'「再」是然後、又一次；「在」是地點。寫完再去玩用「再」！'},
+    {type:'observe',q:'🔍 找錯誤：「小蛹慢慢的走進教室，安靜地坐下。」哪個字用錯了？',hint:'「走」是動作，前面修飾動作用哪個字？',
+     opts:[{t:'「慢慢的」應該是「慢慢地」（後面是動作「走」）',c:true},{t:'「安靜地」應該是「安靜的」',c:false},{t:'沒有錯',c:false},{t:'「教室」寫錯了',c:false}],
+     okMsg:'好眼力！「走」是動作，前面要用「地」：慢慢地走！「安靜地坐下」是對的！',failMsg:'「慢慢的走」錯了！走是動作，要用「地」：慢慢地走！'},
+    {type:'observe',q:'🔍 找不同：「做」和「作」都唸ㄗㄨㄛˋ。「___功課」「___事」「工___」「___文」，哪一個要用「做」？',hint:'「做」通常是用手實際去做；「作」多用在固定的詞語，像作文、工作',
+     opts:[{t:'做事（實際動手去做）',c:true},{t:'作文→做文',c:false},{t:'工作→工做',c:false},{t:'四個都用「做」',c:false}],
+     okMsg:'對！做事、做功課用「做」；作文、工作是固定詞語用「作」！',failMsg:'做事、做功課（實際動手）用「做」；作文、工作（固定詞）用「作」！'},
+    {type:'test',q:'「美麗___花園」填哪個字？',opts:['的','得','地','在'],ans:'的',hint:'後面是名詞「花園」⋯⋯'},
+    {type:'test',q:'「他開心___笑了。」填哪個字？',opts:['地','的','得','再'],ans:'地',hint:'後面是動作「笑」⋯⋯'},
+    {type:'test',q:'「我___家裡等你。」填哪個字？',opts:['在','再','載','栽'],ans:'在',hint:'家裡是地點⋯⋯'},
   ]},
-  {chapter:'⚖️ 第6章：近義詞和反義詞！',story:'有些詞意思差不多，有些相反！找出差異是小蛹最擅長的！',
+  {chapter:'✒️ 第6章：標點符號大集合！',story:'逗號句號太簡單了！冒號、引號、分號、刪節號、破折號⋯⋯每個符號都有自己的工作！',
    units:[
-    {type:'teach',char:'近義詞',emoji:'≈',pinyin:'ㄐㄧㄣˋ ㄧˋ ㄘˊ',meaning:'意思相近或相同的詞',
-     talk:['<span class="char-big">近義詞</span>是意思很像的詞！','美麗≈漂亮，快樂≈高興，努力≈用功！','會用近義詞，作文不會重複！'],
-     example:'她很<span class="hl">美麗</span>（也可以說<span class="hl">漂亮</span>）。'},
-    {type:'teach',char:'反義詞',emoji:'↔️',pinyin:'ㄈㄢˇ ㄧˋ ㄘˊ',meaning:'意思相反的詞',
-     talk:['<span class="char-big">反義詞</span>是意思相反的詞！','快樂↔悲傷，勤奮↔懶惰，美麗↔醜陋！','用反義詞可以形成強烈對比！'],
-     example:'他很<span class="hl">勤奮</span>，不<span class="hl">懶惰</span>。（反義詞對比）'},
-    {type:'observe',q:'🔍 找不同：「快樂、高興、開心、悲傷」，哪一個和其他三個不同？',hint:'其中三個意思相近，一個意思相反',
-     opts:[{t:'悲傷（其他三個都是快樂的意思）',c:true},{t:'快樂',c:false},{t:'高興',c:false},{t:'開心',c:false}],
-     okMsg:'找到了！快樂、高興、開心是近義詞，悲傷是它們的反義詞！',
-     failMsg:'快樂≈高興≈開心，這三個意思相近；悲傷是它們的反義詞！'},
-    {type:'observe',q:'🔍 配對挑戰：「寬容」的近義詞是？反義詞是？',hint:'寬容是不計較、包容；找意思接近和相反的詞',
-     opts:[{t:'近義詞是「包容」，反義詞是「苛刻」',c:true},{t:'近義詞是「苛刻」，反義詞是「包容」',c:false},{t:'近義詞和反義詞都是「善良」',c:false},{t:'近義詞是「狹隘」，反義詞是「包容」',c:false}],
-     okMsg:'完全正確！包容≈寬容，苛刻↔寬容！同時找到近義詞和反義詞！',
-     failMsg:'包容和寬容意思接近（都是不計較）；苛刻和寬容意思相反！'},
-    {type:'practice',char:'近義詞',pinyin:'ㄐㄧㄣˋ ㄧˋ ㄘˊ',q:'「努力」的近義詞是？',hint:'意思很像「努力」的詞',
-     opts:[{t:'用功',c:true},{t:'懶惰',c:false},{t:'放棄',c:false},{t:'休息',c:false}],
-     okMsg:'用功！努力和用功意思很近！',failMsg:'努力≈用功，都是認真做事的意思！'},
-    {type:'test',q:'「快樂」的近義詞是？',opts:['高興','悲傷','煩惱','恐懼'],ans:'高興',hint:'意思接近快樂⋯⋯'},
-    {type:'test',q:'「勤奮」的反義詞是？',opts:['懶惰','努力','用功','積極'],ans:'懶惰',hint:'和勤奮意思相反⋯⋯'},
-    {type:'test',q:'「快樂、高興、開心」三個詞的關係是？',opts:['近義詞','反義詞','同音字','量詞'],ans:'近義詞',hint:'意思都差不多⋯⋯'},
+    {type:'teach',char:'標點符號',emoji:'✒️',meaning:'幫助讀者理解句子停頓和語氣的符號',
+     talk:['四年級要認識更多<span class="char-big">標點符號</span>！','<span class="hl">冒號：</span>用在「說」的後面，或要列舉東西之前——媽媽說：「快來吃飯。」','<span class="hl">引號「」</span>把人說的話、或特別強調的詞框起來','<span class="hl">頓號、</span>用在並列的詞之間——蘋果、香蕉、橘子','<span class="hl">分號；</span>分開兩個並列的長句子——白天很熱；晚上卻很涼。'],
+     example:'老師說：「明天要帶水彩、畫筆、調色盤。」'},
+    {type:'teach',char:'刪節號 破折號',emoji:'➖',meaning:'刪節號⋯⋯表示省略或停頓；破折號——表示解釋或轉折',
+     talk:['兩個長長的符號！','<span class="hl">刪節號⋯⋯</span>（六個點）：表示話沒說完、省略、或猶豫——「我⋯⋯我不是故意的。」','<span class="hl">破折號——</span>（兩個字長的橫線）：用來解釋說明，或語氣突然轉變——「我最愛的動物——貓，今天生了小貓。」','小祕訣：刪節號是「沒說完」，破折號是「補充說明」！'],
+     example:'她小聲地說：「我的作業⋯⋯忘在家裡了。」'},
+    {type:'practice',q:'「我喜歡的水果有蘋果___香蕉___西瓜。」要填哪個符號？',hint:'並列的詞之間',
+     opts:[{t:'頓號（、）',c:true},{t:'句號（。）',c:false},{t:'冒號（：）',c:false},{t:'引號（「」）',c:false}],
+     okMsg:'對！並列的詞語之間用頓號！',failMsg:'蘋果、香蕉、西瓜是並列的詞，中間用頓號（、）！'},
+    {type:'observe',q:'🔍 找錯誤：「媽媽說，「今天要早點睡。」」這句話哪裡錯了？',hint:'「說」後面要用什麼符號？',
+     opts:[{t:'「說」後面應該用冒號（：），不是逗號',c:true},{t:'不應該用引號',c:false},{t:'句號應該在引號外面',c:false},{t:'沒有錯',c:false}],
+     okMsg:'好眼力！「說」後面接人家講的話，要用冒號：媽媽說：「今天要早點睡。」',failMsg:'「說」後面引出說的話，要用冒號（：）：媽媽說：「今天要早點睡。」'},
+    {type:'observe',q:'🔍 推理題：「他看著天空，想了很久⋯⋯」這裡的刪節號表示什麼？',hint:'六個點代表話還沒說完或停頓',
+     opts:[{t:'他的話或想法還沒說完，留給讀者想像',c:true},{t:'他說了六句話',c:false},{t:'天空有六朵雲',c:false},{t:'句子寫錯了',c:false}],
+     okMsg:'對！刪節號表示「還沒說完」，讓讀者自己想像他在想什麼！',failMsg:'刪節號（⋯⋯）表示話沒說完或停頓，留下想像空間！'},
+    {type:'test',q:'「老師說___「大家要認真聽。」」填哪個符號？',opts:['冒號（：）','逗號（，）','句號（。）','頓號（、）'],ans:'冒號（：）',hint:'「說」後面要引出說的話⋯⋯'},
+    {type:'test',q:'哪個符號是用來「補充說明」的？',opts:['破折號（——）','刪節號（⋯⋯）','頓號（、）','問號（？）'],ans:'破折號（——）',hint:'兩個字長的橫線⋯⋯'},
+    {type:'test',q:'「我⋯⋯我真的不知道。」刪節號表示什麼？',opts:['說話猶豫、停頓','很生氣','很開心','列舉東西'],ans:'說話猶豫、停頓',hint:'說「我」之後停了一下⋯⋯'},
   ]},
-  {chapter:'🔍 第7章：找出文章的秘密！',story:'文章裡藏著很多線索！小蛹的觀察力是閱讀理解最好的武器！',
+  {chapter:'🔍 第7章：閱讀理解升級！',story:'四年級的文章更長了！要學會找段落大意、分辨「事實」和「意見」，這正是偵探的基本功！',
    units:[
-    {type:'teach',char:'主旨',emoji:'🎯',pinyin:'ㄓㄨˇ ㄓˋ',meaning:'文章最主要想說的意思',
-     talk:['<span class="char-big">主旨</span>是文章的靈魂！','讀完文章問自己：「這篇文章最主要說什麼？」','其他所有句子都是圍繞主旨展開的！'],
-     example:'一篇說「蝴蝶努力破蛹而出」的文章，主旨是<span class="hl">努力才能成長</span>。'},
-    {type:'observe',q:'🔍 推理題：文章說「小蛹每天練習，雖然困難，但她從不放棄，最後終於飛起來了」。主旨是？',hint:'這篇文章想告訴讀者什麼道理？',
-     opts:[{t:'堅持努力就能成功',c:true},{t:'蝴蝶很漂亮',c:false},{t:'學習很辛苦',c:false},{t:'小蛹住在花園',c:false}],
-     okMsg:'推理正確！文章強調「困難→不放棄→成功」，主旨是堅持努力！',
-     failMsg:'文章的重點是「困難但不放棄最後成功」，主旨是堅持努力才能成功！'},
-    {type:'observe',q:'🔍 找線索：文章說「小蛹帶了雨傘和雨衣出門」，可以推論天氣怎麼樣？',hint:'為什麼要帶雨傘和雨衣？',
-     opts:[{t:'天氣可能會下雨',c:true},{t:'今天是晴天',c:false},{t:'小蛹喜歡雨傘',c:false},{t:'天氣很冷',c:false}],
-     okMsg:'推理正確！帶雨傘雨衣→預防下雨→天氣可能會下雨！這就是從線索推論！',
-     failMsg:'帶雨傘和雨衣是為了防雨，所以可以推論可能會下雨！'},
-    {type:'observe',q:'🔍 找細節：「三月一日早上，小蛹第一次飛翔」，哪個是「細節」？',hint:'具體的時間、地點、人物就是細節',
-     opts:[{t:'三月一日早上（具體時間）',c:true},{t:'堅持努力才能成功',c:false},{t:'蝴蝶可以飛',c:false},{t:'努力很重要',c:false}],
-     okMsg:'找到了！「三月一日早上」是具體的時間，這就是細節！',
-     failMsg:'具體的時間（三月一日早上）是細節；「堅持努力才能成功」才是主旨！'},
-    {type:'observe',q:'🔍 觀察：「主旨」和「細節」有什麼本質區別？',hint:'一個是「整體觀念」，一個是「具體事實」',
-     opts:[{t:'主旨是整體觀念；細節是具體事實和描述',c:true},{t:'主旨比細節長',c:false},{t:'細節比主旨重要',c:false},{t:'兩個一樣',c:false}],
-     okMsg:'觀察到本質差異了！主旨是整體的道理，細節是具體的描述！',
-     failMsg:'主旨是整篇文章最主要的觀念；細節是具體的時間、地點、人物描述！'},
-    {type:'test',q:'文章的「主旨」是指什麼？',opts:['文章最主要想說的意思','文章有多長','第一句話','文章的標題'],ans:'文章最主要想說的意思',hint:'整篇文章最想說的⋯⋯'},
-    {type:'test',q:'從文章線索推測文章沒說出的事叫做？',opts:['推論','細節','主旨','比喻'],ans:'推論',hint:'根據線索猜測⋯⋯'},
-    {type:'test',q:'「具體的時間、地點、描述」叫做文章的？',opts:['細節','主旨','推論','修辭'],ans:'細節',hint:'具體的說明⋯⋯'},
+    {type:'teach',char:'段落大意',emoji:'📄',meaning:'一段文章最主要在講的那一件事',
+     talk:['長文章怎麼讀？先抓每一段的<span class="char-big">段落大意</span>！','祕訣1：大意常常藏在段落的<span class="hl">第一句</span>或<span class="hl">最後一句</span>！','祕訣2：把這一段用一句話說完——「這段在講什麼？」','祕訣3：把每段的大意串起來，就是整篇文章的<span class="hl">主旨</span>！'],
+     example:'「蜜蜂很勤勞。牠們天一亮就出門採蜜，直到天黑才回家。」→ 大意：蜜蜂很勤勞。'},
+    {type:'teach',char:'事實與意見',emoji:'⚖️',meaning:'事實是可以查證的；意見是個人的想法',
+     talk:['偵探必學：分辨<span class="char-big">事實</span>和<span class="char-big">意見</span>！','<span class="hl">事實</span>：可以查證、不會因人而異——「台灣最高的山是玉山。」','<span class="hl">意見</span>：是個人的想法或感覺——「玉山是最美的山。」','線索：看到「我覺得」「最美」「應該」「很棒」這類詞，多半是意見！'],
+     example:'事實：蝴蝶有四片翅膀。　意見：蝴蝶是最可愛的昆蟲。'},
+    {type:'observe',q:'🔍 觀察題：「蝸牛走得很慢，一小時只能爬幾公尺。牠的殼是用來保護自己的，遇到危險就縮進去。」這段的大意是？',hint:'整段都在介紹什麼？',
+     opts:[{t:'介紹蝸牛的特徵（走得慢、有殼保護）',c:true},{t:'蝸牛很可愛',c:false},{t:'蝸牛一小時走幾公尺',c:false},{t:'蝸牛遇到危險',c:false}],
+     okMsg:'對！整段都在介紹蝸牛的特徵，其他選項只是其中一個細節！',failMsg:'大意要能包含整段：這段在介紹蝸牛的特徵（慢、有殼）！其他只是細節！'},
+    {type:'observe',q:'🔍 找不同：下面哪一句是「意見」不是「事實」？',hint:'找有「感覺」「評價」的句子',
+     opts:[{t:'我覺得夏天是最棒的季節',c:true},{t:'一年有四個季節',c:false},{t:'夏天的白天比冬天長',c:false},{t:'台灣的夏天常常下午下雷陣雨',c:false}],
+     okMsg:'找到了！「我覺得⋯⋯最棒」是個人感覺，是意見！其他三句都可以查證！',failMsg:'「我覺得」「最棒」是個人想法，是意見！其他三句都是可以查證的事實！'},
+    {type:'observe',q:'🔍 推理題：「小蛹回到家，鞋子濕透了，雨傘卻是乾的。」可以推論什麼？',hint:'雨傘是乾的，表示她沒有撐傘⋯⋯那鞋子為什麼濕？',
+     opts:[{t:'她可能沒有撐傘，或是踩到水坑',c:true},{t:'今天沒有下雨',c:false},{t:'她的雨傘壞了',c:false},{t:'她沒有穿鞋子',c:false}],
+     okMsg:'好推理！雨傘乾表示沒撐傘，鞋子濕可能是淋雨或踩水——線索要合在一起想！',failMsg:'傘是乾的→沒撐傘；鞋子濕→可能淋雨或踩到水坑。兩個線索一起看！'},
+    {type:'test',q:'段落大意通常藏在段落的哪裡？',opts:['第一句或最後一句','正中間','標題裡','不在文章裡'],ans:'第一句或最後一句',hint:'開頭或結尾⋯⋯'},
+    {type:'test',q:'哪一句是「事實」？',opts:['地球繞著太陽轉','地球是最漂亮的星球','我覺得太陽很熱','大家應該多看星星'],ans:'地球繞著太陽轉',hint:'可以查證、不是個人感覺的那一句⋯⋯'},
+    {type:'test',q:'「他一進門就把書包丟在地上，躺到沙發上。」可以推論他怎麼樣？',opts:['很累或心情不好','很開心','剛起床','要出門'],ans:'很累或心情不好',hint:'丟書包、躺沙發是什麼狀態？'},
   ]},
-  {chapter:'🎵 第8章：詩歌的音樂性！',story:'詩歌是語言最美的樣子！今天用你的耳朵和眼睛一起欣賞！',
+  {chapter:'🏗️ 第8章：文章的骨架！',story:'一篇好文章就像蓋房子，要有骨架！六何法、起承轉合、順序詞，學會了寫作文就不怕沒東西寫！',
    units:[
-    {type:'teach',char:'押韻',emoji:'🎶',pinyin:'ㄧㄚ ㄩㄣˋ',meaning:'詩歌句子結尾發音相同或相似',
-     talk:['<span class="char-big">押韻</span>讓詩歌好聽！','「床前明月光，疑是地上霜」——「光」和「霜」押韻！','句尾的發音相似，讀起來像音樂！'],
-     example:'床前明月<span class="hl">光</span>，疑是地上<span class="hl">霜</span>。（光和霜押韻）'},
-    {type:'observe',q:'🔍 找押韻：「春天花兒香，蝴蝶滿園___」，哪個字能和「香」押韻？',hint:'找和「香」尾音相似的字（ㄤ結尾）',
-     opts:[{t:'飛翔（翔=ㄒㄧㄤˊ，和香ㄤ押韻）',c:true},{t:'飛舞（舞=ㄨˇ，不押韻）',c:false},{t:'蛻變（變=ㄅㄧㄢˋ，不押韻）',c:false},{t:'美麗（麗=ㄌㄧˋ，不押韻）',c:false}],
-     okMsg:'找到了！香（ㄤ）和翔（ㄤ）押韻！耳朵很靈！',
-     failMsg:'押韻就是句尾發音相似，「香」的尾音是ㄤ，「翔」也是ㄤ！'},
-    {type:'observe',q:'🔍 找不同：下面哪兩句押韻了？',hint:'注意每句最後一個字的發音',
-     opts:[{t:'「春來花自香，夏到風送涼」（香/涼都有ㄤ）',c:true},{t:'「春天真美麗，花朵開放了」（麗/了不押韻）',c:false},{t:'「小蛹飛翔，蝴蝶漂亮」（翔/亮不押韻）',c:false},{t:'「今天天氣好，我要去上學」（好/學不押韻）',c:false}],
-     okMsg:'找出押韻了！香（ㄤ）和涼（ㄤ）！耳朵很準！',
-     failMsg:'「香」尾音ㄤ，「涼」尾音ㄤ，兩個相同！其他句子最後的字尾音不同！'},
-    {type:'teach',char:'意象',emoji:'🖼️',pinyin:'ㄧˋ ㄒㄧㄤˋ',meaning:'詩歌中用來表達情感的具體事物',
-     talk:['<span class="char-big">意象</span>是詩歌的語言！','詩人用「月亮」表達思念，用「梅花」表達堅強！','找出意象，就能讀懂詩歌的情感！'],
-     example:'「月亮」在詩中常是<span class="hl">思念家鄉</span>的意象。'},
-    {type:'observe',q:'🔍 觀察：同一首詩裡「梅花」和「松樹」都在寒冬中生長，它們常被用來表達什麼情感？',hint:'梅花和松樹在嚴寒中還能生長，這代表什麼？',
-     opts:[{t:'堅強不屈、不畏困難',c:true},{t:'思念家鄉',c:false},{t:'喜悅快樂',c:false},{t:'春天到了',c:false}],
-     okMsg:'觀察到了！在逆境中仍然生長，代表堅強不屈！',
-     failMsg:'梅花和松樹在嚴冬中生長，代表面對困難也不放棄，象徵堅強不屈！'},
-    {type:'test',q:'詩句結尾發音相似叫做？',opts:['押韻','節奏','意象','意境'],ans:'押韻',hint:'尾音相似⋯⋯'},
-    {type:'test',q:'「月亮」在詩中常表達什麼情感？',opts:['思念家鄉','很快樂','很勇敢','春天到了'],ans:'思念家鄉',hint:'月亮讓人想到⋯⋯'},
-    {type:'test',q:'找押韻：「小蛹展翅翔，彩蝶飛四___」，填哪個字？',opts:['方','飛','美','高'],ans:'方',hint:'翔的尾音是ㄤ，找同尾音⋯⋯'},
+    {type:'teach',char:'六何法',emoji:'🧱',meaning:'何人、何時、何地、何事、為何、如何——記敘文的六個要素',
+     talk:['記敘文的骨架：<span class="char-big">六何法</span>！','<span class="hl">何人</span>（誰）、<span class="hl">何時</span>（什麼時候）、<span class="hl">何地</span>（在哪裡）','<span class="hl">何事</span>（發生什麼事）、<span class="hl">為何</span>（為什麼）、<span class="hl">如何</span>（結果怎麼樣）','寫作文前先把六個問題答一遍，內容就不會空空的！'],
+     example:'上星期六（何時），小蛹（何人）在公園（何地）撿到一隻受傷的小鳥（何事），因為牠飛不動（為何），就帶回家照顧到牠康復（如何）。'},
+    {type:'teach',char:'起承轉合',emoji:'🎢',meaning:'文章的四個部分：開頭、發展、轉折、結尾',
+     talk:['文章的四段結構：<span class="char-big">起承轉合</span>！','<span class="hl">起</span>：開頭，交代人物和背景','<span class="hl">承</span>：接著發展，事情怎麼進行','<span class="hl">轉</span>：轉折！發生意外或變化，最精彩的地方','<span class="hl">合</span>：結尾，事情怎麼結束，學到什麼','順序詞幫你串起來：首先→接著→然後→最後！'],
+     example:'起：我們去爬山。承：一路上很順利。轉：突然下起大雨！合：我們躲在亭子裡，學會了出門要看天氣。'},
+    {type:'practice',q:'「昨天下午，弟弟在客廳打破了花瓶。」這句話少了六何法的哪一個？',hint:'人、時、地、事都有了，少了⋯⋯',
+     opts:[{t:'為何（為什麼打破）和如何（結果怎麼樣）',c:true},{t:'何人',c:false},{t:'何時',c:false},{t:'何地',c:false}],
+     okMsg:'對！弟弟（人）昨天下午（時）在客廳（地）打破花瓶（事），但沒說為什麼、後來怎麼了！',failMsg:'人、時、地、事都有了，少了「為何」和「如何」！'},
+    {type:'observe',q:'🔍 找規律：「首先把麵粉倒進碗裡，接著加水攪拌，然後放進烤箱，最後拿出來放涼。」這段用什麼方法排順序？',hint:'注意「首先、接著、然後、最後」',
+     opts:[{t:'用順序詞按時間先後排列',c:true},{t:'按照大小排列',c:false},{t:'隨便排的',c:false},{t:'按照重要性排列',c:false}],
+     okMsg:'對！首先→接著→然後→最後，是按時間先後的順序詞！',failMsg:'首先、接著、然後、最後，是按照時間順序排的！'},
+    {type:'observe',q:'🔍 推理題：一篇文章寫「我們開心地出發去海邊⋯⋯突然，天空烏雲密布！」「突然」這句是起承轉合的哪一部分？',hint:'事情發生變化的地方',
+     opts:[{t:'轉（發生轉折和變化）',c:true},{t:'起（開頭）',c:false},{t:'承（發展）',c:false},{t:'合（結尾）',c:false}],
+     okMsg:'對！「突然⋯⋯」就是轉折的訊號，故事從這裡開始變化！',failMsg:'「突然」是轉折的訊號，事情發生變化，屬於「轉」！'},
+    {type:'test',q:'六何法裡的「何地」是指什麼？',opts:['在哪裡發生','發生什麼事','誰','為什麼'],ans:'在哪裡發生',hint:'「地」是地點⋯⋯'},
+    {type:'test',q:'起承轉合中，「最精彩、發生變化」的是哪一部分？',opts:['轉','起','承','合'],ans:'轉',hint:'轉折⋯⋯'},
+    {type:'test',q:'「首先、接著、然後、最後」這些是什麼詞？',opts:['順序詞','關聯詞','量詞','形容詞'],ans:'順序詞',hint:'排順序用的⋯⋯'},
   ]},
-  {chapter:'📬 第9章：應用文寫作！',story:'應用文是生活中真正用到的文章！學會了可以自己寫信、通知！',
+  {chapter:'📝 第9章：日記、便條、海報！',story:'三年級學了寫信，四年級學更多生活裡真的用得到的文章！日記、便條、海報，各有各的格式！',
    units:[
-    {type:'teach',char:'書信',emoji:'✉️',pinyin:'ㄕㄨ ㄒㄧㄣˋ',meaning:'寫給別人的信，有固定格式',
-     talk:['<span class="char-big">書信</span>格式很重要！','1. 稱呼（親愛的媽媽）','2. 正文（我想說的事）','3. 結尾敬語（祝您健康）','4. 落款（你的女兒 小蛹）'],
-     example:'親愛的媽媽：\n    今天學了成語，很開心！\n祝您 身體健康\n    女兒 <span class="hl">小蛹</span> 敬上'},
-    {type:'observe',q:'🔍 找問題：小蛹寫的信「媽媽，我今天很開心。小蛹」，少了什麼格式？',hint:'對照書信的四個部分，找出缺少哪一項',
-     opts:[{t:'少了稱呼格式（親愛的）和結尾敬語',c:true},{t:'沒有問題，格式正確',c:false},{t:'少了正文內容',c:false},{t:'只少了落款',c:false}],
-     okMsg:'找到問題了！稱呼應該是「親愛的媽媽：」，結尾要有「祝您健康」！',
-     failMsg:'稱呼要有「親愛的」和冒號，結尾要有祝福語，這兩個都少了！'},
-    {type:'teach',char:'通知',emoji:'📢',pinyin:'ㄊㄨㄥ ㄓ',meaning:'告訴大家某件事情，要清楚說明時間地點',
-     talk:['<span class="char-big">通知</span>要清楚！','通知要有：時間、地點、事情、對象！','「明天下午三點，全班在操場集合」！'],
-     example:'親愛的同學：\n    <span class="hl">明天（3/15）下午3點</span>，請在操場集合。\n    班長 小蛹'},
-    {type:'observe',q:'🔍 找不完整的通知：「請同學們明天集合。」這份通知缺少什麼？',hint:'一份好通知要有時間、地點、事情',
-     opts:[{t:'缺少地點（在哪集合？）',c:true},{t:'什麼都不缺',c:false},{t:'缺少時間',c:false},{t:'缺少事情',c:false}],
-     okMsg:'找到了！「明天」有時間，但沒說在哪裡集合，缺少地點！',
-     failMsg:'有「明天」（時間）、有「集合」（事情），但沒說「在哪裡」，缺少地點！'},
-    {type:'observe',q:'🔍 比較：書信和通知有什麼最大的不同？',hint:'書信是寫給一個人，通知是⋯⋯',
-     opts:[{t:'書信是寫給特定人；通知是給所有相關人',c:true},{t:'書信比通知長',c:false},{t:'通知比書信正式',c:false},{t:'兩種一樣',c:false}],
-     okMsg:'觀察到差異了！書信寫給特定的一個人，通知是給所有相關的人！',
-     failMsg:'書信是「親愛的媽媽」這樣寫給一個人；通知是「親愛的同學們」寫給所有人！'},
-    {type:'test',q:'書信的最後寫上自己名字叫做？',opts:['落款','稱呼','正文','敬語'],ans:'落款',hint:'信的最後面⋯⋯'},
-    {type:'test',q:'一份好通知最重要要說清楚什麼？',opts:['時間、地點、事情','很多形容詞','押韻的字','故事情節'],ans:'時間、地點、事情',hint:'讓人看懂⋯⋯'},
-    {type:'test',q:'書信開頭稱呼後面應該用什麼符號？',opts:['冒號（：）','句號（。）','逗號（，）','問號（？）'],ans:'冒號（：）',hint:'親愛的媽媽後面接⋯⋯'},
+    {type:'teach',char:'日記',emoji:'📔',meaning:'記錄一天發生的事和自己的感想',
+     talk:['<span class="char-big">日記</span>的格式！','第一行寫：<span class="hl">日期、星期、天氣</span>（例：十月二十五日　星期六　晴）','內容：今天發生了什麼事？（可以用六何法）','重點：一定要寫<span class="hl">自己的感想</span>——開心？難過？學到什麼？','日記是寫給自己看的，可以很誠實！'],
+     example:'十月二十五日　星期六　晴<br>今天和爸爸去爬山，看到一隻松鼠。我覺得牠的尾巴好像一把掃帚，真有趣！'},
+    {type:'teach',char:'便條',emoji:'📌',meaning:'留給別人的簡短字條',
+     talk:['<span class="char-big">便條</span>是短短的留言！四個部分：','1. <span class="hl">稱呼</span>（媽媽：）','2. <span class="hl">事情</span>（我去同學家寫功課，六點回來。）','3. <span class="hl">署名</span>（小蛹）','4. <span class="hl">日期時間</span>（10/25 下午3點）','便條要短、要清楚，別人一看就懂！'],
+     example:'媽媽：<br>我去小華家寫功課，六點以前回來。<br>小蛹　10/25 下午3:00'},
+    {type:'teach',char:'海報',emoji:'📢',meaning:'用大字和圖畫告訴很多人一件事',
+     talk:['<span class="char-big">海報</span>要讓人「一眼」看懂！五個要素：','<span class="hl">標題</span>（大大的字）、<span class="hl">時間</span>、<span class="hl">地點</span>、<span class="hl">活動內容</span>、<span class="hl">主辦人</span>','字要大、重點要少、最好有圖！','檢查：路過的人三秒內看得懂「什麼活動、何時、在哪」嗎？'],
+     example:'【跳蚤市場】<br>時間：11/1（六）上午9點<br>地點：學校操場<br>帶你的舊玩具來交換！<br>主辦：四年二班'},
+    {type:'practice',q:'日記的第一行通常要寫什麼？',hint:'三樣東西',
+     opts:[{t:'日期、星期、天氣',c:true},{t:'標題、作者、頁數',c:false},{t:'稱呼、署名',c:false},{t:'時間、地點、主辦人',c:false}],
+     okMsg:'對！日期、星期、天氣，三樣一起寫在第一行！',failMsg:'日記第一行：日期　星期　天氣！'},
+    {type:'observe',q:'🔍 找問題：小蛹留的便條「我去公園玩。」少了什麼？',hint:'對照便條四個部分',
+     opts:[{t:'少了稱呼、署名和時間，別人不知道是誰留的、什麼時候回來',c:true},{t:'沒有少什麼',c:false},{t:'少了標題',c:false},{t:'少了天氣',c:false}],
+     okMsg:'好眼力！沒有稱呼不知道寫給誰，沒有署名不知道誰寫的，沒有時間不知道幾點走的！',failMsg:'便條要有稱呼、事情、署名、時間！這張只有事情！'},
+    {type:'observe',q:'🔍 找錯誤：一張海報寫著「大家快來參加我們的活動！真的很好玩！不要錯過！」路人看了會有什麼問題？',hint:'對照海報五要素',
+     opts:[{t:'不知道是什麼活動、什麼時間、在哪裡',c:true},{t:'字太多了',c:false},{t:'沒有問題',c:false},{t:'少了「謝謝」',c:false}],
+     okMsg:'對！海報最重要的是活動內容、時間、地點，這張全部沒寫，只有感覺！',failMsg:'海報要有標題、時間、地點、內容、主辦人！這張只有「很好玩」，什麼資訊都沒有！'},
+    {type:'test',q:'便條的四個部分是？',opts:['稱呼、事情、署名、日期時間','日期、星期、天氣、內容','標題、時間、地點、主辦人','起、承、轉、合'],ans:'稱呼、事情、署名、日期時間',hint:'留言給別人要讓人知道誰寫的、什麼時候⋯⋯'},
+    {type:'test',q:'日記最重要的是要寫出自己的什麼？',opts:['感想','標題','頁數','簽名'],ans:'感想',hint:'日記是寫給自己看的，要寫出心裡⋯⋯'},
+    {type:'test',q:'海報的字為什麼要大？',opts:['讓路過的人一眼就看懂','因為紙很大','因為老師規定','為了好看'],ans:'讓路過的人一眼就看懂',hint:'海報是給很多人「看一眼」的⋯⋯'},
   ]},
-  {chapter:'🏆 第10章：小蛹大挑戰！',story:'學了好多！最後一關，全面複習！小蛹的觀察力一定能拿滿分！',
+  {chapter:'🏆 第10章：小蛹國語大挑戰！',story:'四年級國語全部複習！成語、修辭、關聯詞、標點、閱讀⋯⋯小蛹的觀察力全開！',
    units:[
-    {type:'test',q:'「一石二鳥」是什麼意思？',opts:['一件事達到兩個目的','打鳥的方法','非常困難','做事慢'],ans:'一件事達到兩個目的',hint:'一顆石頭兩隻鳥⋯⋯'},
-    {type:'test',q:'「守株待兔」告訴我們什麼？',opts:['不努力只靠運氣沒用','要有耐心','保護動物','農夫很努力'],ans:'不努力只靠運氣沒用',hint:'守著樹等兔子⋯⋯'},
-    {type:'observe',q:'🔍 找不同：「比喻」和「擬人」最大的差異是？',opts:['比喻用「像」比較；擬人賦予人的動作','兩個意思一樣','比喻更高級','擬人更常用'],ans:'比喻用「像」比較；擬人賦予人的動作',hint:'一個用像，一個讓東西有人的行為⋯⋯'},
-    {type:'test',q:'「因為⋯⋯所以⋯⋯」是什麼關係？',opts:['因果關係','轉折關係','並列關係','假設關係'],ans:'因果關係',hint:'原因→結果⋯⋯'},
-    {type:'test',q:'「快樂」的近義詞是？',opts:['高興','悲傷','勤奮','懶惰'],ans:'高興',hint:'意思接近快樂⋯⋯'},
-    {type:'observe',q:'🔍 找押韻：「小蛹展翅翔，彩蝶飛四___」，填哪個字？',opts:['方（ㄤ和翔押韻）','飛','美','高'],ans:'方（ㄤ和翔押韻）',hint:'翔的尾音ㄤ，找同尾音⋯⋯'},
-    {type:'test',q:'書信的最後寫名字叫做？',opts:['落款','稱呼','正文','主題'],ans:'落款',hint:'信的最後面⋯⋯'},
-    {type:'observe',q:'🔍 找錯誤量詞：「一棵魚、一朵花、一本書」，哪個量詞用錯了？',opts:['一棵魚（應該是一條魚）','一朵花','一本書','全部都對'],ans:'一棵魚（應該是一條魚）',hint:'棵是植物的量詞⋯⋯'},
-    {type:'test',q:'文章最主要想說的意思叫做？',opts:['主旨','細節','推論','修辭'],ans:'主旨',hint:'整篇文章想說的⋯⋯'},
-    {type:'observe',q:'🔍 推理題：文章說小蛹穿了雨衣和雨靴，可以推論什麼？',opts:['天氣可能下雨','天氣很熱','她要去游泳','她喜歡雨衣'],ans:'天氣可能下雨',hint:'穿雨衣雨靴是為了⋯⋯'},
+    {type:'test',q:'「鍥而不捨」的意思是？',opts:['堅持到底不放棄','做事做一半','自己騙自己','多做了不該做的事'],ans:'堅持到底不放棄',hint:'一直雕刻不停手⋯⋯'},
+    {type:'test',q:'「他的聲音大到連隔壁村都聽得見。」是哪種修辭？',opts:['誇飾','排比','設問','擬人'],ans:'誇飾',hint:'故意說得很大⋯⋯'},
+    {type:'observe',q:'🔍 找錯誤：「雖然他很用功，所以考了一百分。」哪裡錯了？',opts:['「雖然」應該配「但是」，或改成「因為⋯⋯所以」','沒有錯','「用功」寫錯了','應該用「如果」'],ans:'「雖然」應該配「但是」，或改成「因為⋯⋯所以」',hint:'關聯詞要成對⋯⋯'},
+    {type:'test',q:'「小鳥快樂___唱歌。」填哪個字？',opts:['地','的','得','在'],ans:'地',hint:'後面是動作「唱歌」⋯⋯'},
+    {type:'test',q:'「爸爸說___「要早點回家。」」填哪個符號？',opts:['冒號（：）','逗號（，）','頓號（、）','分號（；）'],ans:'冒號（：）',hint:'「說」後面⋯⋯'},
+    {type:'observe',q:'🔍 找不同：哪一句是「意見」？',opts:['我覺得貓比狗可愛','貓有四隻腳','貓是哺乳動物','貓會抓老鼠'],ans:'我覺得貓比狗可愛',hint:'有「我覺得」的那一句⋯⋯'},
+    {type:'test',q:'記敘文的六何法「為何」是指？',opts:['為什麼發生','在哪裡','什麼時候','結果怎樣'],ans:'為什麼發生',hint:'為＝為什麼⋯⋯'},
+    {type:'observe',q:'🔍 推理題：他說「我從來不遲到」，但今天他遲到了。可以用哪個成語形容？',opts:['自相矛盾','畫蛇添足','井底之蛙','專心致志'],ans:'自相矛盾',hint:'說的話和做的事打架⋯⋯'},
+    {type:'test',q:'便條一定要有「署名」，是為了讓人知道什麼？',opts:['是誰留的','天氣如何','幾點回來','去哪裡'],ans:'是誰留的',hint:'署名就是簽名字⋯⋯'},
   ]},
 ],
 english:[
-    {chapter:'🔤 第1章：字母 A-D',story:'自然拼音第一關！每個字母先看中文意思，再練習，慢慢來！',
+    {chapter:'🔤 第1章：短母音拼讀 CVC！',story:'26個字母都認識了，四年級要把它們「拼」起來！a、e、i、o、u 五個短母音是拼讀的鑰匙！',
    units:[
-    {type:'phonics_teach',letter:'a',sound:'/æ/',soundZh:'短促的「阿」',emoji:'🍎',word:'apple',wordBreak:'a-p-p-l-e',color:'vowel',
-     talk:[
-       '第一個字母：<span class="eng-big">A a</span>',
-       '發音：短促的「阿」/æ/，嘴巴張大！',
-       '<span class="eng-big">apple</span> = 蘋果 🍎<br><span class="eng-big">ant</span> = 螞蟻 🐜<br><span class="eng-big">arm</span> = 手臂 💪',
-       '練習：a…a…a！apple！'
-     ],audio:'a',audioWord:'apple'},
-    {type:'phonics_teach',letter:'b',sound:'/b/',soundZh:'嘴唇彈開的「逼」',emoji:'🐝',word:'bee',wordBreak:'b-ee',color:'consonant',
-     talk:[
-       '第二個字母：<span class="eng-big">B b</span>',
-       '發音：嘴唇先閉再彈開「逼」/b/',
-       '<span class="eng-big">bee</span> = 蜜蜂 🐝<br><span class="eng-big">ball</span> = 球 🏀<br><span class="eng-big">book</span> = 書 📚',
-       '練習：b…b…b！bee！'
-     ],audio:'b',audioWord:'bee'},
-    {type:'phonics_teach',letter:'c',sound:'/k/',soundZh:'喉嚨的「克」',emoji:'🐱',word:'cat',wordBreak:'c-a-t',color:'consonant',
-     talk:[
-       '第三個字母：<span class="eng-big">C c</span>',
-       '發音：喉嚨發「克」/k/',
-       '<span class="eng-big">cat</span> = 貓 🐱<br><span class="eng-big">cup</span> = 杯子 ☕<br><span class="eng-big">car</span> = 車 🚗',
-       '拼拼看：c-a-t = cat 貓！'
-     ],audio:'c',audioWord:'cat'},
-    {type:'phonics_teach',letter:'d',sound:'/d/',soundZh:'舌尖彈的「得」',emoji:'🐶',word:'dog',wordBreak:'d-o-g',color:'consonant',
-     talk:[
-       '第四個字母：<span class="eng-big">D d</span>',
-       '發音：舌尖輕碰牙齦「得」/d/',
-       '<span class="eng-big">dog</span> = 狗 🐶<br><span class="eng-big">desk</span> = 桌子 🪑<br><span class="eng-big">door</span> = 門 🚪',
-       '拼拼看：d-o-g = dog 狗！'
-     ],audio:'d',audioWord:'dog'},
-    {type:'practice',q:'"apple" 是什麼意思？',hint:'a 是第一個字母，apple 是 a 開頭的單字',
-     opts:[{t:'🍎 蘋果',c:true},{t:'🍌 香蕉',c:false},{t:'🍊 橘子',c:false},{t:'🍇 葡萄',c:false}],
-     okMsg:'apple = 蘋果！a-p-p-l-e！',failMsg:'apple = 蘋果 🍎！a 開頭的單字！'},
-    {type:'practice',q:'"dog" 是什麼動物？',hint:'d 是「得」的聲音，dog 是 d 開頭的單字',
-     opts:[{t:'🐶 狗',c:true},{t:'🐱 貓',c:false},{t:'🐝 蜜蜂',c:false},{t:'🐟 魚',c:false}],
-     okMsg:'dog = 狗！d-o-g！',failMsg:'dog = 狗 🐶！d 開頭的單字！'},
-    {type:'phonics_blend',q:'哪個字從 <b>a</b>「阿」開始？',hint:'嘴巴張大的「阿」',
-     opts:[{t:'🍎 apple',w:'apple',c:true},{t:'🐝 bee',w:'bee',c:false},{t:'🐱 cat',w:'cat',c:false},{t:'🐶 dog',w:'dog',c:false}],
-     okMsg:'apple！a 的聲音「阿」！',failMsg:'apple 才是 a 開頭！',audio:'apple'},
-    {type:'phonics_test',q:'哪個字是 🐱 貓咪？',opts:['cat','bat','hat','rat'],ans:'cat',hint:'克-阿-特⋯⋯',audio:'cat'},
+    {type:'phonics_teach',letter:'a',sound:'/æ/',soundZh:'短促的「阿」',emoji:'🐱',word:'cat',wordBreak:'c-a-t',color:'vowel',
+     talk:['拼讀第一步：<span class="eng-big">子音＋母音＋子音</span>，叫做 CVC 單字！','短母音 <span class="eng-big">a</span> 唸短促的「阿」/æ/','<span class="eng-big">cat</span> 貓 🐱　<span class="eng-big">hat</span> 帽子 🎩　<span class="eng-big">map</span> 地圖 🗺️','拼拼看：c-a-t → cat！'],audio:'a',audioWord:'cat'},
+    {type:'phonics_teach',letter:'e',sound:'/ɛ/',soundZh:'短促的「欸」',emoji:'🖊️',word:'pen',wordBreak:'p-e-n',color:'vowel',
+     talk:['短母音 <span class="eng-big">e</span> 唸短促的「欸」/ɛ/','<span class="eng-big">pen</span> 筆 🖊️　<span class="eng-big">bed</span> 床 🛏️　<span class="eng-big">red</span> 紅色 🔴','拼拼看：p-e-n → pen！'],audio:'e',audioWord:'pen'},
+    {type:'phonics_teach',letter:'i',sound:'/ɪ/',soundZh:'短促的「一」',emoji:'🐷',word:'pig',wordBreak:'p-i-g',color:'vowel',
+     talk:['短母音 <span class="eng-big">i</span> 唸短促的「一」/ɪ/','<span class="eng-big">pig</span> 豬 🐷　<span class="eng-big">sit</span> 坐 🪑　<span class="eng-big">six</span> 六 6️⃣','拼拼看：p-i-g → pig！'],audio:'i',audioWord:'pig'},
+    {type:'phonics_teach',letter:'o',sound:'/ɑ/',soundZh:'嘴巴張大的「啊」',emoji:'🐶',word:'dog',wordBreak:'d-o-g',color:'vowel',
+     talk:['短母音 <span class="eng-big">o</span> 唸嘴巴張大的「啊」/ɑ/','<span class="eng-big">dog</span> 狗 🐶　<span class="eng-big">hot</span> 熱 🔥　<span class="eng-big">box</span> 箱子 📦','拼拼看：d-o-g → dog！'],audio:'o',audioWord:'dog'},
+    {type:'phonics_teach',letter:'u',sound:'/ʌ/',soundZh:'短促的「阿」（嘴巴小一點）',emoji:'☀️',word:'sun',wordBreak:'s-u-n',color:'vowel',
+     talk:['短母音 <span class="eng-big">u</span> 唸短促的「阿」/ʌ/，嘴巴比 a 小一點','<span class="eng-big">sun</span> 太陽 ☀️　<span class="eng-big">bus</span> 公車 🚌　<span class="eng-big">cup</span> 杯子 ☕','拼拼看：s-u-n → sun！'],audio:'u',audioWord:'sun'},
+    {type:'phonics_blend',q:'🔍 觀察題：cat、pen、pig、dog、sun，每個字「中間」的字母有什麼共同點？',hint:'c-a-t、p-e-n、p-i-g⋯⋯中間那個字母',
+     opts:[{t:'中間都是母音（a e i o u）',c:true,w:'cat pen pig dog sun'},{t:'中間都是子音',c:false},{t:'都是同一個字母',c:false},{t:'沒有共同點',c:false}],
+     okMsg:'找到了！CVC 單字的中間永遠是母音，子音在兩邊！',failMsg:'c-a-t、p-e-n、p-i-g、d-o-g、s-u-n：中間都是母音！'},
+    {type:'phonics_blend',q:'聽聽看，哪個字的中間是短母音 i「一」？',hint:'p-i-g',
+     opts:[{t:'🐷 pig',w:'pig',c:true},{t:'🖊️ pen',w:'pen',c:false},{t:'🐱 cat',w:'cat',c:false},{t:'🐶 dog',w:'dog',c:false}],
+     audio:'pig',okMsg:'pig！中間是 i「一」！',failMsg:'pig 的中間是 i，唸「一」！'},
+    {type:'phonics_test',q:'哪個字是 ☀️ 太陽？',opts:['sun','sad','set','sit'],ans:'sun',hint:'s-u-n，中間是 u⋯⋯',audio:'sun'},
+    {type:'phonics_test',q:'"bed" 是什麼意思？',opts:['🛏️ 床','🐝 蜜蜂','🍞 麵包','🔴 紅色'],ans:'🛏️ 床',hint:'b-e-d，睡覺的地方⋯⋯',audio:'bed'},
   ]},
-{chapter:'🔤 第2章：字母 E-H',story:'繼續探險！今天學E、F、G、H，波比一起來！',
+  {chapter:'✨ 第2章：魔法 e 長母音！',story:'字尾加一個不發音的 e，中間的母音就會變魔法！cap 變 cape、kit 變 kite⋯⋯小蛹來找規律！',
    units:[
-    {type:'phonics_teach',letter:'e',sound:'/ɛ/',soundZh:'短促的「欸」',emoji:'🥚',word:'egg',wordBreak:'e-gg',color:'vowel',
-     talk:['<span class="eng-big">e</span> 的聲音是短促的<span class="hl">「欸」/ɛ/</span>！','嘴巴微開，快快說「欸」！<span class="eng-big">egg</span> 雞蛋🥚！'],audio:'e',audioWord:'egg'},
-    {type:'phonics_teach',letter:'f',sound:'/f/',soundZh:'上牙咬下唇的「夫」',emoji:'🐟',word:'fish',wordBreak:'f-i-sh',color:'consonant',
-     talk:['<span class="eng-big">f</span> 的聲音是<span class="hl">「夫」/f/</span>！','上牙輕咬下唇吹氣！<span class="eng-big">fish</span> 魚🐟！'],audio:'f',audioWord:'fish'},
-    {type:'phonics_teach',letter:'g',sound:'/g/',soundZh:'喉嚨的「格」',emoji:'🐐',word:'goat',wordBreak:'g-oa-t',color:'consonant',
-     talk:['<span class="eng-big">g</span> 的聲音是<span class="hl">「格」/g/</span>！','喉嚨深處發聲！<span class="eng-big">goat</span> 山羊🐐！'],audio:'g',audioWord:'goat'},
-    {type:'phonics_teach',letter:'h',sound:'/h/',soundZh:'呼氣的「喝」',emoji:'🎩',word:'hat',wordBreak:'h-a-t',color:'consonant',
-     talk:['<span class="eng-big">h</span> 的聲音是<span class="hl">「喝」/h/</span>！','像呼氣一樣！<span class="eng-big">hat</span> 帽子🎩！h-a-t！'],audio:'h',audioWord:'hat'},
-    {type:'phonics_blend',q:'<b>h</b>「喝」+<b>a</b>「阿」+<b>t</b>「特」= ？',hint:'喝…阿…特！',
-     opts:[{t:'🎩 hat',w:'hat',c:true},{t:'🐱 cat',w:'cat',c:false},{t:'🦇 bat',w:'bat',c:false},{t:'🐀 rat',w:'rat',c:false}],
-     okMsg:'Hat！帽子！h-a-t！',failMsg:'h+a+t = hat 帽子！',audio:'hat'},
-    {type:'phonics_test',q:'哪個字是 🥚 雞蛋？',opts:['egg','dog','cat','bee'],ans:'egg',hint:'欸-格⋯⋯',audio:'egg'},
-    {type:'phonics_test',q:'哪個字是 🐟 魚？',opts:['fish','dish','wish','kiss'],ans:'fish',hint:'夫-依-許⋯⋯',audio:'fish'},
-    {type:'phonics_test',q:'哪個字是 🎩 帽子？',opts:['hat','cat','bat','rat'],ans:'hat',hint:'喝-阿-特⋯⋯',audio:'hat'},
+    {type:'phonics_teach',letter:'a_e',sound:'/eɪ/',soundZh:'字母本音「ㄟ」',emoji:'🎂',word:'cake',wordBreak:'c-a-ke',color:'vowel',
+     talk:['<span class="eng-big">Magic e</span> 魔法 e 來了！','單字結尾的 <span class="eng-big">e</span> 自己不發音，卻讓前面的母音唸出<span class="hl">字母本音</span>！','a_e 唸「ㄟ」：<span class="eng-big">cake</span> 蛋糕 🎂　<span class="eng-big">name</span> 名字　<span class="eng-big">game</span> 遊戲 🎮','cap（帽子）加 e → cape（披風）！'],audio:'cake',audioWord:'cake'},
+    {type:'phonics_teach',letter:'i_e',sound:'/aɪ/',soundZh:'字母本音「ㄞ」',emoji:'🚲',word:'bike',wordBreak:'b-i-ke',color:'vowel',
+     talk:['i_e 唸字母本音「ㄞ」','<span class="eng-big">bike</span> 腳踏車 🚲　<span class="eng-big">kite</span> 風箏 🪁　<span class="eng-big">five</span> 五 5️⃣','kit（工具組）加 e → kite（風箏）！'],audio:'bike',audioWord:'bike'},
+    {type:'phonics_teach',letter:'o_e',sound:'/oʊ/',soundZh:'字母本音「歐」',emoji:'🏠',word:'home',wordBreak:'h-o-me',color:'vowel',
+     talk:['o_e 唸字母本音「歐」','<span class="eng-big">home</span> 家 🏠　<span class="eng-big">nose</span> 鼻子 👃　<span class="eng-big">rope</span> 繩子 🪢','hop（跳）加 e → hope（希望）！'],audio:'home',audioWord:'home'},
+    {type:'phonics_teach',letter:'u_e',sound:'/juː/',soundZh:'字母本音「ㄧㄡ」',emoji:'🐣',word:'cute',wordBreak:'c-u-te',color:'vowel',
+     talk:['u_e 唸字母本音「ㄧㄡ」','<span class="eng-big">cute</span> 可愛 🐣　<span class="eng-big">huge</span> 巨大 🐘　<span class="eng-big">tube</span> 管子','cub（幼獸）加 e → cube（方塊）！小蛹最愛的魔術方塊就是 cube！'],audio:'cute',audioWord:'cute'},
+    {type:'phonics_blend',q:'🔍 找規律：cap→cape、kit→kite、hop→hope，加了 e 之後，中間的母音怎麼了？',hint:'cap 唸「阿」，cape 唸「ㄟ」',
+     opts:[{t:'母音變成唸字母本音，結尾的 e 不發音',c:true,w:'cape kite hope'},{t:'母音消失了',c:false},{t:'結尾的 e 大聲唸出來',c:false},{t:'沒有變化',c:false}],
+     okMsg:'找到魔法的規律了！e 自己安靜，卻讓前面的母音唸出本音！',failMsg:'魔法 e 不發音，但會讓前面的母音唸字母本音：a→ㄟ、i→ㄞ、o→歐！'},
+    {type:'phonics_blend',q:'哪個字有魔法 e？',hint:'結尾是 e、中間母音唸字母本音',
+     opts:[{t:'🎂 cake',w:'cake',c:true},{t:'🐱 cat',w:'cat',c:false},{t:'🧢 cap',w:'cap',c:false},{t:'🥫 can',w:'can',c:false}],
+     audio:'cake',okMsg:'cake！a 唸「ㄟ」，結尾的 e 是魔法！',failMsg:'cake 結尾有 e，a 唸字母本音「ㄟ」！其他三個都是短母音！'},
+    {type:'phonics_test',q:'哪個字是 🚲 腳踏車？',opts:['bike','bake','back','bit'],ans:'bike',hint:'b-i-ke，i 唸「ㄞ」⋯⋯',audio:'bike'},
+    {type:'phonics_test',q:'"hop" 加上魔法 e 變成什麼？',opts:['hope','hoop','hap','hip'],ans:'hope',hint:'o 變成唸「歐」⋯⋯',audio:'hope'},
   ]},
-  {chapter:'🔤 第3章：字母 I-L',story:'一半了！I、J、K、L 來了，波比陪你繼續！',
+  {chapter:'🤝 第3章：子音好朋友 sh ch th wh！',story:'兩個子音手牽手，會變出新的聲音！sh、ch、th、wh——小蛹來聽聽看有什麼不一樣！',
    units:[
-    {type:'phonics_teach',letter:'i',sound:'/ɪ/',soundZh:'短促的「依」',emoji:'🍦',word:'ice cream',wordBreak:'i-ce cr-ea-m',color:'vowel',
-     talk:['<span class="eng-big">i</span> 的聲音是短促的<span class="hl">「依」/ɪ/</span>！','嘴角微笑說「依」！<span class="eng-big">ice cream</span> 冰淇淋🍦！'],audio:'i',audioWord:'ice cream'},
-    {type:'phonics_teach',letter:'j',sound:'/dʒ/',soundZh:'「揪」的聲音',emoji:'🤹',word:'jump',wordBreak:'j-u-mp',color:'consonant',
-     talk:['<span class="eng-big">j</span> 的聲音是<span class="hl">「揪」/dʒ/</span>！','舌頭往上翹！<span class="eng-big">jump</span> 跳🤹！'],audio:'j',audioWord:'jump'},
-    {type:'phonics_teach',letter:'k',sound:'/k/',soundZh:'喉嚨的「克」（跟c一樣）',emoji:'🪁',word:'kite',wordBreak:'k-i-te',color:'consonant',
-     talk:['<span class="eng-big">k</span> 的聲音跟c一樣，是<span class="hl">「克」/k/</span>！','<span class="eng-big">kite</span> 風箏🪁！k-i-te！'],audio:'k',audioWord:'kite'},
-    {type:'phonics_teach',letter:'l',sound:'/l/',soundZh:'舌尖碰上顎的「了」',emoji:'🦁',word:'lion',wordBreak:'l-i-on',color:'consonant',
-     talk:['<span class="eng-big">l</span> 的聲音是<span class="hl">「了」/l/</span>！','舌尖碰上顎！<span class="eng-big">lion</span> 獅子🦁！'],audio:'l',audioWord:'lion'},
-    {type:'phonics_blend',q:'哪個字從 <b>l</b>「了」開始？',hint:'舌尖碰上顎的聲音～',
-     opts:[{t:'🦁 lion',w:'lion',c:true},{t:'🪁 kite',w:'kite',c:false},{t:'🤹 jump',w:'jump',c:false},{t:'🍦 ice cream',w:'ice cream',c:false}],
-     okMsg:'Lion！獅子！l 的聲音「了」！',failMsg:'Lion 才是 l 開頭！',audio:'lion'},
-    {type:'phonics_test',q:'哪個字是 🪁 風箏？',opts:['kite','bite','site','mite'],ans:'kite',hint:'克-依-特⋯⋯',audio:'kite'},
-    {type:'phonics_test',q:'哪個字是 🦁 獅子？',opts:['lion','lemon','light','lamp'],ans:'lion',hint:'了-依-昂⋯⋯',audio:'lion'},
-    {type:'phonics_test',q:'哪個字母和 c 發音相同？',opts:['k','g','h','j'],ans:'k',hint:'喉嚨的「克」聲⋯⋯',audio:'k'},
+    {type:'phonics_teach',letter:'sh',sound:'/ʃ/',soundZh:'噓～（叫人安靜的聲音）',emoji:'🚢',word:'ship',wordBreak:'sh-ip',color:'consonant',
+     talk:['兩個子音組合：<span class="eng-big">sh</span>','發音就像叫人安靜的「噓～」/ʃ/','<span class="eng-big">ship</span> 船 🚢　<span class="eng-big">fish</span> 魚 🐟　<span class="eng-big">shoe</span> 鞋子 👟','sh 可以在開頭（ship）也可以在結尾（fish）！'],audio:'sh',audioWord:'ship'},
+    {type:'phonics_teach',letter:'ch',sound:'/tʃ/',soundZh:'「去」（像打噴嚏的「啾」）',emoji:'🪑',word:'chair',wordBreak:'ch-air',color:'consonant',
+     talk:['<span class="eng-big">ch</span> 唸「去」/tʃ/，像小火車「啾啾」的聲音！','<span class="eng-big">chair</span> 椅子 🪑　<span class="eng-big">cheese</span> 起司 🧀　<span class="eng-big">lunch</span> 午餐 🍱','sh 是「噓」，ch 是「去」，聽聽看差在哪！'],audio:'ch',audioWord:'chair'},
+    {type:'phonics_teach',letter:'th',sound:'/θ/',soundZh:'舌頭輕輕放在牙齒中間吹氣',emoji:'3️⃣',word:'three',wordBreak:'th-ree',color:'consonant',
+     talk:['<span class="eng-big">th</span> 是中文沒有的聲音！','舌尖輕輕放在上下牙齒中間，吹氣 /θ/','<span class="eng-big">three</span> 三 3️⃣　<span class="eng-big">thank</span> 謝謝 🙏　<span class="eng-big">mouth</span> 嘴巴 👄','照鏡子看看，舌頭有沒有露出來一點點！'],audio:'th',audioWord:'three'},
+    {type:'phonics_teach',letter:'wh',sound:'/w/',soundZh:'嘴巴圓圓的「屋」',emoji:'🐳',word:'whale',wordBreak:'wh-ale',color:'consonant',
+     talk:['<span class="eng-big">wh</span> 唸嘴巴圓圓的「屋」/w/','<span class="eng-big">whale</span> 鯨魚 🐳　<span class="eng-big">white</span> 白色 ⬜　<span class="eng-big">what</span> 什麼 ❓','很多問句都是 wh 開頭：what、where、when、who！'],audio:'wh',audioWord:'whale'},
+    {type:'phonics_blend',q:'聽聽看，哪個字的開頭是 sh「噓」？',hint:'sh-ip',
+     opts:[{t:'🚢 ship',w:'ship',c:true},{t:'🪑 chair',w:'chair',c:false},{t:'3️⃣ three',w:'three',c:false},{t:'🐳 whale',w:'whale',c:false}],
+     audio:'ship',okMsg:'ship！sh 的「噓」！',failMsg:'ship 開頭是 sh「噓」！chair 是 ch，three 是 th，whale 是 wh！'},
+    {type:'phonics_blend',q:'🔍 找不同：fish、ship、shoe、chair，哪一個「沒有」sh 的聲音？',hint:'聽開頭和結尾',
+     opts:[{t:'🪑 chair（是 ch）',w:'chair',c:true},{t:'🐟 fish',w:'fish',c:false},{t:'🚢 ship',w:'ship',c:false},{t:'👟 shoe',w:'shoe',c:false}],
+     okMsg:'對！chair 是 ch「去」，其他三個都有 sh「噓」！',failMsg:'fish、ship、shoe 都有 sh；chair 是 ch！'},
+    {type:'phonics_test',q:'"fish" 結尾的聲音是哪一組？',opts:['sh','ch','th','wh'],ans:'sh',hint:'fi-sh，噓～',audio:'fish'},
+    {type:'phonics_test',q:'哪個字是 🧀 起司？',opts:['cheese','sheep','these','wheel'],ans:'cheese',hint:'ch-eese，開頭是「去」⋯⋯',audio:'cheese'},
   ]},
-  {chapter:'🔤 第4章：字母 M-P',story:'越來越厲害了！M、N、O、P，波比說你一定記得住！',
+  {chapter:'🔢 第4章：數字 11 到 100！',story:'三年級數到 10，四年級要數到 100！數字裡藏著規律，找到了就全部會唸！',
    units:[
-    {type:'phonics_teach',letter:'m',sound:'/m/',soundZh:'嘴唇閉起來的「嗯」',emoji:'🐒',word:'monkey',wordBreak:'m-on-key',color:'consonant',
-     talk:['<span class="eng-big">m</span> 的聲音是<span class="hl">「嗯」/m/</span>！','嘴唇閉起來發聲！<span class="eng-big">monkey</span> 猴子🐒！'],audio:'m',audioWord:'monkey'},
-    {type:'phonics_teach',letter:'n',sound:'/n/',soundZh:'舌尖碰牙齦的「呢」',emoji:'🌙',word:'night',wordBreak:'n-ight',color:'consonant',
-     talk:['<span class="eng-big">n</span> 的聲音是<span class="hl">「呢」/n/</span>！','舌尖碰牙齦！<span class="eng-big">night</span> 夜晚🌙！'],audio:'n',audioWord:'night'},
-    {type:'phonics_teach',letter:'o',sound:'/ɒ/',soundZh:'短促的「喔」',emoji:'🐙',word:'octopus',wordBreak:'o-ct-o-pus',color:'vowel',
-     talk:['<span class="eng-big">o</span> 的聲音是短促的<span class="hl">「喔」/ɒ/</span>！','嘴巴圓圓的說「喔」！<span class="eng-big">octopus</span> 章魚🐙！'],audio:'o',audioWord:'octopus'},
-    {type:'phonics_teach',letter:'p',sound:'/p/',soundZh:'嘴唇爆破的「劈」',emoji:'🐧',word:'penguin',wordBreak:'p-en-gu-in',color:'consonant',
-     talk:['<span class="eng-big">p</span> 的聲音是<span class="hl">「劈」/p/</span>！','嘴唇閉緊再爆開！<span class="eng-big">penguin</span> 企鵝🐧！'],audio:'p',audioWord:'penguin'},
-    {type:'phonics_blend',q:'哪個字從母音 <b>o</b>「喔」開始？',hint:'嘴巴圓圓的「喔」～',
-     opts:[{t:'🐙 octopus',w:'octopus',c:true},{t:'🐒 monkey',w:'monkey',c:false},{t:'🌙 night',w:'night',c:false},{t:'🐧 penguin',w:'penguin',c:false}],
-     okMsg:'Octopus！章魚！o 的聲音「喔」！',failMsg:'Octopus 才是 o 開頭！',audio:'octopus'},
-    {type:'phonics_test',q:'哪個字是 🐒 猴子？',opts:['monkey','donkey','turkey','hockey'],ans:'monkey',hint:'嗯-昂-ki⋯⋯',audio:'monkey'},
-    {type:'phonics_test',q:'哪個字是 🐧 企鵝？',opts:['penguin','panda','parrot','pigeon'],ans:'penguin',hint:'劈-eng-win⋯⋯',audio:'penguin'},
-    {type:'phonics_test',q:'哪個字母是母音？',opts:['o','m','n','p'],ans:'o',hint:'母音嘴巴要開⋯⋯',audio:'o'},
+    {type:'phonics_teach',letter:'11-20',sound:'numbers',soundZh:'數字 11 到 20',emoji:'🔢',word:'thirteen',wordBreak:'thir-teen',color:'vowel',
+     talk:['先數 11 到 20！','<span class="eng-big">eleven</span> 11　<span class="eng-big">twelve</span> 12　<span class="eng-big">thirteen</span> 13　<span class="eng-big">fourteen</span> 14　<span class="eng-big">fifteen</span> 15','<span class="eng-big">sixteen</span> 16　<span class="eng-big">seventeen</span> 17　<span class="eng-big">eighteen</span> 18　<span class="eng-big">nineteen</span> 19　<span class="eng-big">twenty</span> 20','規律：13 到 19 結尾都是 <span class="hl">-teen</span>（十幾）！只有 11 和 12 特別，要單獨記！'],audioWord:'eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty'},
+    {type:'phonics_teach',letter:'20-100',sound:'numbers',soundZh:'整十的數字',emoji:'💯',word:'one hundred',wordBreak:'one-hun-dred',color:'vowel',
+     talk:['再來數整十！','<span class="eng-big">twenty</span> 20　<span class="eng-big">thirty</span> 30　<span class="eng-big">forty</span> 40　<span class="eng-big">fifty</span> 50','<span class="eng-big">sixty</span> 60　<span class="eng-big">seventy</span> 70　<span class="eng-big">eighty</span> 80　<span class="eng-big">ninety</span> 90　<span class="eng-big">one hundred</span> 100','規律：整十結尾都是 <span class="hl">-ty</span>！中間的數字就是整十加個位：twenty-one（21）、thirty-five（35）！'],audioWord:'twenty thirty forty fifty sixty seventy eighty ninety one hundred'},
+    {type:'phonics_teach',letter:'How many',sound:'sentence',soundZh:'問數量的句型',emoji:'🍎',word:'How many apples?',wordBreak:'How-many-apples',color:'consonant',
+     talk:['問「有幾個？」的句型：','<span class="eng-big">How many apples?</span><br>中文：有幾個蘋果？','回答：<span class="eng-big">There are five apples.</span><br>中文：有五個蘋果。','• How many = 多少　• There are = 有（很多個）<br>注意：問很多個的時候，名詞要加 <span class="hl">s</span>！apple→apples'],audioWord:'How many apples? There are five apples.'},
+    {type:'practice',q:'"fifteen" 是幾？',hint:'fif- 是 five 的變化，-teen 是十幾',
+     opts:[{t:'15',c:true},{t:'5',c:false},{t:'50',c:false},{t:'14',c:false}],
+     okMsg:'fifteen = 15！fif（5）＋teen（十幾）！',failMsg:'fifteen 結尾是 -teen，是十幾：15！fifty 才是 50！'},
+    {type:'phonics_blend',q:'🔍 找規律：thirteen、fourteen、sixteen 都有 -teen。下面哪一個「不是」這個規律？',hint:'11 和 12 是特別的',
+     opts:[{t:'twelve（12）',c:true,w:'twelve'},{t:'fifteen（15）',c:false},{t:'seventeen（17）',c:false},{t:'nineteen（19）',c:false}],
+     okMsg:'對！twelve 沒有 -teen，11（eleven）和 12（twelve）是特別的，要單獨記！',failMsg:'twelve 結尾不是 -teen！13 到 19 才有 -teen 的規律！'},
+    {type:'phonics_blend',q:'「有三隻貓」的英文怎麼說？',hint:'There are ＋ 數字 ＋ 名詞加s',
+     opts:[{t:'There are three cats.',c:true,w:'There are three cats'},{t:'There is three cat.',c:false},{t:'Three cats there are.',c:false},{t:'Have three cats.',c:false}],
+     audio:'There are three cats',okMsg:'There are three cats！很多隻用 are，cat 要加 s！',failMsg:'很多隻要用 There are，而且 cat 要變 cats！'},
+    {type:'phonics_test',q:'「四十」的英文是？',opts:['forty','fourty','fourteen','fifty'],ans:'forty',hint:'小心！四十的拼法沒有 u⋯⋯',audio:'forty'},
+    {type:'phonics_test',q:'"twenty-three" 是幾？',opts:['23','32','20','13'],ans:'23',hint:'twenty（20）＋three（3）⋯⋯',audio:'twenty-three'},
   ]},
-  {chapter:'🔤 第5章：字母 Q-T',story:'快到終點了！Q、R、S、T，每個都很特別！',
+  {chapter:'⏰ 第5章：幾點了？星期幾？',story:'What time is it? 學會問時間和說星期，生活裡天天用得到！',
    units:[
-    {type:'phonics_teach',letter:'q',sound:'/kw/',soundZh:'「快」的開頭音',emoji:'👑',word:'queen',wordBreak:'qu-ee-n',color:'consonant',
-     talk:['<span class="eng-big">q</span> 的聲音是<span class="hl">「快」/kw/</span>！','q 通常和 u 一起出現！<span class="eng-big">queen</span> 女王👑！'],audio:'q',audioWord:'queen'},
-    {type:'phonics_teach',letter:'r',sound:'/r/',soundZh:'舌頭捲起來的「入」',emoji:'🌈',word:'rainbow',wordBreak:'r-ain-bow',color:'consonant',
-     talk:['<span class="eng-big">r</span> 的聲音是<span class="hl">「入」/r/</span>！','舌頭往後捲！<span class="eng-big">rainbow</span> 彩虹🌈！'],audio:'r',audioWord:'rainbow'},
-    {type:'phonics_teach',letter:'s',sound:'/s/',soundZh:'像蛇一樣的「絲」',emoji:'🌞',word:'sun',wordBreak:'s-u-n',color:'consonant',
-     talk:['<span class="eng-big">s</span> 的聲音是<span class="hl">「絲」/s/</span>！','像蛇嘶嘶的聲音！<span class="eng-big">sun</span> 太陽🌞！'],audio:'s',audioWord:'sun'},
-    {type:'phonics_teach',letter:'t',sound:'/t/',soundZh:'舌尖彈的「特」',emoji:'🌳',word:'tree',wordBreak:'tr-ee',color:'consonant',
-     talk:['<span class="eng-big">t</span> 的聲音是<span class="hl">「特」/t/</span>！','舌尖碰上顎彈開！<span class="eng-big">tree</span> 樹🌳！'],audio:'t',audioWord:'tree'},
-    {type:'phonics_blend',q:'哪個字從 <b>s</b>「絲」開始？',hint:'蛇一樣的嘶嘶聲～',
-     opts:[{t:'🌞 sun',w:'sun',c:true},{t:'🌈 rainbow',w:'rainbow',c:false},{t:'🌳 tree',w:'tree',c:false},{t:'👑 queen',w:'queen',c:false}],
-     okMsg:'Sun！太陽！s 的聲音「絲」！',failMsg:'Sun 才是 s 開頭！',audio:'sun'},
-    {type:'phonics_test',q:'哪個字是 🌈 彩虹？',opts:['rainbow','window','pillow','shadow'],ans:'rainbow',hint:'入-ai-bow⋯⋯',audio:'rainbow'},
-    {type:'phonics_test',q:'哪個字是 🌳 樹？',opts:['tree','free','three','bee'],ans:'tree',hint:'特-r-ee⋯⋯',audio:'tree'},
-    {type:'phonics_test',q:'q 通常和哪個字母一起出現？',opts:['u','a','e','i'],ans:'u',hint:'qu 一起⋯⋯',audio:'queen'},
+    {type:'phonics_teach',letter:'What time',sound:'sentence',soundZh:'問時間的句型',emoji:'🕖',word:'What time is it?',wordBreak:'What-time-is-it',color:'consonant',
+     talk:['問時間：<span class="eng-big">What time is it?</span><br>中文：現在幾點？','整點回答：<span class="eng-big">It is seven o\'clock.</span><br>中文：七點整。','半點回答：<span class="eng-big">It is seven thirty.</span><br>中文：七點三十分。','• o\'clock = 整點　• thirty = 三十<br>小祕訣：幾點幾分，就是「數字＋數字」直接唸！'],audioWord:'What time is it? It is seven thirty.'},
+    {type:'phonics_teach',letter:'Days',sound:'sentence',soundZh:'一週七天',emoji:'📅',word:'Monday',wordBreak:'Mon-day',color:'vowel',
+     talk:['一週七天：','<span class="eng-big">Monday</span> 星期一　<span class="eng-big">Tuesday</span> 星期二　<span class="eng-big">Wednesday</span> 星期三　<span class="eng-big">Thursday</span> 星期四','<span class="eng-big">Friday</span> 星期五　<span class="eng-big">Saturday</span> 星期六　<span class="eng-big">Sunday</span> 星期日','規律：全部結尾都是 <span class="hl">-day</span>，而且第一個字母要<span class="hl">大寫</span>！<br>問句：<span class="eng-big">What day is it today?</span>（今天星期幾？）'],audioWord:'Monday Tuesday Wednesday Thursday Friday Saturday Sunday'},
+    {type:'practice',q:'"It is nine o\'clock." 是幾點？',hint:'nine = 9，o\'clock = 整點',
+     opts:[{t:'九點整',c:true},{t:'九點半',c:false},{t:'五點整',c:false},{t:'十點整',c:false}],
+     okMsg:'nine o\'clock = 九點整！',failMsg:'nine 是 9，o\'clock 是整點：九點整！'},
+    {type:'phonics_blend',q:'「星期三」的英文是？',hint:'Wed-nes-day，中間有一個不發音的 d',
+     opts:[{t:'Wednesday',c:true,w:'Wednesday'},{t:'Tuesday',c:false},{t:'Thursday',c:false},{t:'Monday',c:false}],
+     audio:'Wednesday',okMsg:'Wednesday！拼法有點難，但你記住了！',failMsg:'星期三是 Wednesday！Tuesday 是星期二，Thursday 是星期四！'},
+    {type:'phonics_blend',q:'🔍 找規律：Saturday 和 Sunday 有什麼共同點？',hint:'這兩天不用上學',
+     opts:[{t:'都是週末（weekend），而且都是 S 開頭',c:true,w:'Saturday Sunday weekend'},{t:'都是上學日',c:false},{t:'都是 T 開頭',c:false},{t:'沒有共同點',c:false}],
+     okMsg:'對！Saturday 和 Sunday 都是 S 開頭，合起來叫 weekend 週末！',failMsg:'Saturday、Sunday 都是 S 開頭，而且都是週末 weekend！'},
+    {type:'phonics_test',q:'「現在幾點？」的英文是？',opts:['What time is it?','What day is it?','How are you?','How many?'],ans:'What time is it?',hint:'time = 時間⋯⋯',audio:'What time is it'},
+    {type:'phonics_test',q:'"It is four thirty." 是幾點？',opts:['四點三十分','四點整','三點四十分','十四點'],ans:'四點三十分',hint:'four（4）thirty（30）⋯⋯',audio:'It is four thirty'},
+    {type:'phonics_test',q:'星期五的英文是？',opts:['Friday','Thursday','Saturday','Sunday'],ans:'Friday',hint:'Fri-day⋯⋯',audio:'Friday'},
   ]},
-  {chapter:'🔤 第6章：U-Z 大結局！',story:'最後一關！U到Z，學完就是26個字母全部認識了！',
+  {chapter:'🌤️ 第6章：今天天氣如何？',story:'How is the weather? 晴天、雨天、多雲⋯⋯用英文說天氣，還能順便學形容詞！',
    units:[
-    {type:'phonics_teach',letter:'u',sound:'/ʌ/',soundZh:'短促的「阿」（喉嚨深處）',emoji:'☂️',word:'umbrella',wordBreak:'u-m-br-ell-a',color:'vowel',
-     talk:['<span class="eng-big">u</span> 的聲音是<span class="hl">「阿」/ʌ/</span>（喉嚨深處）！','和 a 不一樣，這個更深沉！<span class="eng-big">umbrella</span> 雨傘☂️！'],audio:'u',audioWord:'umbrella'},
-    {type:'phonics_teach',letter:'v',sound:'/v/',soundZh:'上牙咬下唇振動的「夫」',emoji:'🎻',word:'violin',wordBreak:'vi-o-lin',color:'consonant',
-     talk:['<span class="eng-big">v</span> 的聲音是<span class="hl">「夫」/v/</span>（有振動！）','和 f 類似，但聲帶要振動！<span class="eng-big">violin</span> 小提琴🎻！'],audio:'v',audioWord:'violin'},
-    {type:'phonics_teach',letter:'w',sound:'/w/',soundZh:'嘴唇圓圓的「物」',emoji:'🐋',word:'whale',wordBreak:'wh-a-le',color:'consonant',
-     talk:['<span class="eng-big">w</span> 的聲音是<span class="hl">「物」/w/</span>！','嘴唇圓圓往前！<span class="eng-big">whale</span> 鯨魚🐋！'],audio:'w',audioWord:'whale'},
-    {type:'phonics_teach',letter:'x',sound:'/ks/',soundZh:'「克斯」連音',emoji:'🎸',word:'xylophone',wordBreak:'xy-lo-phone',color:'consonant',
-     talk:['<span class="eng-big">x</span> 的聲音是<span class="hl">「克斯」/ks/</span>！','兩個音連在一起！<span class="eng-big">xylophone</span> 木琴🎸！'],audio:'x',audioWord:'xylophone'},
-    {type:'phonics_teach',letter:'y',sound:'/j/',soundZh:'像「ㄧ」滑過的「夜」',emoji:'🧶',word:'yarn',wordBreak:'y-ar-n',color:'consonant',
-     talk:['<span class="eng-big">y</span> 的聲音是<span class="hl">「夜」/j/</span>！','像注音的ㄧ快速滑過！<span class="eng-big">yarn</span> 毛線🧶！'],audio:'y',audioWord:'yarn'},
-    {type:'phonics_teach',letter:'z',sound:'/z/',soundZh:'像蜜蜂嗡嗡的「茲」',emoji:'🦓',word:'zebra',wordBreak:'ze-bra',color:'consonant',
-     talk:['<span class="eng-big">z</span> 的聲音是<span class="hl">「茲」/z/</span>！','像蜜蜂嗡嗡叫！<span class="eng-big">zebra</span> 斑馬🦓！'],audio:'z',audioWord:'zebra'},
-    {type:'phonics_test',q:'哪個字是 ☂️ 雨傘？',opts:['umbrella','vanilla','gorilla','caterpillar'],ans:'umbrella',hint:'u 開頭⋯⋯',audio:'umbrella'},
-    {type:'phonics_test',q:'哪個字是 🐋 鯨魚？',opts:['whale','while','white','whole'],ans:'whale',hint:'物-ai-l⋯⋯',audio:'whale'},
-    {type:'phonics_test',q:'哪個字是 🦓 斑馬？',opts:['zebra','cobra','hydra','ultra'],ans:'zebra',hint:'茲-ee-bra⋯⋯',audio:'zebra'},
-    {type:'phonics_test',q:'26個字母最後一個是？',opts:['z','x','y','w'],ans:'z',hint:'蜜蜂嗡嗡叫的字母⋯⋯',audio:'z'},
+    {type:'phonics_teach',letter:'Weather',sound:'sentence',soundZh:'問天氣的句型',emoji:'🌤️',word:'How is the weather?',wordBreak:'How-is-the-weather',color:'consonant',
+     talk:['問天氣：<span class="eng-big">How is the weather?</span><br>中文：天氣怎麼樣？','回答：<span class="eng-big">It is sunny.</span><br>中文：是晴天。','• weather = 天氣　• sunny = 晴朗的<br>sun（太陽）加 ny 變成 sunny（晴朗的）！'],audioWord:'How is the weather? It is sunny.'},
+    {type:'phonics_teach',letter:'sunny',sound:'sentence',soundZh:'各種天氣',emoji:'☀️',word:'sunny rainy cloudy',wordBreak:'sun-ny',color:'vowel',
+     talk:['各種天氣的說法：','<span class="eng-big">sunny</span> 晴天 ☀️　<span class="eng-big">rainy</span> 雨天 🌧️　<span class="eng-big">cloudy</span> 多雲 ☁️','<span class="eng-big">windy</span> 颳風 💨　<span class="eng-big">snowy</span> 下雪 ❄️','規律：sun→sunny、rain→rainy、cloud→cloudy、wind→windy、snow→snowy，名詞加 <span class="hl">-y</span> 變成形容詞！','溫度也可以說：<span class="eng-big">hot</span> 熱 🔥　<span class="eng-big">cold</span> 冷 🧊'],audioWord:'sunny rainy cloudy windy snowy hot cold'},
+    {type:'practice',q:'"It is rainy." 是什麼天氣？',hint:'rain = 雨',
+     opts:[{t:'🌧️ 雨天',c:true},{t:'☀️ 晴天',c:false},{t:'❄️ 下雪',c:false},{t:'💨 颳風',c:false}],
+     okMsg:'rainy = 雨天！rain 加 y！',failMsg:'rain 是雨，rainy 是下雨的！'},
+    {type:'phonics_blend',q:'🔍 找規律：sun→sunny、rain→rainy、cloud→cloudy，那 wind（風）變成天氣形容詞是？',hint:'照規律加 -y',
+     opts:[{t:'windy（颳風的）',c:true,w:'windy'},{t:'winds',c:false},{t:'winding',c:false},{t:'wind 不變',c:false}],
+     audio:'windy',okMsg:'windy！名詞加 y 變形容詞，規律找到了！',failMsg:'照規律 wind 加 y → windy（颳風的）！'},
+    {type:'phonics_blend',q:'外面在下雪，應該怎麼說？',hint:'snow = 雪',
+     opts:[{t:'It is snowy. ❄️',c:true,w:'It is snowy'},{t:'It is sunny. ☀️',c:false},{t:'It is hot. 🔥',c:false},{t:'It is cloudy. ☁️',c:false}],
+     audio:'It is snowy',okMsg:'It is snowy！下雪天！',failMsg:'下雪是 snowy！snow（雪）加 y！'},
+    {type:'phonics_test',q:'「天氣怎麼樣？」的英文是？',opts:['How is the weather?','What time is it?','How are you?','What day is it?'],ans:'How is the weather?',hint:'weather = 天氣⋯⋯',audio:'How is the weather'},
+    {type:'phonics_test',q:'"cloudy" 是什麼天氣？',opts:['☁️ 多雲','☀️ 晴天','🌧️ 雨天','🧊 很冷'],ans:'☁️ 多雲',hint:'cloud = 雲⋯⋯',audio:'cloudy'},
+    {type:'phonics_test',q:'「很冷」的英文是？',opts:['cold','hot','cool','old'],ans:'cold',hint:'c-o-l-d，和 hot 相反⋯⋯',audio:'cold'},
   ]},
-    {chapter:'💬 第7章：打招呼和自我介紹！',story:'今天學用英文打招呼、介紹自己——每個單字都有中文說明，慢慢來！',
+  {chapter:'🍕 第7章：你喜歡吃什麼？',story:'Do you like pizza? 學會問「你喜歡嗎」和回答，還有一大堆好吃的食物單字！',
    units:[
-    {type:'phonics_teach',letter:'Hello',sound:'greetings',soundZh:'打招呼用語',emoji:'👋',word:'Hello',wordBreak:'Hel-lo',color:'consonant',
-     talk:[
-       '今天學打招呼！先看這幾個單字：',
-       '<span class="eng-big">Hello</span> = 你好 👋<br><span class="eng-big">Hi</span> = 嗨（輕鬆版的你好）',
-       '<span class="eng-big">Good morning</span> = 早安 🌅<br><span class="eng-big">Good afternoon</span> = 午安 ☀️<br><span class="eng-big">Good night</span> = 晚安 🌙',
-       '記住：早上說 <span class="hl">Good morning</span>，晚上說 <span class="hl">Good night</span>！'
-     ],audioWord:'Hello'},
-    {type:'phonics_blend',q:'早上見到同學，應該說哪句話？',hint:'早上 = morning',
-     opts:[{t:'Good morning! 早安',c:true,w:'Good morning'},{t:'Good night! 晚安',c:false},{t:'Good afternoon! 午安',c:false},{t:'Goodbye! 再見',c:false}],
-     audio:'Good morning',okMsg:'Good morning！早安！你記住了！',failMsg:'早上說 Good morning（好的早晨）！'},
-    {type:'phonics_teach',letter:'My name',sound:'introduce',soundZh:'自我介紹',emoji:'🙋',word:'My name is...',wordBreak:'My name is',color:'consonant',
-     talk:[
-       '介紹自己的句型：',
-       '<span class="eng-big">My name is ___</span><br>中文意思：我的名字是＿＿',
-       '• My = 我的<br>• name = 名字<br>• is = 是',
-       '例如：My name is Xiao Yong.<br>（我的名字是小蛹）',
-       '問別人名字：<span class="eng-big">What is your name?</span><br>中文：你的名字是什麼？'
-     ],audioWord:'My name is Xiao Yong'},
-    {type:'practice',q:'"My name is ___" 裡，"name" 是什麼意思？',hint:'一個能介紹你自己的重要單字',
-     opts:[{t:'名字',c:true},{t:'年齡',c:false},{t:'學校',c:false},{t:'老師',c:false}],
-     okMsg:'name = 名字！My name is 小蛹 = 我的名字是小蛹！',failMsg:'name = 名字！My name is... 就是「我的名字是...」'},
-    {type:'phonics_teach',letter:'How are you',sound:'howareyou',soundZh:'問候',emoji:'😊',word:'How are you?',wordBreak:'How are you',color:'consonant',
-     talk:[
-       '認識問句！',
-       '<span class="eng-big">How are you?</span><br>中文：你好嗎？／你怎麼樣？',
-       '回答方式：<br><span class="eng-big">I am fine, thank you!</span><br>中文：我很好，謝謝！',
-       '• I = 我<br>• am = 是（第一人稱用）<br>• fine = 很好<br>• thank you = 謝謝'
-     ],audioWord:'How are you I am fine thank you'},
-    {type:'phonics_blend',q:'有人問你 "How are you?"，你應該怎麼回答？',hint:'我很好謝謝！',
-     opts:[{t:'I am fine, thank you! 我很好，謝謝',c:true,w:'I am fine thank you'},{t:'My name is... 我的名字是',c:false},{t:'Good morning! 早安',c:false},{t:'Goodbye! 再見',c:false}],
-     audio:'I am fine thank you',okMsg:'I am fine, thank you！超棒！',failMsg:'How are you 是問「你好嗎」，回答 I am fine = 我很好！'},
-    {type:'phonics_test',q:'「你好嗎？」的英文是哪一句？',opts:['How are you?','What is your name?','Where are you?','I am fine.'],
-     ans:'How are you?',hint:'How = 怎麼樣，are you = 你是',audio:'How are you'},
-    {type:'practice',q:'「I am fine」的中文意思是什麼？',hint:'I = 我，am = 是，fine = 好的',
-     opts:[{t:'我很好',c:true},{t:'我很累',c:false},{t:'謝謝你',c:false},{t:'再見',c:false}],
-     okMsg:'I am fine = 我很好！把 I am fine, thank you 一起記住！',failMsg:'fine = 好的！I am fine = 我是好的 = 我很好！'},
+    {type:'phonics_teach',letter:'Do you like',sound:'sentence',soundZh:'問喜不喜歡',emoji:'🍕',word:'Do you like pizza?',wordBreak:'Do-you-like-pizza',color:'consonant',
+     talk:['問喜不喜歡：<span class="eng-big">Do you like pizza?</span><br>中文：你喜歡披薩嗎？','喜歡：<span class="eng-big">Yes, I do.</span>　不喜歡：<span class="eng-big">No, I don\'t.</span>','• like = 喜歡　• Do…? 開頭的問句，就用 do 來回答！','說自己喜歡什麼：<span class="eng-big">I like noodles.</span>（我喜歡麵。）'],audioWord:'Do you like pizza? Yes, I do.'},
+    {type:'phonics_teach',letter:'Food',sound:'sentence',soundZh:'食物單字',emoji:'🍜',word:'noodles',wordBreak:'noo-dles',color:'vowel',
+     talk:['好吃的食物：','<span class="eng-big">pizza</span> 披薩 🍕　<span class="eng-big">noodles</span> 麵 🍜　<span class="eng-big">rice</span> 飯 🍚　<span class="eng-big">hamburger</span> 漢堡 🍔','<span class="eng-big">egg</span> 蛋 🥚　<span class="eng-big">chicken</span> 雞肉 🍗　<span class="eng-big">ice cream</span> 冰淇淋 🍦','飲料：<span class="eng-big">milk</span> 牛奶 🥛　<span class="eng-big">juice</span> 果汁 🧃　<span class="eng-big">water</span> 水 💧'],audioWord:'pizza noodles rice hamburger egg chicken ice cream milk juice water'},
+    {type:'practice',q:'有人問 "Do you like rice?"，你喜歡的話要怎麼回答？',hint:'Do 開頭的問句用 do 回答',
+     opts:[{t:'Yes, I do.',c:true},{t:'Yes, I am.',c:false},{t:'Yes, I like.',c:false},{t:'Yes, I can.',c:false}],
+     okMsg:'Yes, I do！Do 問，do 答！',failMsg:'Do you like…? 要用 Yes, I do. 回答！'},
+    {type:'phonics_blend',q:'🔍 找錯誤：「Do you like milk?」「Yes, I am.」哪裡錯了？',hint:'問句的開頭是什麼字？',
+     opts:[{t:'問句用 Do，回答要用 do：Yes, I do.',c:true,w:'Yes, I do'},{t:'milk 拼錯了',c:false},{t:'沒有錯',c:false},{t:'應該回答 Yes, I like.',c:false}],
+     okMsg:'抓到了！Do 問 do 答，Yes, I am 是回答 Are you…? 的！',failMsg:'Do you like…? 要用 Yes, I do. 回答，不是 Yes, I am！'},
+    {type:'phonics_blend',q:'「我不喜歡漢堡」怎麼說？',hint:'don\'t = 不',
+     opts:[{t:'I don\'t like hamburgers.',c:true,w:'I do not like hamburgers'},{t:'I like hamburgers.',c:false},{t:'I am not hamburgers.',c:false},{t:'No hamburgers like.',c:false}],
+     audio:'I do not like hamburgers',okMsg:'I don\'t like hamburgers！don\'t 就是「不」！',failMsg:'不喜歡：I don\'t like ＋ 食物！'},
+    {type:'phonics_test',q:'哪個字是 🍜 麵？',opts:['noodles','rice','pizza','juice'],ans:'noodles',hint:'noo-dles⋯⋯',audio:'noodles'},
+    {type:'phonics_test',q:'「你喜歡冰淇淋嗎？」的英文是？',opts:['Do you like ice cream?','Are you ice cream?','How is ice cream?','What is ice cream?'],ans:'Do you like ice cream?',hint:'like = 喜歡⋯⋯',audio:'Do you like ice cream'},
+    {type:'phonics_test',q:'"No, I don\'t." 是什麼意思？',opts:['不，我不喜歡','是，我喜歡','我不知道','我不是'],ans:'不，我不喜歡',hint:'don\'t = 不⋯⋯',audio:'No, I do not'},
   ]},
-  {chapter:'🔍 第8章：英文找一找！',story:'今天先學一個重要的文法規律，再用小蛹的觀察力找出句子的不同！',
+  {chapter:'💪 第8章：你會什麼？Can you…?',story:'Can you swim? 用 can 說自己「會做什麼」，每一個都是你的超能力！',
    units:[
-    {type:'phonics_teach',letter:'動詞+s',sound:'grammar',soundZh:'文法小秘密',emoji:'🔍',word:'She loves cats.',wordBreak:'She loves cats',color:'vowel',
-     talk:[
-       '今天學一個很重要的規律！',
-       '用 <span class="hl">I / You / We / They</span> 當主語時：<br>動詞不加 s<br>例：I <span class="eng-big">like</span> cats.',
-       '用 <span class="hl">She / He / It</span> 當主語時：<br>動詞要加 s！<br>例：She <span class="eng-big">likes</span> cats.',
-       '記憶口訣：<span class="hl">她他它，動詞加 s 不能差！</span>',
-       '• I like → She like<span class="hl">s</span><br>• I love → He love<span class="hl">s</span><br>• I have → It ha<span class="hl">s</span>'
-     ],audioWord:'She loves cats'},
-    {type:'practice',q:'"She ___ cats." 空格裡應該填哪個字？',hint:'She 是她，動詞要加 s！',
-     opts:[{t:'loves（加 s）',c:true},{t:'love（不加 s）',c:false},{t:'loving',c:false},{t:'loved',c:false}],
-     okMsg:'She loves！She/He/It 後面的動詞要加 s！',failMsg:'She 是「她」，用 She 當主語時動詞要加 s！loves 才對！'},
-    {type:'phonics_blend',q:'🔍 找錯誤：哪個句子的動詞用法是「錯誤」的？',hint:'注意 she/he 後面的動詞是否加了 s',
-     opts:[{t:'She love cats.（❌ 應是 loves）',c:true,w:'She loves cats'},{t:'She loves cats.（✓）',c:false},{t:'I like dogs.（✓）',c:false},{t:'They like birds.（✓）',c:false}],
-     audio:'She loves cats',okMsg:'找到了！She 後面要加 s，She love → She loves！',failMsg:'She/He/It 後面的動詞要加 s！She love 是錯的，要寫 She loves！'},
-    {type:'phonics_teach',letter:'be動詞',sound:'be',soundZh:'am/is/are',emoji:'📝',word:'I am / You are / She is',wordBreak:'am are is',color:'vowel',
-     talk:[
-       'be 動詞也有規律：',
-       '<span class="eng-big">I am</span> happy. 我很開心<br><span class="eng-big">You are</span> happy. 你很開心<br><span class="eng-big">She is</span> happy. 她很開心',
-       '• I → am<br>• You/We/They → are<br>• She/He/It → is',
-       '口訣：<span class="hl">我用 am，你們用 are，她他它用 is！</span>'
-     ],audioWord:'I am You are She is'},
-    {type:'practice',q:'"He ___ my friend." 空格填什麼？',hint:'He 是他，be 動詞用哪個？',
-     opts:[{t:'is',c:true},{t:'am',c:false},{t:'are',c:false},{t:'be',c:false}],
-     okMsg:'He is！She/He/It 都用 is！',failMsg:'He 是「他」，用 is！I am，You are，He/She/It is！'},
-    {type:'phonics_blend',q:'🔍 找規律：「I am」「You are」「She is」，"He" 後面用什麼？',hint:'She 和 He 是同一類！',
-     opts:[{t:'He is（和 She 一樣用 is）',c:true,w:'He is happy'},{t:'He are',c:false},{t:'He am',c:false},{t:'He be',c:false}],
-     audio:'He is happy',okMsg:'He is！She 和 He 都是第三人稱，都用 is！',failMsg:'She is、He is、It is——她他它都用 is！'},
-    {type:'phonics_test',q:'哪個句子是正確的？',opts:['She likes reading.','She like reading.','She liking reading.','She liked reading now.'],
-     ans:'She likes reading.',hint:'She 後面動詞要加 s！',audio:'She likes reading'},
+    {type:'phonics_teach',letter:'Can you',sound:'sentence',soundZh:'問會不會',emoji:'🏊',word:'Can you swim?',wordBreak:'Can-you-swim',color:'consonant',
+     talk:['問會不會：<span class="eng-big">Can you swim?</span><br>中文：你會游泳嗎？','會：<span class="eng-big">Yes, I can.</span>　不會：<span class="eng-big">No, I can\'t.</span>','• can = 能、會　• Can…? 開頭的問句，就用 can 來回答！','說自己會什麼：<span class="eng-big">I can jump.</span>（我會跳。）'],audioWord:'Can you swim? Yes, I can.'},
+    {type:'phonics_teach',letter:'Actions',sound:'sentence',soundZh:'動作單字',emoji:'🏃',word:'run',wordBreak:'r-un',color:'consonant',
+     talk:['各種動作：','<span class="eng-big">run</span> 跑 🏃　<span class="eng-big">jump</span> 跳 🦘　<span class="eng-big">swim</span> 游泳 🏊　<span class="eng-big">fly</span> 飛 🦋','<span class="eng-big">sing</span> 唱歌 🎤　<span class="eng-big">dance</span> 跳舞 💃　<span class="eng-big">draw</span> 畫畫 🎨　<span class="eng-big">ride a bike</span> 騎腳踏車 🚲','小蛹會哪些？I can draw! I can ride a bike!'],audioWord:'run jump swim fly sing dance draw ride a bike'},
+    {type:'practice',q:'"Can you fly?" 你是人類，應該怎麼回答？',hint:'人不會飛⋯⋯',
+     opts:[{t:'No, I can\'t.',c:true},{t:'Yes, I can.',c:false},{t:'Yes, I do.',c:false},{t:'No, I am not.',c:false}],
+     okMsg:'No, I can\'t！人類不會飛，蝴蝶才會！',failMsg:'Can 問 can 答：不會就是 No, I can\'t.！'},
+    {type:'phonics_blend',q:'🔍 找不同：Do you like…? 和 Can you…? 回答的規律是什麼？',hint:'問句用什麼字開頭，就用什麼字回答',
+     opts:[{t:'Do 用 do 回答，Can 用 can 回答',c:true,w:'Yes I do. Yes I can.'},{t:'都用 Yes, I am 回答',c:false},{t:'都用 do 回答',c:false},{t:'都用 can 回答',c:false}],
+     okMsg:'找到規律了！問句開頭是什麼，回答就用什麼！',failMsg:'Do you…?→Yes, I do.　Can you…?→Yes, I can.　開頭是什麼就用什麼答！'},
+    {type:'phonics_blend',q:'「我會唱歌」怎麼說？',hint:'I can ＋ 動作',
+     opts:[{t:'I can sing.',c:true,w:'I can sing'},{t:'I am sing.',c:false},{t:'I do sing.',c:false},{t:'Sing I can.',c:false}],
+     audio:'I can sing',okMsg:'I can sing！會做什麼就用 I can！',failMsg:'我會＝I can，後面直接接動作：I can sing！'},
+    {type:'phonics_test',q:'哪個字是 🏊 游泳？',opts:['swim','swing','sing','skip'],ans:'swim',hint:'s-w-i-m⋯⋯',audio:'swim'},
+    {type:'phonics_test',q:'「你會跳舞嗎？」的英文是？',opts:['Can you dance?','Do you dance?','Are you dance?','Can you draw?'],ans:'Can you dance?',hint:'會不會用 can，dance = 跳舞⋯⋯',audio:'Can you dance'},
+    {type:'phonics_test',q:'"I can ride a bike." 是什麼意思？',opts:['我會騎腳踏車','我會開車','我想要腳踏車','我會跑步'],ans:'我會騎腳踏車',hint:'ride = 騎，bike = 腳踏車⋯⋯',audio:'I can ride a bike'},
   ]},
-  {chapter:'🔤 第9章：常用單字和句型！',story:'今天學生活裡最常用到的單字！每個都有中文說明，慢慢記！',
+  {chapter:'📦 第9章：東西在哪裡？',story:'Where is the cat? 用 in、on、under 說位置，再學 this/these 的祕密！',
    units:[
-    {type:'phonics_teach',letter:'colors',sound:'colors',soundZh:'顏色單字',emoji:'🌈',word:'red blue green yellow',wordBreak:'col-ors',color:'vowel',
-     talk:[
-       '今天先學顏色！',
-       '<span class="eng-big">red</span> = 紅色 🔴<br><span class="eng-big">blue</span> = 藍色 🔵<br><span class="eng-big">green</span> = 綠色 💚',
-       '<span class="eng-big">yellow</span> = 黃色 💛<br><span class="eng-big">white</span> = 白色 ⬜<br><span class="eng-big">black</span> = 黑色 ⬛',
-       '顏色句型：<span class="hl">This is + 顏色</span><br>例：This is red. 這是紅色。'
-     ],audioWord:'red blue green yellow white black'},
-    {type:'practice',q:'"blue" 是什麼顏色？',hint:'藍天、藍海是什麼顏色？',
-     opts:[{t:'🔵 藍色',c:true},{t:'🔴 紅色',c:false},{t:'💛 黃色',c:false},{t:'💚 綠色',c:false}],
-     okMsg:'blue = 藍色！像天空一樣！',failMsg:'blue = 藍色 🔵！藍天、藍海、藍色的海！'},
-    {type:'practice',q:'"green" 是什麼顏色？',hint:'草地、樹葉是什麼顏色？',
-     opts:[{t:'💚 綠色',c:true},{t:'🔴 紅色',c:false},{t:'🔵 藍色',c:false},{t:'💛 黃色',c:false}],
-     okMsg:'green = 綠色！像草地一樣！',failMsg:'green = 綠色 💚！草是綠色的！'},
-    {type:'phonics_teach',letter:'numbers',sound:'numbers',soundZh:'數字 11-20',emoji:'🔢',word:'eleven to twenty',wordBreak:'num-bers',color:'consonant',
-     talk:[
-       '數字 11-20！',
-       '<span class="eng-big">11</span> = eleven（伊勒文）<br><span class="eng-big">12</span> = twelve（特威夫）<br><span class="eng-big">13</span> = thirteen（瑟爾鐵）',
-       '<span class="eng-big">14</span> = fourteen<br><span class="eng-big">15</span> = fifteen<br><span class="eng-big">16</span> = sixteen',
-       '<span class="eng-big">17</span> = seventeen<br><span class="eng-big">18</span> = eighteen<br><span class="eng-big">19</span> = nineteen<br><span class="eng-big">20</span> = twenty',
-       '記憶技巧：13-19 結尾都是 <span class="hl">-teen</span>！'
-     ],audioWord:'eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty'},
-    {type:'practice',q:'"thirteen" 是數字幾？',hint:'thir + teen，13 還是 30？',
-     opts:[{t:'13',c:true},{t:'30',c:false},{t:'14',c:false},{t:'12',c:false}],
-     okMsg:'thirteen = 13！-teen 結尾的都是 10 幾喔！',failMsg:'thirteen = 13！注意 -teen 結尾是 10 幾，不是幾十！'},
-    {type:'phonics_teach',letter:'classroom',sound:'classroom',soundZh:'教室單字',emoji:'🏫',word:'book pen desk chair',wordBreak:'class-room',color:'consonant',
-     talk:[
-       '教室裡的東西！',
-       '<span class="eng-big">book</span> = 書 📚<br><span class="eng-big">pen</span> = 筆 ✏️<br><span class="eng-big">desk</span> = 桌子 🪑',
-       '<span class="eng-big">chair</span> = 椅子 🪑<br><span class="eng-big">bag</span> = 書包 🎒<br><span class="eng-big">ruler</span> = 尺 📏',
-       '句型：<span class="hl">This is my ___.</span><br>例：This is my book. 這是我的書。'
-     ],audioWord:'book pen desk chair bag ruler'},
-    {type:'practice',q:'"bag" 是什麼意思？',hint:'上學每天都要背的是什麼？',
-     opts:[{t:'🎒 書包／袋子',c:true},{t:'📚 書',c:false},{t:'✏️ 筆',c:false},{t:'📏 尺',c:false}],
-     okMsg:'bag = 書包！This is my bag. 這是我的書包！',failMsg:'bag = 書包 🎒！背在背上的那個！'},
-    {type:'phonics_test',q:'"Red" 是什麼顏色？',opts:['紅色','藍色','黃色','綠色'],ans:'紅色',hint:'像草莓🍓一樣！',audio:'red'},
+    {type:'phonics_teach',letter:'in on under',sound:'sentence',soundZh:'位置介系詞',emoji:'📦',word:'in the box',wordBreak:'in-the-box',color:'consonant',
+     talk:['三個位置詞：','<span class="eng-big">in</span> 在裡面 📦　<span class="eng-big">on</span> 在上面 ⬆️　<span class="eng-big">under</span> 在下面 ⬇️','問：<span class="eng-big">Where is the cat?</span>（貓在哪裡？）<br>答：<span class="eng-big">It is in the box.</span>（牠在箱子裡。）','想像一個箱子：in 是鑽進去、on 是坐在上面、under 是躲在下面！'],audioWord:'Where is the cat? It is in the box.'},
+    {type:'phonics_teach',letter:'This/These',sound:'sentence',soundZh:'這個／這些',emoji:'👉',word:'This is a pen.',wordBreak:'This-is-a-pen',color:'vowel',
+     talk:['指東西的句型：','一個：<span class="eng-big">This is a pen.</span>（這是一枝筆。）','很多個：<span class="eng-big">These are pens.</span>（這些是筆。）','規律：一個用 <span class="hl">This is a</span>，很多個用 <span class="hl">These are</span>，而且名詞要加 <span class="hl">s</span>！','遠一點的東西用 <span class="eng-big">That is</span>（那是）／<span class="eng-big">Those are</span>（那些是）！'],audioWord:'This is a pen. These are pens.'},
+    {type:'practice',q:'貓躲在桌子「下面」，英文是？',hint:'下面 = under',
+     opts:[{t:'The cat is under the desk.',c:true},{t:'The cat is on the desk.',c:false},{t:'The cat is in the desk.',c:false},{t:'The cat is desk.',c:false}],
+     okMsg:'under the desk！躲在桌子下面！',failMsg:'下面是 under！The cat is under the desk！'},
+    {type:'phonics_blend',q:'🔍 找規律：This is a dog.→These are dogs.　This is a cup.→These are ___？',hint:'很多個要加 s',
+     opts:[{t:'These are cups.',c:true,w:'These are cups'},{t:'These are cup.',c:false},{t:'This are cups.',c:false},{t:'These is cups.',c:false}],
+     audio:'These are cups',okMsg:'These are cups！This→These，is→are，cup→cups，三個地方一起變！',failMsg:'很多個：This 變 These、is 變 are、cup 加 s 變 cups！'},
+    {type:'phonics_blend',q:'書放在桌子上面，怎麼說？',hint:'上面 = on',
+     opts:[{t:'The book is on the desk.',c:true,w:'The book is on the desk'},{t:'The book is in the desk.',c:false},{t:'The book is under the desk.',c:false},{t:'The desk is on the book.',c:false}],
+     audio:'The book is on the desk',okMsg:'on the desk！放在上面！',failMsg:'上面是 on！The book is on the desk！'},
+    {type:'phonics_test',q:'「在裡面」的英文是？',opts:['in','on','under','at'],ans:'in',hint:'鑽進箱子裡⋯⋯',audio:'in'},
+    {type:'phonics_test',q:'「貓在哪裡？」的英文是？',opts:['Where is the cat?','What is the cat?','How is the cat?','Who is the cat?'],ans:'Where is the cat?',hint:'Where = 哪裡⋯⋯',audio:'Where is the cat'},
+    {type:'phonics_test',q:'"These are apples." 是什麼意思？',opts:['這些是蘋果','這是一個蘋果','那是蘋果','蘋果在這裡'],ans:'這些是蘋果',hint:'These = 這些，apples 有 s⋯⋯',audio:'These are apples'},
   ]},
-  {chapter:'🏆 第10章：英文大挑戰！',story:'先複習所有學過的單字，再來大挑戰！',
+  {chapter:'🏆 第10章：英文大挑戰！',story:'四年級英文全部複習！拼讀、數字、時間、天氣、食物、能力、位置，小蛹全都會了！',
    units:[
     {type:'phonics_teach',letter:'review',sound:'review',soundZh:'總複習',emoji:'🌟',word:'all words',wordBreak:'re-view',color:'vowel',
-     talk:[
-       '大挑戰前，先快速複習！',
-       '動物：<span class="eng-big">cat</span>=貓 <span class="eng-big">dog</span>=狗 <span class="eng-big">bee</span>=蜜蜂<br>顏色：<span class="eng-big">red</span>=紅 <span class="eng-big">blue</span>=藍 <span class="eng-big">green</span>=綠',
-       '句型：<span class="eng-big">My name is ___</span>（我的名字是）<br><span class="eng-big">How are you?</span>（你好嗎？）<br><span class="eng-big">I am fine!</span>（我很好！）',
-       '規律：She/He/It 後面動詞加 s！<br>She <span class="hl">likes</span> ✓ &nbsp; She <span class="hl">like</span> ✗',
-       '準備好了嗎？開始大挑戰！🏆'
-     ],audioWord:'cat dog bee red blue green'},
-    {type:'phonics_test',q:'"cat" 是什麼動物？',opts:['🐱 貓','🐶 狗','🐝 蜜蜂','🐟 魚'],ans:'🐱 貓',hint:'c-a-t！',audio:'cat'},
-    {type:'phonics_test',q:'"blue" 是什麼顏色？',opts:['🔵 藍色','🔴 紅色','💛 黃色','💚 綠色'],ans:'🔵 藍色',hint:'像天空一樣！',audio:'blue'},
-    {type:'phonics_blend',q:'「我的名字是小蛹」英文是？',hint:'My name is ___',
-     opts:[{t:'My name is Xiao Yong.',c:true,w:'My name is Xiao Yong'},{t:'Name my is Xiao Yong.',c:false},{t:'I am Xiao Yong name.',c:false}],
-     audio:'My name is Xiao Yong',okMsg:'My name is！完美！',failMsg:'My name is + 名字！語序：我的名字是...'},
-    {type:'phonics_blend',q:'哪個句子動詞用法是正確的？',hint:'She 後面動詞要加 s！',
-     opts:[{t:'She likes butterflies. ✓',c:true,w:'She likes butterflies'},{t:'She like butterflies. ✗',c:false},{t:'She liking butterflies. ✗',c:false}],
-     audio:'She likes butterflies',okMsg:'She likes！第三人稱加 s！',failMsg:'She 後面動詞要加 s！like → likes！'},
-    {type:'phonics_test',q:'「你好嗎？」英文是哪句？',opts:['How are you?','What is your name?','I am fine.','Good morning!'],
-     ans:'How are you?',hint:'問候的句子！',audio:'How are you'},
-    {type:'practice',q:'"I am fine" 的中文意思是？',hint:'I = 我，am = 是，fine = 好',
-     opts:[{t:'我很好',c:true},{t:'我很累',c:false},{t:'謝謝你',c:false},{t:'再見',c:false}],
-     okMsg:'I am fine = 我很好！',failMsg:'fine = 好！I am fine = 我很好！'},
-    {type:'phonics_blend',q:'「問地點」的疑問詞是？',hint:'Where = 哪裡',
-     opts:[{t:'Where（哪裡）',c:true,w:'Where is it'},{t:'When（什麼時候）',c:false},{t:'What（什麼）',c:false},{t:'Who（誰）',c:false}],
-     audio:'Where is it',okMsg:'Where！問地點！',failMsg:'Where = 哪裡！問地點用 Where！'},
+     talk:['大挑戰前，快速複習！','拼讀：短母音 cat／魔法 e cake／sh ship／ch chair／th three','句型：<span class="eng-big">What time is it?</span>　<span class="eng-big">How is the weather?</span>','<span class="eng-big">Do you like…? → Yes, I do.</span>　<span class="eng-big">Can you…? → Yes, I can.</span>','位置：in／on／under　　一個 This is a ／很多 These are ＋ s','準備好了嗎？開始大挑戰！🏆'],audioWord:'cat cake ship chair three'},
+    {type:'phonics_test',q:'哪個字有魔法 e？',opts:['kite','kit','sit','hit'],ans:'kite',hint:'結尾有 e，i 唸「ㄞ」⋯⋯',audio:'kite'},
+    {type:'phonics_test',q:'"thirty" 是幾？',opts:['30','13','3','33'],ans:'30',hint:'結尾 -ty 是整十⋯⋯',audio:'thirty'},
+    {type:'phonics_blend',q:'有人問 "Can you swim?"，你會游泳，要怎麼回答？',hint:'Can 問 can 答',
+     opts:[{t:'Yes, I can.',c:true,w:'Yes, I can'},{t:'Yes, I do.',c:false},{t:'Yes, I am.',c:false},{t:'Yes, I swim.',c:false}],
+     audio:'Yes, I can',okMsg:'Yes, I can！完美！',failMsg:'Can you…? 要用 Yes, I can. 回答！'},
+    {type:'phonics_test',q:'「星期日」的英文是？',opts:['Sunday','Saturday','Monday','Friday'],ans:'Sunday',hint:'Sun-day⋯⋯',audio:'Sunday'},
+    {type:'phonics_blend',q:'🔍 找錯誤：「This are a cat.」哪裡錯了？',hint:'一隻貓，用 is 還是 are？',
+     opts:[{t:'一個要用 is：This is a cat.',c:true,w:'This is a cat'},{t:'cat 要加 s',c:false},{t:'沒有錯',c:false},{t:'應該用 These',c:false}],
+     okMsg:'抓到了！一隻貓用 This is a cat.！',failMsg:'一個用 This is a，很多個才用 These are！'},
+    {type:'phonics_test',q:'"It is windy." 是什麼天氣？',opts:['💨 颳風','🌧️ 雨天','☀️ 晴天','❄️ 下雪'],ans:'💨 颳風',hint:'wind = 風⋯⋯',audio:'windy'},
+    {type:'phonics_test',q:'「我喜歡飯」的英文是？',opts:['I like rice.','I can rice.','I am rice.','Rice like I.'],ans:'I like rice.',hint:'like = 喜歡⋯⋯',audio:'I like rice'},
+    {type:'phonics_test',q:'"The ball is under the chair." 球在哪裡？',opts:['椅子下面','椅子上面','椅子裡面','椅子旁邊'],ans:'椅子下面',hint:'under = 下面⋯⋯',audio:'The ball is under the chair'},
   ]},
   {chapter:'📖 Unit 1：Nouns 名詞！',
    story:'Grammar Picnic帶你認識英文名詞！人物Person、物品Thing、動物Animal、地方Place——小蛹學了就能分辨所有名詞！',
@@ -1749,6 +1768,7 @@ english:[
      opts:[{t:'完全一樣！只是把Be動詞移到句首，其他不變！',c:true},{t:'問句要換成不同的Be動詞',c:false},{t:'問句不需要Be動詞',c:false},{t:'問句的Be動詞都用is',c:false}],
      okMsg:'對！Be動詞種類不變，只是移到最前面就變問句！超簡單的規律！',
      failMsg:'直述句的Be動詞是什麼，問句就用同一個，只是移到句首！'},
+   ]},
   {chapter:'📖 Unit 8：What/Who Questions！',
    story:'What 問東西，Who 問人！學會這兩個問句，你就能用英文問任何問題了！',
    units:[
@@ -1917,232 +1937,236 @@ english:[
      opts:[{t:'形容詞永遠在名詞前面！（形容詞+名詞）',c:true},{t:'形容詞在名詞後面',c:false},{t:'形容詞在句尾',c:false},{t:'形容詞位置不固定',c:false}],
      okMsg:'完全正確！形容詞永遠放在名詞前面！black cat、tall girl、round clocks！',
      failMsg:'形容詞+名詞！black放在cat前、tall放在girl前、round放在clocks前！'},
-   ]}   ]},
+   ]},
 ],
 math:[
-  {chapter:'✖️ 第1章：乘法的祕密！',story:'乘法是加法的快速版！小蛹你能發現乘法的規律嗎？',
+  {chapter:'🔢 第1章：大數的世界！',story:'萬、十萬、百萬⋯⋯一直到億！數字越大，位值的規律越重要，小蛹來找找看！',
    units:[
-    {type:'teach',concept:'multiplication',
-     talk:['<span class="hl">乘法</span>就是「重複加法」的快捷方式！','3×4 就是 4+4+4，也就是 3 個 4！','用圖片看：3行 × 4個 = 12個！'],
-     v1:['🦋','🦋','🦋','🦋'],v2:['🦋','🦋','🦋','🦋'],v3:['🦋','🦋','🦋','🦋'],result:12,isMult:true,mult:[3,4]},
-    {type:'practice',concept:'multiplication',q:'3 × 4 = ?',hint:'3 個 4，或是 4+4+4',visual:['3×4=?'],
-     opts:[{t:'12',c:true},{t:'7',c:false},{t:'10',c:false},{t:'9',c:false}],
-     okMsg:'3×4=12！乘法超快！',failMsg:'3×4就是3個4相加：4+4+4=12！'},
-    {type:'observe',q:'🔍 找規律：「2×3=6」「3×2=6」「4×5=20」「5×4=？」，規律是什麼？',hint:'交換兩個數字相乘，結果會變嗎？',
-     opts:[{t:'5×4=20，交換兩數相乘結果不變',c:true},{t:'5×4=25',c:false},{t:'5×4=15',c:false},{t:'5×4=24',c:false}],
-     okMsg:'發現規律了！乘法交換律：a×b = b×a！',
-     failMsg:'4×5=20，交換成5×4還是20！乘法交換律：交換兩個數相乘，結果不變！'},
-    {type:'practice',concept:'multiplication',q:'5 × 3 = ?',hint:'5個3',visual:['5×3=?'],
-     opts:[{t:'15',c:true},{t:'8',c:false},{t:'12',c:false},{t:'20',c:false}],
-     okMsg:'5×3=15！',failMsg:'5×3就是5個3：3+3+3+3+3=15！'},
-    {type:'observe',q:'🔍 觀察題：「3×7」和「7×3」，哪個答案比較大？',hint:'用乘法交換律想想看',
-     opts:[{t:'一樣大，都等於21',c:true},{t:'3×7比較大',c:false},{t:'7×3比較大',c:false},{t:'無法比較',c:false}],
-     okMsg:'完全正確！3×7=7×3=21！乘法交換律！',
-     failMsg:'乘法交換律：3×7=7×3，兩個都等於21！'},
-    {type:'test',q:'4 × 5 = ?',visual:['4×5=?'],opts:['20','18','24','15'],ans:'20',hint:'4個5⋯⋯'},
-    {type:'test',q:'6 × 3 = ?',visual:['6×3=?'],opts:['18','15','21','24'],ans:'18',hint:'6個3⋯⋯'},
-    {type:'test',q:'7 × 2 = ?',visual:['7×2=?'],opts:['14','12','16','9'],ans:'14',hint:'7個2⋯⋯'},
+    {type:'teach',concept:'big_number',
+     talk:['四年級的數字變大了！<span class="hl">萬</span>的後面還有<span class="hl">十萬、百萬、千萬</span>，再上去就是<span class="hl">億</span>！','每往左一位，就是前一位的<span class="hl">10倍</span>！10個一萬＝十萬，10個千萬＝一億！','讀大數的祕訣：先從右邊每四位切一刀，切出「萬」和「億」！例如 3,0500,0000 讀作「三億零五百萬」！'],
+     visual:['萬＝10000','十萬＝100000','百萬＝1000000','億＝10000個萬'],result:0},
+    {type:'observe',q:'🔍 找規律：1萬、10萬、100萬、1000萬，下一個是？',hint:'每次都變成10倍',
+     opts:[{t:'1億（＝10000萬）',c:true},{t:'10億',c:false},{t:'1萬萬萬',c:false},{t:'100萬萬',c:false}],
+     okMsg:'找到了！1000萬的10倍就是1億，也就是一萬個萬！',failMsg:'1000萬×10＝1億！一萬個一萬就是一億！'},
+    {type:'practice',concept:'big_number',q:'408,000 要怎麼讀？',hint:'從右邊切四位：40 | 8000，前面是「萬」',
+     opts:[{t:'四十萬八千',c:true},{t:'四萬八千',c:false},{t:'四百零八萬',c:false},{t:'四十萬零八百',c:false}],
+     okMsg:'四十萬八千！切四位之後，左邊的40是「萬」，右邊的8000是「八千」！',failMsg:'408,000切成 40 | 8000：40萬＋8000＝四十萬八千！'},
+    {type:'practice',concept:'big_number',q:'98,765 和 102,340，哪一個比較大？',hint:'先數位數，位數多的一定大',
+     opts:[{t:'102,340 比較大（六位數）',c:true},{t:'98,765 比較大（開頭的9比較大）',c:false},{t:'一樣大',c:false},{t:'無法比較',c:false}],
+     okMsg:'對！102,340是六位數，98,765只有五位數，位數多的一定比較大！',failMsg:'比大小先數位數！102,340有六位，98,765只有五位，六位數一定比較大！'},
+    {type:'observe',q:'🔍 找錯誤：小蛹把「六十萬零三百」寫成 60,300。對不對？',hint:'六十萬要有幾個0？寫出來數數看位數',
+     opts:[{t:'錯了，應該是 600,300（六位數）',c:true},{t:'對，60,300 就是六十萬零三百',c:false},{t:'錯了，應該是 603,000',c:false},{t:'錯了，應該是 6,000,300',c:false}],
+     okMsg:'好眼力！六十萬是600,000，加上三百就是600,300！60,300只有六萬零三百！',failMsg:'六十萬＝600,000（六位數），零三百＝300，合起來是600,300！'},
+    {type:'test',q:'2,500,000 讀作？',visual:['2,500,000'],opts:['二百五十萬','二十五萬','二千五百萬','二百五十'],ans:'二百五十萬',hint:'切四位：250 | 0000⋯⋯'},
+    {type:'test',q:'1億等於幾個1000萬？',visual:['1億＝？個1000萬'],opts:['10個','100個','1000個','1個'],ans:'10個',hint:'1000萬×10＝⋯⋯'},
+    {type:'test',q:'「三萬五千」寫成數字是？',visual:['三萬五千'],opts:['35,000','3,500','350,000','30,500'],ans:'35,000',hint:'三萬是30,000，再加五千⋯⋯'},
   ]},
-  {chapter:'📊 第2章：九九乘法表！',story:'九九乘法表有規律可循！小蛹一定能找到它們！',
+  {chapter:'✖️ 第2章：乘法升級！',story:'三位數乘以二位數！只要會拆開來算，再大的乘法都不怕！',
    units:[
-    {type:'teach',concept:'times_table',
-     talk:['九九乘法表的規律！','<span class="hl">規律1</span>：任何數 × 1 = 那個數本身！','<span class="hl">規律2</span>：5的倍數結尾是0或5！','<span class="hl">規律3</span>：9的倍數各位數字加總等於9！'],
-     visual:['×1=自己','×5結尾0或5','9×N數字和=9'],result:0},
-    {type:'observe',q:'🔍 找規律：「9×1=9, 9×2=18, 9×3=27, 9×4=36」，各位數字加總都等於幾？',hint:'9的各位數字相加：1+8=？2+7=？3+6=？',
-     opts:[{t:'都等於9',c:true},{t:'都等於18',c:false},{t:'每次加1',c:false},{t:'沒有規律',c:false}],
-     okMsg:'找到9的神奇規律了！各位數字相加都等於9！',
-     failMsg:'9→9、18→1+8=9、27→2+7=9、36→3+6=9！9的倍數各位相加都是9！'},
-    {type:'practice',concept:'multiplication',q:'6 × 5 = ?',hint:'6的5倍，結果是5的倍數',visual:['6×5=?'],
-     opts:[{t:'30',c:true},{t:'25',c:false},{t:'35',c:false},{t:'28',c:false}],
-     okMsg:'6×5=30！結尾是0！',failMsg:'6×5=30！5的倍數結尾是0或5！'},
-    {type:'practice',concept:'multiplication',q:'8 × 7 = ?',hint:'8個7',visual:['8×7=?'],
-     opts:[{t:'56',c:true},{t:'54',c:false},{t:'49',c:false},{t:'64',c:false}],
-     okMsg:'8×7=56！',failMsg:'8×7=56！'},
-    {type:'observe',q:'🔍 觀察：「6×4=24」「6×5=30」「6×6=36」，每次增加幾？',hint:'注意相鄰兩個答案的差',
-     opts:[{t:'每次增加6',c:true},{t:'每次增加4',c:false},{t:'每次增加5',c:false},{t:'每次增加10',c:false}],
-     okMsg:'觀察到了！6的倍數每次增加6！30-24=6，36-30=6！',
-     failMsg:'24→30→36，每次差6！6的倍數每次加6！'},
-    {type:'test',q:'7 × 8 = ?',visual:['7×8=?'],opts:['56','54','48','64'],ans:'56',hint:'7個8⋯⋯'},
-    {type:'test',q:'9 × 9 = ?',visual:['9×9=?'],opts:['81','72','80','90'],ans:'81',hint:'9的最大倍⋯⋯'},
-    {type:'test',q:'3 × 9 = ?',visual:['3×9=?'],opts:['27','24','30','21'],ans:'27',hint:'3個9⋯⋯'},
+    {type:'teach',concept:'mult_big',
+     talk:['大乘法的祕訣：<span class="hl">把乘數拆開</span>！','123×45，先把45拆成40和5：','123×5＝615、123×40＝4920，加起來 615＋4920＝<span class="hl">5535</span>！','直式計算時，乘「十位」的那一列記得往左移一位（因為它是幾十）！'],
+     visual:['123×5＝615','123×40＝4920','615＋4920＝5535'],result:0},
+    {type:'observe',q:'🔍 找規律：25×4＝100、25×8＝200、25×12＝300，那 25×16＝？',hint:'乘數每多4，積就多多少？',
+     opts:[{t:'400（乘數每多4，積多100）',c:true},{t:'350',c:false},{t:'320',c:false},{t:'500',c:false}],
+     okMsg:'找到規律了！25×4＝100，所以16裡面有4個4，就是4個100＝400！',failMsg:'4→100、8→200、12→300，每多4就多100，16→400！'},
+    {type:'practice',concept:'mult_big',q:'36 × 20 ＝ ?',hint:'先算36×2，再補一個0',visual:['36×20=?'],
+     opts:[{t:'720',c:true},{t:'72',c:false},{t:'560',c:false},{t:'7200',c:false}],
+     okMsg:'36×2＝72，乘以20就是720！乘整十的數，先算再補0！',failMsg:'36×2＝72，20是2的10倍，所以36×20＝720！'},
+    {type:'practice',concept:'mult_big',q:'214 × 3 ＝ ?',hint:'200×3、10×3、4×3 分開算再相加',visual:['214×3=?'],
+     opts:[{t:'642',c:true},{t:'632',c:false},{t:'612',c:false},{t:'652',c:false}],
+     okMsg:'600＋30＋12＝642！拆開算最清楚！',failMsg:'200×3＝600，10×3＝30，4×3＝12，加起來是642！'},
+    {type:'observe',q:'🔍 找錯誤：小蛹算 123×45：「123×5＝615，123×4＝492，615＋492＝1107」。哪裡錯了？',hint:'45 裡面的 4 是「四十」還是「四」？',
+     opts:[{t:'123乘的是40不是4，應該是4920，答案是5535',c:true},{t:'123×5算錯了',c:false},{t:'615＋492加錯了',c:false},{t:'沒有錯，答案就是1107',c:false}],
+     okMsg:'抓到了！45的4在十位，是「四十」，123×40＝4920才對！615＋4920＝5535！',failMsg:'45的4是四十！123×40＝4920，不是492。正確答案是615＋4920＝5535！'},
+    {type:'test',q:'125 × 8 ＝ ?',visual:['125×8=?'],opts:['1000','900','1025','1250'],ans:'1000',hint:'125×8 是個很好記的答案⋯⋯'},
+    {type:'test',q:'304 × 12 ＝ ?',visual:['304×12=?'],opts:['3648','3568','3048','3684'],ans:'3648',hint:'304×10＝3040，304×2＝608⋯⋯'},
+    {type:'test',q:'一本書 198 元，買 5 本大約要多少錢？',visual:['198×5≈?'],opts:['約1000元','約500元','約2000元','約100元'],ans:'約1000元',hint:'198很接近200，200×5＝⋯⋯'},
   ]},
-  {chapter:'➗ 第3章：除法是什麼？',story:'除法是分配！今天用小蛹的觀察力找出乘除的關係！',
+  {chapter:'➗ 第3章：除法升級！',story:'除數變成二位數了！學會「驗算」，自己就能檢查答案對不對！',
    units:[
-    {type:'teach',concept:'division',
-     talk:['<span class="hl">除法</span>就是「平均分配」！','12個糖果分給4人，每人幾個？','12 ÷ 4 = 3！每人3個！'],
-     visual:['12','÷','4','=','3'],result:3,isDiv:true},
-    {type:'observe',q:'🔍 找關係：「3×4=12」→「12÷3=？」「12÷4=？」',hint:'乘法和除法是互逆的關係',
-     opts:[{t:'12÷3=4，12÷4=3（乘除互逆）',c:true},{t:'12÷3=3，12÷4=4',c:false},{t:'12÷3=6，12÷4=6',c:false},{t:'無法計算',c:false}],
-     okMsg:'找到乘除的關係了！3×4=12，所以12÷3=4、12÷4=3！',
-     failMsg:'3×4=12，反過來：12÷3=4，12÷4=3！乘除是互逆的！'},
-    {type:'practice',concept:'division',q:'20 ÷ 5 = ?',hint:'5×幾=20？',visual:['20÷5=?'],
-     opts:[{t:'4',c:true},{t:'5',c:false},{t:'3',c:false},{t:'6',c:false}],
-     okMsg:'20÷5=4！用5×4=20推算！',failMsg:'5×4=20，所以20÷5=4！'},
-    {type:'practice',concept:'division',q:'36 ÷ 6 = ?',hint:'6×幾=36？',visual:['36÷6=?'],
-     opts:[{t:'6',c:true},{t:'7',c:false},{t:'5',c:false},{t:'8',c:false}],
-     okMsg:'36÷6=6！6×6=36！',failMsg:'6×6=36，所以36÷6=6！'},
-    {type:'observe',q:'🔍 找不同：四個除法算式，哪個答案是「奇數」？',hint:'先算出每個答案，再看哪個不能被2整除',
-     opts:[{t:'15÷3=5（5是奇數）',c:true},{t:'12÷3=4（4是偶數）',c:false},{t:'16÷4=4（4是偶數）',c:false},{t:'18÷3=6（6是偶數）',c:false}],
-     okMsg:'找到了！15÷3=5，5是奇數！其他答案都是偶數！',
-     failMsg:'15÷3=5（奇數），12÷3=4，16÷4=4，18÷3=6（都是偶數）！'},
-    {type:'test',q:'15 ÷ 3 = ?',visual:['15÷3=?'],opts:['5','4','6','3'],ans:'5',hint:'3×幾=15？⋯⋯'},
-    {type:'test',q:'24 ÷ 8 = ?',visual:['24÷8=?'],opts:['3','4','2','6'],ans:'3',hint:'8×幾=24？⋯⋯'},
-    {type:'test',q:'42 ÷ 7 = ?',visual:['42÷7=?'],opts:['6','5','7','8'],ans:'6',hint:'7×幾=42？⋯⋯'},
+    {type:'teach',concept:'div_big',
+     talk:['除數是二位數時，先<span class="hl">猜商</span>再驗算！','96÷12：想「12×幾最接近96？」12×8＝96，所以商是8！','有餘數的時候，記住：<span class="hl">餘數一定比除數小</span>！','驗算公式：<span class="hl">商×除數＋餘數＝被除數</span>，算對了才算完成！'],
+     visual:['96÷12＝8','驗算：8×12＝96','餘數＜除數'],result:0},
+    {type:'observe',q:'🔍 找規律：□÷7 的餘數最大可以是多少？',hint:'餘數一定要比除數小',
+     opts:[{t:'6',c:true},{t:'7',c:false},{t:'8',c:false},{t:'0',c:false}],
+     okMsg:'對！除以7的餘數只能是0到6，最大是6！餘數如果是7，就還可以再分一次！',failMsg:'餘數一定比除數小！除以7，餘數最大是6！'},
+    {type:'practice',concept:'div_big',q:'84 ÷ 12 ＝ ?',hint:'12×幾＝84？',visual:['84÷12=?'],
+     opts:[{t:'7',c:true},{t:'6',c:false},{t:'8',c:false},{t:'9',c:false}],
+     okMsg:'12×7＝84，所以84÷12＝7！',failMsg:'12×7＝84！所以84÷12＝7！'},
+    {type:'practice',concept:'div_big',q:'100 ÷ 30 ＝ ?',hint:'30×3＝90，還剩多少？',visual:['100÷30=?'],
+     opts:[{t:'3餘10',c:true},{t:'3餘1',c:false},{t:'4',c:false},{t:'3餘30',c:false}],
+     okMsg:'30×3＝90，100－90＝10，所以是3餘10！驗算：3×30＋10＝100！',failMsg:'30×3＝90，剩下100－90＝10，答案是3餘10！'},
+    {type:'observe',q:'🔍 找錯誤：小蛹算 75÷8＝8餘11，驗算 8×8＋11＝75 也對。哪裡有問題？',hint:'看看餘數和除數的大小',
+     opts:[{t:'餘數11比除數8大，應該是9餘3',c:true},{t:'驗算算錯了',c:false},{t:'沒有問題',c:false},{t:'應該是8餘1',c:false}],
+     okMsg:'好眼力！餘數11比8大，表示還能再分一次：8×9＝72，75－72＝3，所以是9餘3！',failMsg:'餘數11＞除數8，不行！應該是9餘3（8×9＝72，75－72＝3）！'},
+    {type:'test',q:'156 ÷ 13 ＝ ?',visual:['156÷13=?'],opts:['12','11','13','14'],ans:'12',hint:'13×12＝⋯⋯'},
+    {type:'test',q:'250 ÷ 40 ＝ ?',visual:['250÷40=?'],opts:['6餘10','6餘1','5餘50','7'],ans:'6餘10',hint:'40×6＝240，250－240＝⋯⋯'},
+    {type:'test',q:'一盒裝 12 顆蛋，150 顆蛋可以裝幾盒？剩幾顆？',visual:['150÷12=?'],opts:['12盒，剩6顆','13盒，剛好','12盒，剩4顆','11盒，剩18顆'],ans:'12盒，剩6顆',hint:'12×12＝144，150－144＝⋯⋯'},
   ]},
-  {chapter:'📝 第4章：應用題挑戰！',story:'把生活問題變成算式！小蛹的觀察力能找到關鍵資訊！',
+  {chapter:'🧮 第4章：四則運算和括號！',story:'加減乘除混在一起，誰先算？規則只有三條，找對順序就不會錯！',
    units:[
-    {type:'teach',concept:'word_problem',
-     talk:['解應用題的步驟！','1. 找關鍵詞（每個、共、平均分）','2. 決定用乘還是除','3. 列式計算','4. 回答問題！'],
-     visual:['找關鍵詞','乘或除','列式','回答'],result:0},
-    {type:'observe',q:'🔍 找關鍵詞：「每個花瓶有5朵花，3個花瓶共有幾朵花？」，用乘法還是除法？',hint:'「每個×數量」是用乘法還是除法？',
-     opts:[{t:'乘法（3×5），每個乘以數量',c:true},{t:'除法（5÷3）',c:false},{t:'加法（3+5）',c:false},{t:'減法（5-3）',c:false}],
-     okMsg:'找到關鍵詞了！「每個」+「共有」→ 用乘法！3×5=15朵！',
-     failMsg:'「每個5朵，3個」→ 每個×數量 → 用乘法 → 3×5=15朵！'},
-    {type:'practice',concept:'division_word',q:'🍪 24個餅乾，平均分給6個小朋友，每人幾個？',hint:'總數÷人數',visual:['24÷6=?'],
-     opts:[{t:'4個',c:true},{t:'6個',c:false},{t:'3個',c:false},{t:'5個',c:false}],
-     okMsg:'24÷6=4個！每人4個！',failMsg:'24個平均分6人：24÷6=4個！'},
-    {type:'observe',q:'🔍 找不同：下面哪個問題要用除法解？',hint:'「分配」「每人幾個」通常用除法',
-     opts:[{t:'35個學生分成5組，每組幾人？',c:true},{t:'圖書館有8本書，再買7本，共幾本？',c:false},{t:'每天跑3圈，4天共跑幾圈？',c:false},{t:'原有15元，花了8元，剩幾元？',c:false}],
-     okMsg:'找到了！「分成5組，每組幾人」是分配問題，用除法！',
-     failMsg:'分配（平均分配/每組多少）用除法！35÷5=7人！'},
-    {type:'test',q:'小蛹採了4次花，每次採9朵，共採幾朵？',visual:['4×9=?'],opts:['36朵','32朵','40朵','28朵'],ans:'36朵',hint:'4次×每次9朵⋯⋯'},
-    {type:'test',q:'48個蛋分裝在6個盒子，每盒幾個？',visual:['48÷6=?'],opts:['8個','6個','9個','7個'],ans:'8個',hint:'48÷6⋯⋯'},
-    {type:'test',q:'教室有6排，每排7張椅子，共幾張？',visual:['6×7=?'],opts:['42張','36張','48張','40張'],ans:'42張',hint:'6排×每排7張⋯⋯'},
-    {type:'test',q:'72個糖果平均分給9人，每人幾個？',visual:['72÷9=?'],opts:['8個','9個','7個','6個'],ans:'8個',hint:'9×幾=72？⋯⋯'},
+    {type:'teach',concept:'order_ops',
+     talk:['混合運算的<span class="hl">三條規則</span>！','規則1：有<span class="hl">括號</span>先算括號裡面！','規則2：<span class="hl">先乘除，後加減</span>！','規則3：同一級的（都是加減，或都是乘除）就<span class="hl">由左到右</span>算！','3＋4×5：先算4×5＝20，再算3＋20＝23！不是7×5＝35喔！'],
+     visual:['①括號','②乘除','③加減','同級由左到右'],result:0},
+    {type:'observe',q:'🔍 觀察題：3＋4×5＝？',hint:'先乘除後加減',
+     opts:[{t:'23（先算4×5＝20）',c:true},{t:'35（先算3＋4＝7）',c:false},{t:'27',c:false},{t:'60',c:false}],
+     okMsg:'對！先乘除後加減：4×5＝20，3＋20＝23！',failMsg:'沒有括號時先乘除！4×5＝20，再加3是23！'},
+    {type:'practice',concept:'order_ops',q:'(3＋4)×5 ＝ ?',hint:'括號先算',visual:['(3+4)×5=?'],
+     opts:[{t:'35',c:true},{t:'23',c:false},{t:'19',c:false},{t:'12',c:false}],
+     okMsg:'括號先算：3＋4＝7，7×5＝35！加了括號答案就不一樣了！',failMsg:'括號優先！(3＋4)＝7，7×5＝35！'},
+    {type:'practice',concept:'order_ops',q:'20－8÷2 ＝ ?',hint:'先算除法',visual:['20−8÷2=?'],
+     opts:[{t:'16',c:true},{t:'6',c:false},{t:'12',c:false},{t:'14',c:false}],
+     okMsg:'8÷2＝4，20－4＝16！',failMsg:'先算8÷2＝4，再算20－4＝16！'},
+    {type:'observe',q:'🔍 找不同：四個算式裡，哪一個的答案「不是」10？',hint:'照規則一個一個算出來',
+     opts:[{t:'(2＋2)×4（＝16）',c:true},{t:'2＋2×4（＝10）',c:false},{t:'2×2＋6（＝10）',c:false},{t:'30÷3（＝10）',c:false}],
+     okMsg:'找到了！(2＋2)×4＝4×4＝16，其他三個都是10！括號改變了順序！',failMsg:'2＋2×4＝2＋8＝10；2×2＋6＝10；30÷3＝10；只有(2＋2)×4＝16！'},
+    {type:'observe',q:'🔍 列式題：小蛹買3枝筆，每枝15元，付100元，應找回幾元？寫成「一個」算式是？',hint:'先算花了多少（15×3），再用100去減',
+     opts:[{t:'100－15×3＝55',c:true},{t:'(100－15)×3',c:false},{t:'100－15＋3',c:false},{t:'100÷15×3',c:false}],
+     okMsg:'對！100－15×3，先算15×3＝45，再算100－45＝55元！這叫「併式」！',failMsg:'花的錢是15×3＝45，找回100－45＝55，併成一個算式就是100－15×3！'},
+    {type:'test',q:'24÷(2＋4) ＝ ?',visual:['24÷(2+4)=?'],opts:['4','16','10','18'],ans:'4',hint:'括號先算：2＋4＝6⋯⋯'},
+    {type:'test',q:'5×6－12÷4 ＝ ?',visual:['5×6−12÷4=?'],opts:['27','18','20','9'],ans:'27',hint:'5×6＝30，12÷4＝3⋯⋯'},
+    {type:'test',q:'100－(25＋15)×2 ＝ ?',visual:['100−(25+15)×2=?'],opts:['20','60','130','110'],ans:'20',hint:'括號裡25＋15＝40，40×2＝80⋯⋯'},
   ]},
-  {chapter:'🍕 第5章：分數是什麼？',story:'把東西分成幾份就是分數！小蛹能觀察出分數的規律嗎？',
+  {chapter:'🎯 第5章：概數與估算！',story:'有時候不需要精準的數字，只要「大約」就夠了！學會四捨五入，算錢、估時間都用得到！',
+   units:[
+    {type:'teach',concept:'rounding',
+     talk:['<span class="hl">概數</span>就是「大約的數」！最常用的方法叫<span class="hl">四捨五入</span>！','要取到千位，就看<span class="hl">百位</span>那個數字：0到4 捨去，5到9 進位！','3,462 → 百位是4，捨去 → 約 3,000；3,562 → 百位是5，進位 → 約 4,000！','生活裡：買東西估總價、看新聞「約三萬人」，都是概數！'],
+     visual:['看後面一位','0～4 捨去','5～9 進位','3,562≈4,000'],result:0},
+    {type:'observe',q:'🔍 觀察題：4,850 四捨五入到百位是多少？',hint:'取到百位，就看十位的數字',
+     opts:[{t:'4,900（十位是5，進位）',c:true},{t:'4,800',c:false},{t:'5,000',c:false},{t:'4,850',c:false}],
+     okMsg:'對！十位是5，要進位，所以800變成900：4,900！',failMsg:'取到百位要看十位！十位是5，進位→4,900！'},
+    {type:'practice',concept:'rounding',q:'27,381 四捨五入到千位是？',hint:'看百位的數字3',visual:['27,381≈?'],
+     opts:[{t:'27,000',c:true},{t:'28,000',c:false},{t:'27,400',c:false},{t:'30,000',c:false}],
+     okMsg:'百位是3，捨去，所以是27,000！',failMsg:'取到千位看百位：3是捨去，所以27,381≈27,000！'},
+    {type:'practice',concept:'rounding',q:'67,500 四捨五入到萬位是？',hint:'看千位的數字7',visual:['67,500≈?'],
+     opts:[{t:'70,000',c:true},{t:'60,000',c:false},{t:'67,000',c:false},{t:'68,000',c:false}],
+     okMsg:'千位是7，進位，6萬變7萬：70,000！',failMsg:'取到萬位看千位：7要進位，所以是70,000！'},
+    {type:'observe',q:'🔍 找規律：四捨五入到百位之後會變成600的整數裡，「最小」的是哪一個？',hint:'十位至少要是5才會進位成600',
+     opts:[{t:'550',c:true},{t:'500',c:false},{t:'599',c:false},{t:'650',c:false}],
+     okMsg:'厲害！550的十位是5，進位變600；549就只會變500！所以550是最小的！',failMsg:'550→十位5進位→600；549→十位4捨去→500。最小是550！'},
+    {type:'observe',q:'🔍 估算題：搭遊覽車每輛坐30人，全校125人要幾輛車？',hint:'125÷30＝4餘5，剩下的5個人怎麼辦？',
+     opts:[{t:'5輛（剩下的5人也需要一輛車）',c:true},{t:'4輛',c:false},{t:'6輛',c:false},{t:'4輛又5人',c:false}],
+     okMsg:'對！4輛只能載120人，剩下5人也要車，所以要5輛！這叫「無條件進入」！',failMsg:'125÷30＝4餘5，剩下的5個人也得上車，所以是5輛！有剩就要多一輛！'},
+    {type:'test',q:'8,249 四捨五入到千位是？',visual:['8,249≈?'],opts:['8,000','9,000','8,200','8,300'],ans:'8,000',hint:'看百位的2⋯⋯'},
+    {type:'test',q:'15,960 四捨五入到百位是？',visual:['15,960≈?'],opts:['16,000','15,900','15,000','20,000'],ans:'16,000',hint:'十位是6要進位，900進位變成1000⋯⋯'},
+    {type:'test',q:'一枝筆 29 元，買 4 枝大約要多少錢？',visual:['29×4≈?'],opts:['約120元','約80元','約160元','約100元'],ans:'約120元',hint:'29很接近30，30×4＝⋯⋯'},
+  ]},
+  {chapter:'🍕 第6章：分數升級！',story:'真分數、假分數、帶分數，還有同分母的加減！分數的規律比你想的還有趣！',
    units:[
     {type:'teach',concept:'fraction',
-     talk:['<span class="hl">分數</span>就是把整體分成幾份！','把pizza分成4等份，每份就是 <span class="hl">1/4</span>！','分母（下面）= 分幾份，分子（上面）= 取幾份！'],
-     visual:['整體','分成4份','取1份=1/4'],result:0},
-    {type:'observe',q:'🔍 找規律：「1/2, 2/4, 3/6」這三個分數有什麼規律？',hint:'把這三個分數化簡看看，結果是多少？',
-     opts:[{t:'三個分數值一樣大，都等於1/2',c:true},{t:'越後面越大',c:false},{t:'越後面越小',c:false},{t:'沒有規律',c:false}],
-     okMsg:'找到規律了！1/2 = 2/4 = 3/6，都是一半！等值分數！',
-     failMsg:'1/2（一半）= 2/4（四份取兩份=一半）= 3/6（六份取三份=一半）！'},
-    {type:'practice',concept:'fraction',q:'一塊蛋糕切成8份，吃了3份，吃了幾分之幾？',hint:'分母=切幾份，分子=取幾份',visual:['8份取3份'],
-     opts:[{t:'3/8（八分之三）',c:true},{t:'8/3',c:false},{t:'1/8',c:false},{t:'5/8',c:false}],
-     okMsg:'3/8（八分之三）！分子是取的份數！',failMsg:'切8份取3份：分母是8，分子是3，所以是3/8！'},
-    {type:'observe',q:'🔍 找不同：「5/9 和 7/9」，哪個比較大？用什麼規律判斷？',hint:'分母相同時，分子大的比較大',
-     opts:[{t:'7/9比較大，因為分母相同，分子7>5',c:true},{t:'5/9比較大',c:false},{t:'一樣大',c:false},{t:'無法比較',c:false}],
-     okMsg:'7/9比較大！分母相同，分子越大，分數越大！',
-     failMsg:'分母相同（9），比分子：7>5，所以7/9比較大！'},
-    {type:'observe',q:'🔍 找規律：「1/3 和 1/6」，哪個比較大？',hint:'分子相同時，分母小的比較大',
-     opts:[{t:'1/3比較大（分子相同，分母小的大）',c:true},{t:'1/6比較大',c:false},{t:'一樣大',c:false},{t:'不知道',c:false}],
-     okMsg:'1/3比較大！把東西分3份比分6份，每份更大！',
-     failMsg:'1/3是把東西分3份取1份；1/6是分6份取1份。分3份每份更大！'},
-    {type:'test',q:'把麵包切成6份，吃了2份，吃了幾分之幾？',visual:['6份取2份'],opts:['2/6','6/2','1/6','4/6'],ans:'2/6',hint:'分母=切幾份，分子=取幾份⋯⋯'},
-    {type:'test',q:'3/8 和 5/8，哪個比較大？',visual:['3/8 vs 5/8'],opts:['5/8比較大','3/8比較大','一樣大','不能比'],ans:'5/8比較大',hint:'分母相同比分子⋯⋯'},
-    {type:'test',q:'1/4 和 1/8，哪個比較大？',visual:['1/4 vs 1/8'],opts:['1/4比較大','1/8比較大','一樣大','不知道'],ans:'1/4比較大',hint:'分子相同，分母小的⋯⋯'},
+     talk:['分數有三種樣子！','<span class="hl">真分數</span>：分子比分母小，像 3/4，不到一個整體！','<span class="hl">假分數</span>：分子大於或等於分母，像 5/4，超過一個整體！','<span class="hl">帶分數</span>：整數加真分數，像 1又1/4！','5/4 和 1又1/4 其實是同一個數：5÷4＝1餘1，就是1又1/4！'],
+     visual:['真分數 3/4','假分數 5/4','帶分數 1又1/4','5/4＝1又1/4'],result:0},
+    {type:'teach',concept:'fraction',
+     talk:['同分母的加減超簡單！','<span class="hl">分母不變，分子相加減</span>！','2/7＋3/7＝5/7（七份裡面，2份加3份是5份）','6/8－1/8＝5/8（八份裡面，6份拿走1份剩5份）','千萬不要把分母也加起來喔！2/7＋3/7 不是 5/14！'],
+     visual:['2/7＋3/7＝5/7','6/8－1/8＝5/8','分母不變'],result:0},
+    {type:'observe',q:'🔍 找不同：下面哪一個是「假分數」？',hint:'分子大於或等於分母的就是假分數',
+     opts:[{t:'7/5（分子7＞分母5）',c:true},{t:'2/5',c:false},{t:'4/9',c:false},{t:'1/2',c:false}],
+     okMsg:'找到了！7/5的分子比分母大，是假分數，它比1還大！',failMsg:'7/5的分子7比分母5大，所以是假分數！其他三個分子都比分母小！'},
+    {type:'practice',concept:'fraction',q:'3/8 ＋ 4/8 ＝ ?',hint:'分母不變，分子相加',visual:['3/8＋4/8'],
+     opts:[{t:'7/8',c:true},{t:'7/16',c:false},{t:'1/8',c:false},{t:'12/8',c:false}],
+     okMsg:'3＋4＝7，分母還是8，答案7/8！',failMsg:'分母不變！3/8＋4/8＝(3＋4)/8＝7/8！'},
+    {type:'practice',concept:'fraction',q:'9/4 換成帶分數是？',hint:'9÷4＝2餘1',visual:['9/4＝？'],
+     opts:[{t:'2又1/4',c:true},{t:'1又5/4',c:false},{t:'4又1/2',c:false},{t:'2又1/2',c:false}],
+     okMsg:'9÷4＝2餘1，所以是2又1/4！',failMsg:'9裡面有2個4，剩下1，所以9/4＝2又1/4！'},
+    {type:'observe',q:'🔍 找規律：1/2＝2/4＝3/6＝4/8，那 5/□ 也等於一半，□是多少？',hint:'分子和分母同時乘以同一個數',
+     opts:[{t:'10（5/10）',c:true},{t:'8',c:false},{t:'12',c:false},{t:'6',c:false}],
+     okMsg:'找到規律了！分子和分母同時乘以5：1×5/2×5＝5/10！這叫「等值分數」！',failMsg:'1/2的分子分母同乘5，得到5/10！分子5對應分母10！'},
+    {type:'test',q:'5/6 － 2/6 ＝ ?',visual:['5/6－2/6'],opts:['3/6','7/6','3/12','2/6'],ans:'3/6',hint:'分母不變，5－2＝⋯⋯'},
+    {type:'test',q:'1又2/5 換成假分數是？',visual:['1又2/5＝？'],opts:['7/5','3/5','12/5','6/5'],ans:'7/5',hint:'1個整體是5/5，再加2/5⋯⋯'},
+    {type:'test',q:'小蛹吃了 2/9 個披薩，弟弟吃了 4/9 個，兩人共吃了多少？',visual:['2/9＋4/9'],opts:['6/9','6/18','8/9','2/9'],ans:'6/9',hint:'分母不變，分子2＋4＝⋯⋯'},
   ]},
-  {chapter:'📐 第6章：面積和周長！',story:'測量一塊地要用面積！小蛹能找出面積和周長的規律嗎？',
+  {chapter:'🔵 第7章：小數的祕密！',story:'0.1、0.01 是什麼？小數和分數是好朋友！學會小數，看價格、量身高都更精準！',
    units:[
-    {type:'teach',concept:'perimeter',
-     talk:['<span class="hl">周長</span>是圍一圈的總長度！','長方形周長 = (長 + 寬) × 2','正方形周長 = 邊長 × 4'],
-     visual:['周長=(長+寬)×2'],result:0},
-    {type:'teach',concept:'area',
-     talk:['<span class="hl">面積</span>是形狀佔的空間！','長方形面積 = 長 × 寬','正方形面積 = 邊長 × 邊長'],
-     visual:['面積=長×寬'],result:0},
-    {type:'observe',q:'🔍 找差異：「面積」和「周長」最大的不同是什麼？',hint:'一個是圍一圈，一個是佔的空間',
-     opts:[{t:'周長是圍一圈的長度；面積是佔的空間大小',c:true},{t:'兩個計算方法一樣',c:false},{t:'周長比面積大',c:false},{t:'面積是圍一圈',c:false}],
-     okMsg:'找到差異了！周長=圍一圈（線），面積=佔的空間（面）！',
-     failMsg:'周長是長度（一維），面積是空間（二維）！'},
-    {type:'practice',concept:'area',q:'長4公尺、寬6公尺的花園，面積是多少？',hint:'長 × 寬 = ?',visual:['4×6=?'],
-     opts:[{t:'24平方公尺',c:true},{t:'20平方公尺',c:false},{t:'10平方公尺',c:false},{t:'28平方公尺',c:false}],
-     okMsg:'4×6=24平方公尺！',failMsg:'面積=長×寬=4×6=24平方公尺！'},
-    {type:'observe',q:'🔍 找規律：正方形邊長1=面積1，邊長2=面積4，邊長3=面積9，邊長4=？',hint:'注意面積和邊長的關係',
-     opts:[{t:'16（邊長×邊長）',c:true},{t:'12',c:false},{t:'8',c:false},{t:'20',c:false}],
-     okMsg:'找到規律了！正方形面積=邊長²，4×4=16！',
-     failMsg:'1²=1，2²=4，3²=9，4²=16！正方形面積=邊長×邊長！'},
-    {type:'test',q:'長8公分、寬3公分，面積是？',visual:['8×3=?'],opts:['24平方公分','22平方公分','11平方公分','16平方公分'],ans:'24平方公分',hint:'面積=長×寬⋯⋯'},
-    {type:'test',q:'長7公分、寬4公分，周長是？',visual:['(7+4)×2=?'],opts:['22公分','28公分','11公分','18公分'],ans:'22公分',hint:'周長=(長+寬)×2⋯⋯'},
-    {type:'test',q:'正方形邊長6公分，面積是？',visual:['6×6=?'],opts:['36平方公分','24平方公分','30平方公分','12平方公分'],ans:'36平方公分',hint:'邊長×邊長⋯⋯'},
+    {type:'teach',concept:'decimal',
+     talk:['<span class="hl">小數</span>是把1再分得更細！','0.1＝十分之一（把1分成10份取1份）','0.01＝百分之一（把1分成100份取1份）','2.35 ＝ 2個一 ＋ 3個0.1 ＋ 5個0.01','小數點右邊第一位叫<span class="hl">十分位</span>，第二位叫<span class="hl">百分位</span>！'],
+     visual:['0.1＝1/10','0.01＝1/100','2.35＝2＋0.3＋0.05'],result:0},
+    {type:'observe',q:'🔍 觀察題：0.8 和 0.75，哪個比較大？',hint:'把0.8想成0.80再比',
+     opts:[{t:'0.8比較大（0.80＞0.75）',c:true},{t:'0.75比較大（位數比較多）',c:false},{t:'一樣大',c:false},{t:'不能比較',c:false}],
+     okMsg:'對！0.8＝0.80，80個0.01比75個0.01多！小數位數多不代表比較大！',failMsg:'0.8就是0.80，和0.75比：80＞75，所以0.8比較大！'},
+    {type:'practice',concept:'decimal',q:'3/10 寫成小數是？',hint:'十分之一是0.1',visual:['3/10＝？'],
+     opts:[{t:'0.3',c:true},{t:'3.0',c:false},{t:'0.03',c:false},{t:'0.13',c:false}],
+     okMsg:'3個十分之一就是0.3！',failMsg:'1/10＝0.1，所以3/10＝0.3！'},
+    {type:'practice',concept:'decimal',q:'1.5 ＋ 2.3 ＝ ?',hint:'整數加整數、小數加小數',visual:['1.5＋2.3'],
+     opts:[{t:'3.8',c:true},{t:'3.5',c:false},{t:'4.8',c:false},{t:'2.8',c:false}],
+     okMsg:'1＋2＝3，0.5＋0.3＝0.8，合起來3.8！',failMsg:'整數部分1＋2＝3，小數部分0.5＋0.3＝0.8，答案3.8！'},
+    {type:'observe',q:'🔍 找規律：0.25、0.5、0.75、___，下一個是？',hint:'每次加多少？',
+     opts:[{t:'1（每次加0.25）',c:true},{t:'0.8',c:false},{t:'0.100',c:false},{t:'0.95',c:false}],
+     okMsg:'每次加0.25！0.75＋0.25＝1.00，也就是1！',failMsg:'0.25→0.5→0.75 每次加0.25，再加一次就是1！'},
+    {type:'observe',q:'🔍 找錯誤：小蛹用直式算 2.5＋0.35，把最後一位對齊，算出 6.0。錯在哪？',hint:'直式小數加法要對齊什麼？',
+     opts:[{t:'要對齊「小數點」，不是對齊最後一位，正確是2.85',c:true},{t:'答案應該是0.60',c:false},{t:'沒有錯',c:false},{t:'答案應該是2.35',c:false}],
+     okMsg:'抓到了！小數直式要對齊小數點：2.50＋0.35＝2.85！',failMsg:'小數加法要對齊小數點！2.50＋0.35＝2.85，不是6.0！'},
+    {type:'test',q:'4.07 裡的「7」在哪一位？',visual:['4.07'],opts:['百分位（表示0.07）','十分位','個位','十位'],ans:'百分位（表示0.07）',hint:'小數點右邊第二位⋯⋯'},
+    {type:'test',q:'5 － 1.6 ＝ ?',visual:['5－1.6'],opts:['3.4','4.4','3.6','4.6'],ans:'3.4',hint:'把5想成5.0⋯⋯'},
+    {type:'test',q:'0.09、0.9、0.19 由小到大排列是？',visual:['0.09 vs 0.9 vs 0.19'],opts:['0.09、0.19、0.9','0.9、0.19、0.09','0.09、0.9、0.19','0.19、0.09、0.9'],ans:'0.09、0.19、0.9',hint:'都寫成兩位小數：0.09、0.90、0.19⋯⋯'},
   ]},
-  {chapter:'⏰ 第7章：時間計算！',story:'幾點幾分？過了多久？今天學時間計算！',
+  {chapter:'📐 第8章：角度和三角形！',story:'拿出量角器！直角、銳角、鈍角，還有各種三角形，圖形世界裡藏著好多規律！',
+   units:[
+    {type:'teach',concept:'angle',
+     talk:['角的大小用<span class="hl">度（°）</span>來量！','<span class="hl">直角</span>＝90°，像書本的角；比90°小是<span class="hl">銳角</span>；比90°大、比180°小是<span class="hl">鈍角</span>！','<span class="hl">平角</span>＝180°（一條直線）；轉一整圈是<span class="hl">周角</span>＝360°！','用量角器：中心點對準角的頂點，一邊對準0°，另一邊指到幾就是幾度！'],
+     visual:['銳角＜90°','直角＝90°','鈍角＞90°','平角180°','周角360°'],result:0},
+    {type:'teach',concept:'triangle',
+     talk:['三角形可以用<span class="hl">邊</span>分類，也可以用<span class="hl">角</span>分類！','看邊：三邊都一樣長叫<span class="hl">正三角形</span>；有兩邊一樣長叫<span class="hl">等腰三角形</span>！','看角：有一個直角叫<span class="hl">直角三角形</span>；有一個鈍角叫<span class="hl">鈍角三角形</span>；三個角都是銳角叫<span class="hl">銳角三角形</span>！','正三角形很特別：三個角都是60°！'],
+     visual:['正三角形：三邊等','等腰：兩邊等','直角三角形','鈍角三角形'],result:0},
+    {type:'observe',q:'🔍 觀察題：時鐘指著3點整，時針和分針夾的角是什麼角？',hint:'3點時，分針指12、時針指3',
+     opts:[{t:'直角（90°）',c:true},{t:'銳角',c:false},{t:'鈍角',c:false},{t:'平角',c:false}],
+     okMsg:'對！3點整時兩根針剛好垂直，是90°直角！6點整就是平角180°！',failMsg:'3點整時分針指12、時針指3，剛好是四分之一圈＝90°直角！'},
+    {type:'practice',concept:'angle',q:'一個角是 120°，它是什麼角？',hint:'比90°大、比180°小',visual:['120°'],
+     opts:[{t:'鈍角',c:true},{t:'銳角',c:false},{t:'直角',c:false},{t:'平角',c:false}],
+     okMsg:'120°比90°大、比180°小，是鈍角！',failMsg:'90°＜120°＜180°，所以是鈍角！'},
+    {type:'observe',q:'🔍 找規律：旋轉90°要轉4次才回到原位，那旋轉180°要轉幾次才回到原位？',hint:'一整圈是360°',
+     opts:[{t:'2次（180°×2＝360°）',c:true},{t:'4次',c:false},{t:'1次',c:false},{t:'3次',c:false}],
+     okMsg:'對！180°×2＝360°，剛好一圈！90°×4＝360°也是一圈！',failMsg:'轉一圈是360°，180°要轉2次：180×2＝360！'},
+    {type:'observe',q:'🔍 找不同：哪一種三角形的三個角「一定」都是60°？',hint:'三邊一樣長的三角形，三個角也一樣大',
+     opts:[{t:'正三角形',c:true},{t:'直角三角形',c:false},{t:'等腰三角形（只保證兩個角相等）',c:false},{t:'鈍角三角形',c:false}],
+     okMsg:'正三角形！三邊相等，三個角也相等，每個都是60°！',failMsg:'正三角形三邊相等、三角相等，每個角都是60°！'},
+    {type:'test',q:'比 90° 小的角叫做？',visual:['＜90°'],opts:['銳角','鈍角','直角','周角'],ans:'銳角',hint:'「銳」是尖尖的意思⋯⋯'},
+    {type:'test',q:'一個直角加一個直角等於幾度？',visual:['90°＋90°'],opts:['180°','90°','360°','100°'],ans:'180°',hint:'90＋90＝⋯⋯'},
+    {type:'test',q:'剛好有兩邊一樣長的三角形叫做？',visual:['兩邊相等'],opts:['等腰三角形','正三角形','直角三角形','鈍角三角形'],ans:'等腰三角形',hint:'像人的兩條腿一樣長⋯⋯'},
+  ]},
+  {chapter:'🧩 第9章：周長和面積升級！',story:'不規則的圖形怎麼算面積？切開來、或是大減小！還有平方公尺和平方公分的換算！',
+   units:[
+    {type:'teach',concept:'area',
+     talk:['遇到<span class="hl">複合圖形</span>（像L形），有兩招！','第一招：<span class="hl">切開相加</span>——切成幾個長方形，分別算面積再加起來！','第二招：<span class="hl">大減小</span>——先算大長方形，再減掉缺掉的那一塊！','單位換算：1公尺＝100公分，所以 <span class="hl">1平方公尺＝100×100＝10000平方公分</span>！'],
+     visual:['切開相加','大減小','1平方公尺＝10000平方公分'],result:0},
+    {type:'observe',q:'🔍 觀察題：長6公分、寬4公分的長方形，角落切掉一個邊長2公分的正方形，剩下面積是多少？',hint:'大減小：24減掉切掉的那塊',
+     opts:[{t:'20平方公分（24－4）',c:true},{t:'24平方公分',c:false},{t:'28平方公分',c:false},{t:'16平方公分',c:false}],
+     okMsg:'對！大長方形6×4＝24，切掉2×2＝4，剩下20平方公分！',failMsg:'大減小：6×4＝24，減掉2×2＝4，答案是20平方公分！'},
+    {type:'practice',concept:'area',q:'正方形的周長是 36 公分，邊長是幾公分？',hint:'周長＝邊長×4，反過來用除法',visual:['36÷4=?'],
+     opts:[{t:'9公分',c:true},{t:'6公分',c:false},{t:'18公分',c:false},{t:'12公分',c:false}],
+     okMsg:'36÷4＝9公分！周長除以4就是邊長！',failMsg:'正方形四邊一樣長，36÷4＝9公分！'},
+    {type:'practice',concept:'area',q:'長方形面積 48 平方公分，長是 8 公分，寬是幾公分？',hint:'面積＝長×寬，反過來用除法',visual:['48÷8=?'],
+     opts:[{t:'6公分',c:true},{t:'40公分',c:false},{t:'16公分',c:false},{t:'8公分',c:false}],
+     okMsg:'48÷8＝6公分！知道面積和長，除一下就有寬！',failMsg:'面積÷長＝寬：48÷8＝6公分！'},
+    {type:'observe',q:'🔍 找規律：周長都是16公分的長方形：1×7面積7、2×6面積12、3×5面積15、4×4面積16。發現什麼？',hint:'長和寬越接近，面積怎麼樣？',
+     opts:[{t:'長寬越接近面積越大，正方形最大',c:true},{t:'1×7的面積最大',c:false},{t:'周長相同，面積一定相同',c:false},{t:'沒有規律',c:false}],
+     okMsg:'厲害！周長一樣時，越接近正方形面積越大！這是很重要的規律！',failMsg:'7→12→15→16，長寬越接近面積越大，4×4的正方形最大！'},
+    {type:'observe',q:'🔍 單位題：3平方公尺等於幾平方公分？',hint:'1平方公尺＝10000平方公分',
+     opts:[{t:'30000平方公分',c:true},{t:'300平方公分',c:false},{t:'3000平方公分',c:false},{t:'300000平方公分',c:false}],
+     okMsg:'10000×3＝30000平方公分！',failMsg:'1平方公尺＝10000平方公分，3平方公尺＝30000平方公分！'},
+    {type:'test',q:'長10公分、寬6公分的長方形，中間挖掉一個長4公分、寬2公分的洞，剩下面積是？',visual:['10×6－4×2'],opts:['52平方公分','60平方公分','48平方公分','56平方公分'],ans:'52平方公分',hint:'60－8＝⋯⋯'},
+    {type:'test',q:'邊長5公尺的正方形花圃，面積和周長各是多少？',visual:['邊長5公尺'],opts:['面積25平方公尺，周長20公尺','面積20平方公尺，周長25公尺','面積25平方公尺，周長10公尺','面積10平方公尺，周長20公尺'],ans:'面積25平方公尺，周長20公尺',hint:'5×5和5×4⋯⋯'},
+    {type:'test',q:'一塊2公尺×3公尺的地墊，面積是幾平方公分？',visual:['2×3平方公尺＝？平方公分'],opts:['60000平方公分','600平方公分','6000平方公分','6平方公分'],ans:'60000平方公分',hint:'6平方公尺，1平方公尺＝10000平方公分⋯⋯'},
+  ]},
+  {chapter:'🏆 第10章：小蛹數學大挑戰！',story:'四年級數學全面挑戰！先學24小時制和折線圖，再把前面九章的本領通通拿出來！',
    units:[
     {type:'teach',concept:'time',
-     talk:['時間計算基礎！','1小時 = 60分鐘','計算時間差：後面時間 - 前面時間！','技巧：先算到整點，再算剩下的！'],
-     visual:['1小時=60分','時間差=後-前'],result:0},
-    {type:'observe',q:'🔍 找規律：「1:30到2:00」「2:30到3:00」「3:30到4:00」，每次都經過幾分鐘？',hint:'注意每次的差',
-     opts:[{t:'都是30分鐘',c:true},{t:'都是60分鐘',c:false},{t:'都是15分鐘',c:false},{t:'每次不一樣',c:false}],
-     okMsg:'找到規律了！每次從:30到整點都是30分鐘！',
-     failMsg:'1:30→2:00是30分，2:30→3:00是30分，規律就是都是30分鐘！'},
-    {type:'practice',concept:'time',q:'下午2:30 到 下午4:00，過了多久？',hint:'4:00 - 2:30 = ?',visual:['2:30→4:00'],
-     opts:[{t:'1小時30分',c:true},{t:'2小時',c:false},{t:'1小時',c:false},{t:'2小時30分',c:false}],
-     okMsg:'1小時30分！從2:30到4:00！',failMsg:'2:30到3:30是1小時，再到4:00又30分，共1小時30分！'},
-    {type:'practice',concept:'time',q:'電影3:15開始，90分鐘後幾點結束？',hint:'3:15 + 60分鐘 = 4:15，再加30分鐘 = ?',visual:['3:15+90分'],
-     opts:[{t:'4:45',c:true},{t:'4:30',c:false},{t:'5:00',c:false},{t:'4:15',c:false}],
-     okMsg:'4:45！3:15加90分鐘！',failMsg:'3:15+60分=4:15，再+30分=4:45！'},
-    {type:'observe',q:'🔍 找問題：小蛹說「我8:50出發，走了20分鐘，9:10到學校」，計算對不對？',hint:'8:50加20分鐘應該是幾點？',
-     opts:[{t:'計算正確！8:50+20分=9:10',c:true},{t:'計算錯誤，應該是9:00',c:false},{t:'計算錯誤，應該是9:20',c:false},{t:'無法判斷',c:false}],
-     okMsg:'驗算一下：8:50+20分=9:10，完全正確！小蛹的計算沒問題！',
-     failMsg:'8:50+20分=9:10！小蛹的計算是對的！'},
-    {type:'test',q:'上午9:00到下午12:00，共幾小時？',visual:['9:00→12:00'],opts:['3小時','4小時','2小時','5小時'],ans:'3小時',hint:'12-9=⋯⋯'},
-    {type:'test',q:'課程2:00開始，每節45分鐘，下課時間是？',visual:['2:00+45分'],opts:['2:45','2:30','3:00','2:50'],ans:'2:45',hint:'2:00加45分鐘⋯⋯'},
-    {type:'test',q:'小蛹7:20出門，8:05到校，走了幾分鐘？',visual:['7:20→8:05'],opts:['45分鐘','40分鐘','50分鐘','35分鐘'],ans:'45分鐘',hint:'7:20到8:05⋯⋯'},
-  ]},
-  {chapter:'🔢 第8章：奇偶數和因倍數！',story:'數字裡藏著規律！小蛹的觀察力能找出它們！',
-   units:[
-    {type:'teach',concept:'odd_even',
-     talk:['<span class="hl">奇數</span>和<span class="hl">偶數</span>！','偶數可以被2整除：2, 4, 6, 8, 10...','奇數不能被2整除：1, 3, 5, 7, 9...','看最後一位就知道！'],
-     visual:['偶數：2,4,6,8,10','奇數：1,3,5,7,9'],result:0},
-    {type:'observe',q:'🔍 找規律：「奇數+奇數」的結果是奇數還是偶數？試試3+5、7+1、9+3',hint:'3+5=8, 7+1=8, 9+3=12，結果都是什麼？',
-     opts:[{t:'奇數+奇數=偶數',c:true},{t:'奇數+奇數=奇數',c:false},{t:'有時奇有時偶',c:false},{t:'無法判斷',c:false}],
-     okMsg:'找到規律了！3+5=8（偶），7+1=8（偶），9+3=12（偶）！奇數+奇數=偶數！',
-     failMsg:'3+5=8（偶數），7+1=8（偶數），9+3=12（偶數）！奇數+奇數永遠是偶數！'},
-    {type:'observe',q:'🔍 找不同：「12, 24, 33, 48」，哪個是奇數？',hint:'看最後一位是否能被2整除',
-     opts:[{t:'33（最後一位3，奇數）',c:true},{t:'12（最後一位2，偶數）',c:false},{t:'24（最後一位4，偶數）',c:false},{t:'48（最後一位8，偶數）',c:false}],
-     okMsg:'找到了！33最後一位是3（奇數），其他最後一位是2、4、8（偶數）！',
-     failMsg:'12→2（偶），24→4（偶），33→3（奇），48→8（偶）！33是奇數！'},
-    {type:'observe',q:'🔍 找不同：10的因數是「1, 2, 5, 10」，哪個「不是」10的因數？',hint:'10÷3是整數嗎？',
-     opts:[{t:'3（10÷3不是整數，不是因數）',c:true},{t:'1（10÷1=10，是因數）',c:false},{t:'2（10÷2=5，是因數）',c:false},{t:'5（10÷5=2，是因數）',c:false}],
-     okMsg:'找到了！10÷3≈3.33，不是整數，所以3不是10的因數！',
-     failMsg:'10÷3=3.33...（不是整數），所以3不是10的因數！因數必須能整除！'},
-    {type:'test',q:'下面哪個是奇數？',visual:['12, 18, 25, 30'],opts:['25','12','18','30'],ans:'25',hint:'不能被2整除⋯⋯'},
-    {type:'test',q:'8的倍數是哪個？',visual:['14, 24, 30, 36'],opts:['24','14','30','36'],ans:'24',hint:'8×幾=?⋯⋯'},
-    {type:'test',q:'6的因數中不包含哪個？',visual:['6的因數'],opts:['4','1','2','3'],ans:'4',hint:'6÷4不是整數⋯⋯'},
-    {type:'observe',q:'🔍 找規律：偶數+偶數的結果一定是？',visual:['2+4=?','6+8=?'],opts:['偶數','奇數','不一定','看情況'],ans:'偶數',hint:'試試2+4、6+8的結果⋯⋯'},
-  ]},
-  {chapter:'📊 第9章：統計圖表！',story:'用圖表讓數字更清楚！小蛹能從圖表裡發現什麼規律嗎？',
-   units:[
-    {type:'teach',concept:'chart',
-     talk:['統計圖表讓數據一目了然！','<span class="hl">長條圖</span>：比較不同項目！','<span class="hl">折線圖</span>：顯示隨時間的變化！','<span class="hl">圓形圖</span>：顯示各部分比例！'],
-     visual:['長條圖：比較','折線圖：變化','圓形圖：比例'],result:0},
-    {type:'observe',q:'🔍 找規律：折線圖顯示「氣溫1月:10度、2月:12度、3月:16度、4月:22度」，趨勢是？',hint:'注意每月增加多少度',
-     opts:[{t:'溫度在上升，增加越來越多',c:true},{t:'溫度維持不變',c:false},{t:'溫度在下降',c:false},{t:'無法判斷',c:false}],
-     okMsg:'發現趨勢了！每月增加量：2,4,6，越來越多，表示氣溫上升加速！',
-     failMsg:'10→12→16→22，增加量2,4,6越來越多，氣溫在上升而且速度加快！'},
-    {type:'practice',concept:'average',q:'小蛹五次成績：80, 90, 70, 85, 75，平均分數是？',hint:'(80+90+70+85+75)÷5 = ?',visual:['400÷5=?'],
-     opts:[{t:'80分',c:true},{t:'75分',c:false},{t:'85分',c:false},{t:'90分',c:false}],
-     okMsg:'(80+90+70+85+75)=400，400÷5=80分！',
-     failMsg:'先加總：80+90+70+85+75=400，再÷5=80分！'},
-    {type:'observe',q:'🔍 找不同：哪種圖表最適合「顯示各種寵物佔全班的比例」？',hint:'比例→各部分佔整體多少',
-     opts:[{t:'圓形圖（顯示各部分佔整體的比例）',c:true},{t:'折線圖（顯示時間變化）',c:false},{t:'長條圖（比較大小）',c:false},{t:'數線（顯示大小順序）',c:false}],
-     okMsg:'圓形圖！顯示各部分佔整體多少比例，圓形圖最清楚！',
-     failMsg:'比例（佔整體多少）→圓形圖！時間變化→折線圖！比大小→長條圖！'},
-    {type:'test',q:'4次成績：85, 95, 75, 93，平均是幾分？',visual:['(85+95+75+93)÷4=?'],opts:['87分','90分','85分','82分'],ans:'87分',hint:'(85+95+75+93)÷4=348÷4⋯⋯'},
-    {type:'test',q:'顯示「一個月氣溫每天變化」最適合哪種圖？',visual:['時間vs氣溫'],opts:['折線圖','長條圖','圓形圖','表格'],ans:'折線圖',hint:'隨時間的變化⋯⋯'},
-    {type:'test',q:'班上5人身高：130,125,140,135,120，平均身高是？',visual:['650÷5=?'],opts:['130公分','125公分','135公分','128公分'],ans:'130公分',hint:'(130+125+140+135+120)÷5=650÷5⋯⋯'},
-    {type:'observe',q:'🔍 觀察：4次考試：70, 80, 90, 60，平均是75分，75分能代表什麼？',hint:'平均數是一種代表整體水準的數',
-     opts:[{t:'代表整體的中等水準，不是每個都等於75',c:true},{t:'代表每個數都等於75',c:false},{t:'代表最大值是75',c:false},{t:'代表最小值是75',c:false}],
-     okMsg:'理解了！平均數代表整體水準，70比平均低，90比平均高！',
-     failMsg:'平均是75，但70和90都不等於75！平均數是代表整體的「中等水準」！'},
-  ]},
-  {chapter:'🏆 第10章：小蛹數學大挑戰！',story:'三年級數學全面挑戰！小蛹的觀察力加上數學能力，一定無敵！',
-   units:[
-    {type:'practice',concept:'multiplication',q:'7 × 8 = ?',hint:'九九乘法！',visual:['7×8=?'],
-     opts:[{t:'56',c:true},{t:'54',c:false},{t:'63',c:false},{t:'49',c:false}],
-     okMsg:'7×8=56！',failMsg:'7×8=56！'},
-    {type:'practice',concept:'division',q:'45 ÷ 9 = ?',hint:'9×幾=45？',visual:['45÷9=?'],
-     opts:[{t:'5',c:true},{t:'6',c:false},{t:'4',c:false},{t:'7',c:false}],
-     okMsg:'45÷9=5！',failMsg:'9×5=45，所以45÷9=5！'},
-    {type:'test',q:'48張貼紙分給8個朋友，每人幾張？',visual:['48÷8=?'],opts:['6張','8張','5張','7張'],ans:'6張',hint:'48÷8⋯⋯'},
-    {type:'observe',q:'🔍 找不同：「9,15,22,27」，哪個不是3的倍數？',visual:['9,15,22,27'],
-     opts:['22（2+2=4，不能被3整除）','9（9÷3=3）','15（1+5=6，能被3整除）','27（2+7=9，能被3整除）'],
-     ans:'22（2+2=4，不能被3整除）',hint:'3的倍數各位數字相加能被3整除⋯⋯'},
-    {type:'test',q:'長方形長9公分、寬4公分，面積是？',visual:['9×4=?'],opts:['36平方公分','26平方公分','32平方公分','40平方公分'],ans:'36平方公分',hint:'面積=長×寬⋯⋯'},
-    {type:'test',q:'3:30 加上 2小時15分，是幾點？',visual:['3:30+2h15min'],opts:['5:45','5:30','6:00','5:15'],ans:'5:45',hint:'3:30+2小時=5:30，再+15分⋯⋯'},
-    {type:'observe',q:'🔍 找不同：哪個是偶數？',visual:['11, 23, 38, 47'],opts:['38（尾數8，偶數）','11','23','47'],ans:'38（尾數8，偶數）',hint:'最後一位是偶數⋯⋯'},
-    {type:'test',q:'4次考試：70,80,90,60，平均是？',visual:['300÷4=?'],opts:['75分','70分','80分','85分'],ans:'75分',hint:'(70+80+90+60)÷4=300÷4⋯⋯'},
+     talk:['兩個新工具！','<span class="hl">24小時制</span>：下午的時間加12！下午3時＝15時，晚上9時＝21時！','<span class="hl">折線圖</span>：點連成線，線往上是增加、往下是減少，越陡表示變化越大！','算經過時間的技巧：先算到整點，再算剩下的分鐘！'],
+     visual:['下午3時＝15時','折線往上＝增加','越陡變化越大'],result:0},
+    {type:'practice',concept:'time',q:'下午2時40分，用24小時制寫是？',hint:'下午要加12',visual:['下午2:40→?'],
+     opts:[{t:'14:40',c:true},{t:'2:40',c:false},{t:'12:40',c:false},{t:'16:40',c:false}],
+     okMsg:'2＋12＝14，所以是14:40！',failMsg:'下午的時間加12：2＋12＝14，14:40！'},
+    {type:'practice',concept:'time',q:'小蛹9:45出發，11:20到達，一共經過多久？',hint:'9:45→10:45是1小時，再到11:20',visual:['9:45→11:20'],
+     opts:[{t:'1小時35分',c:true},{t:'1小時25分',c:false},{t:'2小時',c:false},{t:'1小時45分',c:false}],
+     okMsg:'9:45到10:45是1小時，10:45到11:20是35分，共1小時35分！',failMsg:'先算到10:45（1小時），再從10:45到11:20（35分），共1小時35分！'},
+    {type:'observe',q:'🔍 折線圖：一天氣溫 6時18度、9時22度、12時27度、15時29度、18時24度。哪一段上升最多？',hint:'算出每一段差幾度',
+     opts:[{t:'9時到12時（上升5度）',c:true},{t:'6時到9時（上升4度）',c:false},{t:'12時到15時（上升2度）',c:false},{t:'15時到18時（下降5度）',c:false}],
+     okMsg:'對！22→27上升5度最多！折線圖上這一段最陡！15時到18時是下降不是上升喔！',failMsg:'6→9：＋4；9→12：＋5；12→15：＋2；15→18：－5。上升最多的是9時到12時！'},
+    {type:'test',q:'45 × 12 ＝ ?',visual:['45×12=?'],opts:['540','450','530','560'],ans:'540',hint:'45×10＝450，45×2＝90⋯⋯'},
+    {type:'test',q:'217 ÷ 7 ＝ ?',visual:['217÷7=?'],opts:['31','30','32','29'],ans:'31',hint:'7×30＝210，還剩7⋯⋯'},
+    {type:'test',q:'2又3/8 ＋ 1又2/8 ＝ ?',visual:['2又3/8＋1又2/8'],opts:['3又5/8','3又5/16','4又1/8','3又1/8'],ans:'3又5/8',hint:'整數加整數、分數加分數⋯⋯'},
+    {type:'test',q:'0.6 ＋ 0.45 ＝ ?',visual:['0.6＋0.45'],opts:['1.05','0.51','1.5','0.105'],ans:'1.05',hint:'0.60＋0.45，對齊小數點⋯⋯'},
+    {type:'test',q:'1億比9999萬多多少？',visual:['1億－9999萬'],opts:['1萬','1','1億','100萬'],ans:'1萬',hint:'1億＝10000萬⋯⋯'},
+    {type:'observe',q:'🔍 觀察題：一個三角形有一個角是95°，它是什麼三角形？',visual:['95°'],opts:['鈍角三角形','直角三角形','銳角三角形','正三角形'],ans:'鈍角三角形',hint:'95°比90°大⋯⋯'},
   ]},
 ],
 };
@@ -2438,7 +2462,7 @@ const COSTUMES=[
   {id:'ninja',name:'忍者波比',icon:'🥷',badge:'🌙',desc:'學了7天以上！',days:7},
   {id:'wizard',name:'魔法波比',icon:'🧙',badge:'🔮',desc:'學了14天以上！',days:14},
   {id:'detective',name:'偵探波比',icon:'🔍',badge:'🕵️',desc:'學了21天！觀察力達人！',days:21},
-  {id:'angel',name:'天使波比',icon:'😇',badge:'💫',desc:'學了30天！三年級最強！',days:30},
+  {id:'angel',name:'天使波比',icon:'😇',badge:'💫',desc:'學了30天！四年級最強！',days:30},
   {id:'rainbow',name:'彩虹波比',icon:'🌈',badge:'🦋',desc:'集滿超級波比！',days:99},
 ];
 const STREAK_MILESTONES=[
@@ -2645,13 +2669,14 @@ function isGameUnlocked(id){
 /* =====================================================
    狀態管理
    ===================================================== */
-const SAVE_KEY='boppyAcademy_grade3';
+const SAVE_KEY='boppyAcademy_grade4';
+const OLD_SAVE_KEY='boppyAcademy_grade3'; // 三年級存檔：第一次開啟四年級版時搬過來
 let S={
   name:'小蛹',gold:0,exp:0,level:1,
   badges:{mini:0,small:0,medium:0,large:0,super:0},
   activeCostume:'default',
   unlockedCostumes:['default'],
-  streak:0,lastDate:'',startDate:'2025-03-01',dataVersion:'v5',
+  streak:0,lastDate:'',startDate:'',dataVersion:'v6',
   dailyLogs:{},
   emotionLog:{},
   chapterProgress:{chinese:0,english:0,math:0},
@@ -2670,10 +2695,21 @@ function save(){
     localStorage.setItem(SAVE_KEY+'_detective',JSON.stringify(ds));
   }catch(e){}
 }
-const DATA_VERSION = 'v5'; // 改這個號碼會清除 dailyLogs 但保留名字和徽章
+const DATA_VERSION = 'v6'; // 改這個號碼會清除 dailyLogs 但保留名字和徽章
 function load(){
   try{
-    const d=localStorage.getItem(SAVE_KEY);
+    let d=localStorage.getItem(SAVE_KEY);
+    let migrated=false;
+    if(!d){
+      // 四年級版第一次開啟：把三年級的名字、徽章、造型搬過來，課程進度與每日紀錄重新開始
+      const od=localStorage.getItem(OLD_SAVE_KEY);
+      if(od){
+        const op=JSON.parse(od);
+        const keep={name:op.name,gold:op.gold,exp:op.exp,level:op.level,badges:op.badges,
+          activeCostume:op.activeCostume,unlockedCostumes:op.unlockedCostumes,hasVisited:op.hasVisited};
+        d=JSON.stringify(keep);migrated=true;
+      }
+    }
     if(d){
       const p=JSON.parse(d);
       S={...S,...p};
@@ -2681,27 +2717,27 @@ function load(){
       S.chapterProgress=S.chapterProgress||{chinese:0,english:0,math:0};
       S.unlockedCostumes=S.unlockedCostumes||['default'];
       S.emotionLog=S.emotionLog||{};
-      S.startDate='2025-03-01';
-      // 只保留 2025 年的 dailyLogs，清除其他年份的假資料
-      const cleanLogs={};
-      if(p.dailyLogs){
-        Object.keys(p.dailyLogs).forEach(k=>{
-          if(k.startsWith('2025-')) cleanLogs[k]=p.dailyLogs[k];
-        });
-      }
-      S.dailyLogs=cleanLogs;
-      // 版本不符：連 2025 年的也清掉
-      if(S.dataVersion!==DATA_VERSION){
+      S.dailyLogs=S.dailyLogs||{};
+      S.lessonScores=S.lessonScores||{};
+      // 版本不符（課程換新）：每日紀錄、章節進度、課程分數重新開始；名字、徽章、造型保留
+      if(S.dataVersion!==DATA_VERSION||migrated){
         S.dailyLogs={};
+        S.chapterProgress={chinese:0,english:0,math:0};
+        S.lessonScores={};
         S.streak=0;
         S.lastDate='';
+        S.startDate='';
         S.dataVersion=DATA_VERSION;
         save();
+      }
+      // 只保留開始日之後的每日紀錄（開始日之前的不可能有課）
+      if(S.startDate){
+        Object.keys(S.dailyLogs).forEach(k=>{ if(k<S.startDate) delete S.dailyLogs[k]; });
       }
     }
     // 讀取偵探進度（獨立儲存，不受版本更新影響）
     try{
-      const dd=localStorage.getItem(SAVE_KEY+'_detective');
+      const dd=(migrated?localStorage.getItem(OLD_SAVE_KEY+'_detective'):null)||localStorage.getItem(SAVE_KEY+'_detective');
       if(dd){
         const dp=JSON.parse(dd);
         detectiveState.completed=dp.completed||[];
@@ -2709,6 +2745,7 @@ function load(){
         detectiveState.earnedAchievements=dp.earnedAchievements||[];
         detectiveState.thinkingRecord=dp.thinkingRecord||{};
       }
+      if(migrated) save();
     }catch(e){}
   }catch(e){}
 }
@@ -2718,16 +2755,11 @@ function load(){
 function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function getDayNumber(){
   if(!S.startDate) return 1;
-  // 永遠用 startDate 所在的年份來算，避免跨年問題
-  const startYear = parseInt(S.startDate.slice(0,4));
-  const todayStr = today();
-  const todayYear = parseInt(todayStr.slice(0,4));
-  // 用同一年的同月同日計算
-  const realToday = startYear + todayStr.slice(4); // 強制用 startDate 的年份
+  // 第幾天＝今天－開始日＋1，跨年照算
   const s = new Date(S.startDate + 'T00:00:00');
-  const n = new Date(realToday + 'T00:00:00');
+  const n = new Date(today() + 'T00:00:00');
   const diff = Math.floor((n - s) / (1000*60*60*24)) + 1;
-  return Math.max(1, Math.min(diff, 366)); // 最多一年
+  return Math.max(1, diff);
 }
 function getDailyCourse(dayNum){
   const subjs=['chinese','english','math'];
@@ -2767,6 +2799,7 @@ function getTitle(){
 }
 function getActiveCostume(){return COSTUMES.find(c=>c.id===S.activeCostume)||COSTUMES[0];}
 function updateUI(){
+  try{renderBattleCard();}catch(e){}
   const c=getActiveCostume();
   setBoppyEl('playerAvatar',56,'normal',c.badge,false);
   setBoppyEl('encAvatar',44,'happy',c.badge,false);
@@ -3051,6 +3084,81 @@ DYNAMIC_GENERATORS.noun_english_dyn = ()=>{
   explain:`「${word}」是${correctCat}（${{'Person':'人','Thing':'物品','Animal':'動物','Place':'地方'}[correctCat]}）！Grammar Picnic Unit 1：名詞分Person、Thing、Animal、Place四大類！`};
 };
 
+// ===== 四年級版：偵探挑戰室的隨機題升級（覆蓋三年級的數字題，其他題型沿用）=====
+// 選項重複就重抽，最多 10 次（例：2＋2×2 的三個干擾項會撞在一起）
+function _uniqChoices(gen){ return ()=>{ let r=gen(); for(let i=0;i<10&&new Set(r.choices).size!==r.choices.length;i++) r=gen(); return r; }; }
+Object.assign(DYNAMIC_GENERATORS, {
+  math_word: ()=>{
+    const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+    const templates = [
+    ()=>{ const a=R(102,398), b=R(12,29); const ans=a*b;
+    return {q:`一箱有${a}顆糖果，${b}箱共有幾顆？`,
+    choices:[String(ans), String(ans+a), String(ans-b*10), String(a*(b-1))],
+    ans:0, explain:`${a}×${b}：先算${a}×${Math.floor(b/10)*10}＝${a*(Math.floor(b/10)*10)}，再算${a}×${b%10}＝${a*(b%10)}，相加＝${ans}顆！`}; },
+    ()=>{ const d=R(12,25), q=R(4,9), r=R(1,d-1); const total=d*q+r;
+    return {q:`${total}顆蛋，每盒裝${d}顆，可以裝幾盒？剩幾顆？`,
+    choices:[`${q}盒剩${r}顆`, `${q+1}盒剛好`, `${q}盒剩${r+d}顆`, `${q-1}盒剩${r+d}顆`],
+    ans:0, explain:`${total}÷${d}＝${q}餘${r}！驗算：${q}×${d}＋${r}＝${total}。餘數${r}比除數${d}小，才算對！`}; },
+    ()=>{ const l=R(6,12), w=R(4,8), c=R(2,Math.min(l,w)-1); const area=l*w-c*c;
+    return {q:`長${l}公分、寬${w}公分的長方形，角落切掉一個邊長${c}公分的正方形，剩下面積是多少平方公分？`,
+    choices:[String(area), String(l*w), String(l*w-c), String(area-c)],
+    ans:0, explain:`大減小：${l}×${w}＝${l*w}，減掉${c}×${c}＝${c*c}，剩${area}平方公分！`}; },
+    ()=>{ const a=R(11,89)/10, b=R(11,89)/10; const s=Math.round((a+b)*10)/10;
+    return {q:`小蛹身高${(100+a).toFixed(1)}公分，一年後長高了${b.toFixed(1)}公分，現在幾公分？`,
+    choices:[(100+s).toFixed(1), (100+a+b*10).toFixed(1), (100+Math.round((a-b)*10)/10).toFixed(1), (100+s+1).toFixed(1)],
+    ans:0, explain:`小數加法對齊小數點：${(100+a).toFixed(1)}＋${b.toFixed(1)}＝${(100+s).toFixed(1)}公分！`}; },
+    ()=>{ const a=R(2,9), b=R(2,9), c=R(2,9); const ans=a+b*c;
+    return {q:`${a}＋${b}×${c}＝？`,
+    choices:[String(ans), String((a+b)*c), String(a*b+c), String(ans+b)],
+    ans:0, explain:`先乘除後加減！${b}×${c}＝${b*c}，再加${a}＝${ans}。如果先算${a}＋${b}就會變成${(a+b)*c}，那是錯的！`}; },
+    ];
+    const t = templates[Math.floor(Math.random()*templates.length)]();
+    return {id:'dyn_math', type:'number_puzzle', level:1, tag:'🔢 數字益智', tagColor:'#0ea5e9',
+    q:t.q, choices:t.choices, ans:t.ans, explain:t.explain};
+  },
+  fraction_compare: ()=>{
+    const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+    const kinds=[
+    ()=>{ const d=R(5,12), a=R(1,d-2), b=R(1,d-1-a); const s=a+b;
+    return {q:`${a}/${d}＋${b}/${d}＝？`,
+    choices:[`${s}/${d}`, `${s}/${d*2}`, `${a*b}/${d}`, `${s}/${d+1}`],
+    explain:`同分母相加，分母不變、分子相加：${a}＋${b}＝${s}，答案${s}/${d}！千萬不要把分母也加起來！`}; },
+    ()=>{ const d=R(3,9), w=R(1,3), r=R(1,d-1); const n=w*d+r;
+    return {q:`假分數 ${n}/${d} 換成帶分數是？`,
+    choices:[`${w}又${r}/${d}`, `${w+1}又${r}/${d}`, `${w}又${d}/${r}`, `${r}又${w}/${d}`],
+    explain:`${n}÷${d}＝${w}餘${r}，所以是${w}又${r}/${d}！整數是商，分子是餘數，分母不變！`}; },
+    ()=>{ const d=R(5,12), a=R(2,d-1), b=R(1,a-1); const s=a-b;
+    return {q:`${a}/${d}－${b}/${d}＝？`,
+    choices:[`${s}/${d}`, `${s}`, `${a+b}/${d}`, `${s}/${d-b}`],
+    explain:`同分母相減，分母不變、分子相減：${a}－${b}＝${s}，答案${s}/${d}！`}; },
+    ];
+    const t=kinds[Math.floor(Math.random()*kinds.length)]();
+    return {id:'dyn_fraction', type:'number_puzzle', level:1, tag:'🔢 數字益智', tagColor:'#0ea5e9',
+    q:t.q, choices:t.choices, ans:0, explain:t.explain};
+  },
+  decimal_dyn: ()=>{
+    const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+    const kinds=[
+    ()=>{ const a=R(1,9), b=R(10,99); const x=a/10, y=b/100; // 例：0.8 vs 0.75
+    if(Math.abs(x-y)<0.005) return null;
+    const big=x>y?x:y, small=x>y?y:x;
+    return {q:`${x} 和 ${y}，哪個比較大？`,
+    choices:[`${big}比較大`, `${small}比較大`, '一樣大', '不能比較'],
+    explain:`把${x}寫成${x.toFixed(2)}再比：${x.toFixed(2)}和${y.toFixed(2)}，${big}比較大！小數位數多不代表數字大！`}; },
+    ()=>{ const p=[10,100,1000][R(0,2)]; let n=R(1234,98765); if(n%p===0) n+=R(1,p-1); const ans=Math.round(n/p)*p;
+    const name={10:'十位',100:'百位',1000:'千位'}[p];
+    return {q:`${n.toLocaleString()} 四捨五入到${name}是多少？`,
+    choices:[ans.toLocaleString(), (Math.floor(n/p)*p===ans?Math.ceil(n/p)*p:Math.floor(n/p)*p).toLocaleString(), (ans+p*10).toLocaleString(), n.toLocaleString()],
+    explain:`取到${name}，看它後面那一位的數字：0到4捨去、5到9進位。${n.toLocaleString()}≈${ans.toLocaleString()}！`}; },
+    ];
+    let t=null; for(let i=0;i<5&&!t;i++) t=kinds[Math.floor(Math.random()*kinds.length)]();
+    if(!t) t={q:'0.8 和 0.75，哪個比較大？',choices:['0.8比較大','0.75比較大','一樣大','不能比較'],explain:'0.80＞0.75，所以0.8比較大！'};
+    return {id:'dyn_decimal', type:'number_puzzle', level:1, tag:'🔢 數字益智', tagColor:'#0ea5e9',
+    q:t.q, choices:t.choices, ans:0, explain:t.explain};
+  },
+});
+['math_word','fraction_compare','decimal_dyn','pattern_seq','crossover_dyn'].forEach(k=>{ DYNAMIC_GENERATORS[k]=_uniqChoices(DYNAMIC_GENERATORS[k]); });
+
 const DYNAMIC_SLOTS = {
   // 找矛盾（隨機）
   'd01': 'contradiction_story',
@@ -3078,7 +3186,7 @@ const DYNAMIC_SLOTS = {
   'd28': 'math_word',
   'd29': 'math_word',
   'd26': 'fraction_compare',
-  'd30': 'fraction_compare',
+  'd30': 'decimal_dyn',
   // 邏輯謎題（隨機）
   'd31': 'logic_puzzle_dyn',
   'd32': 'logic_puzzle_dyn',
@@ -4563,9 +4671,9 @@ function openMakeupPopup(dateStr){
     return COURSES_ALL[subj][chIdx];
   }
   const sbjs=[
-    {id:'chinese',name:'國語進階課',ch:(getMakeupChapter('chinese',dateStr)||{}).chapter||'成語、修辭、閱讀',color:'chinese',icon:'📚'},
-    {id:'english',name:'英文挑戰課',ch:(getMakeupChapter('english',dateStr)||{}).chapter||'字母、句型、觀察',color:'english',icon:'🔤'},
-    {id:'math',name:'數學闖關課',ch:(getMakeupChapter('math',dateStr)||{}).chapter||'乘除、分數、圖形',color:'math',icon:'🔢'}
+    {id:'chinese',name:'國語進階課',ch:(getMakeupChapter('chinese',dateStr)||{}).chapter||'成語、修辭、標點、閱讀',color:'chinese',icon:'📚'},
+    {id:'english',name:'英文挑戰課',ch:(getMakeupChapter('english',dateStr)||{}).chapter||'拼讀、句型、觀察',color:'english',icon:'🔤'},
+    {id:'math',name:'數學闖關課',ch:(getMakeupChapter('math',dateStr)||{}).chapter||'大數、小數、分數、角度',color:'math',icon:'🔢'}
   ];
   let html=sbjs.map(s=>{
     const done=makeupLog[s.id];
@@ -4723,7 +4831,7 @@ function renderPractice(u,chapter){
 /* 測驗 */
 function shuffleOpts(opts, ans){
   const tagged = (Array.isArray(opts)?opts:[]).map(o=>{
-    if(typeof o==='object') return {txt:o.t, correct:o.c===true};
+    if(typeof o==='object') return {txt:(o.t!==undefined?o.t:o.txt), correct:(o.c===true||o.correct===true)};
     return {txt:o, correct: o===ans};
   });
   for(let i=tagged.length-1;i>0;i--){
@@ -5062,9 +5170,9 @@ function showComplete(){
   const allDone=Object.values(log).filter(Boolean).length>=3;
   const c=document.getElementById('learnContent');
   const msgs={
-    chinese:'成語和修辭都掌握了！語文小達人！',
-    english:'拼音和句型棒棒的！英文越來越好！',
-    math:'乘除和分數搞定！數學偵探出動！'
+    chinese:'成語、修辭、閱讀都掌握了！語文小達人！',
+    english:'拼讀和句型棒棒的！英文越來越好！',
+    math:'大數、小數、分數搞定！數學偵探出動！'
   };
   // 分數顯示
   // 分數顯示使用最頂部的 scoreNoteHTML
@@ -6441,6 +6549,282 @@ document.addEventListener('touchend', function(e){
 
 // GP 初始化由主 window load 事件統一執行（見下方 load handler 內的 gpLoad() 呼叫）
 
+/* =====================================================
+   波比對戰學院：關卡對戰（道館）＋無限競技場＋怪獸圖鑑
+   答對＝波比出招，答錯或超時＝怪獸反擊。每隻怪獸有一個「弱點科目」，用對科目傷害加倍。
+   ===================================================== */
+const BT_SUBJ={chinese:{n:'國語',e:'📚',c:'#ef4444'},english:{n:'英文',e:'🔤',c:'#3b82f6'},math:{n:'數學',e:'🔢',c:'#14b8a6'}};
+const BT_GYMS=[
+  {id:'g1',name:'草原道館',emoji:'🌱',bg:'linear-gradient(160deg,#166534,#4ade80)',maxCh:3,
+   mons:[{n:'錯字蟲',e:'🐛',w:'chinese'},{n:'貪吃蝸',e:'🐌',w:'math'},{n:'草原鹿',e:'🦌',w:'english',boss:true}]},
+  {id:'g2',name:'森林道館',emoji:'🌲',bg:'linear-gradient(160deg,#14532d,#15803d)',maxCh:4,
+   mons:[{n:'迷路狐',e:'🦊',w:'english'},{n:'偷書鼠',e:'🐭',w:'chinese'},{n:'文法熊',e:'🐻',w:'english',boss:true}]},
+  {id:'g3',name:'河流道館',emoji:'🌊',bg:'linear-gradient(160deg,#0c4a6e,#0ea5e9)',maxCh:5,
+   mons:[{n:'分數蛙',e:'🐸',w:'math'},{n:'小數魚',e:'🐟',w:'math'},{n:'河馬王',e:'🦛',w:'chinese',boss:true}]},
+  {id:'g4',name:'火山道館',emoji:'🌋',bg:'linear-gradient(160deg,#7f1d1d,#f97316)',maxCh:6,
+   mons:[{n:'急躁雞',e:'🐔',w:'chinese'},{n:'噴火蜥',e:'🦎',w:'english'},{n:'岩漿龍',e:'🐉',w:'math',boss:true}]},
+  {id:'g5',name:'雪山道館',emoji:'🏔️',bg:'linear-gradient(160deg,#1e3a8a,#93c5fd)',maxCh:7,
+   mons:[{n:'雪球兔',e:'🐰',w:'english'},{n:'冰企鵝',e:'🐧',w:'math'},{n:'雪怪',e:'🦣',w:'chinese',boss:true}]},
+  {id:'g6',name:'沙漠道館',emoji:'🏜️',bg:'linear-gradient(160deg,#78350f,#fbbf24)',maxCh:8,
+   mons:[{n:'沙蠍',e:'🦂',w:'math'},{n:'仙人掌怪',e:'🌵',w:'chinese'},{n:'金字塔駱駝',e:'🐫',w:'english',boss:true}]},
+  {id:'g7',name:'天空道館',emoji:'☁️',bg:'linear-gradient(160deg,#4c1d95,#c084fc)',maxCh:9,
+   mons:[{n:'風箏鷹',e:'🦅',w:'chinese'},{n:'雲朵羊',e:'🐑',w:'english'},{n:'雷電孔雀',e:'🦚',w:'math',boss:true}]},
+  {id:'g8',name:'海底道館',emoji:'🐚',bg:'linear-gradient(160deg,#083344,#06b6d4)',maxCh:10,
+   mons:[{n:'泡泡章魚',e:'🐙',w:'english'},{n:'鯊魚哥',e:'🦈',w:'math'},{n:'海王鯨',e:'🐳',w:'chinese',boss:true}]},
+  {id:'g9',name:'冠軍殿堂',emoji:'👑',bg:'linear-gradient(160deg,#1e1b4b,#f59e0b)',maxCh:99,champion:true,
+   mons:[{n:'貓頭鷹博士',e:'🦉',w:'chinese'},{n:'獨角獸',e:'🦄',w:'english'},{n:'混亂之王',e:'🐲',w:'math',boss:true}]},
+];
+const BT_ALL_MONS=BT_GYMS.flatMap((g,gi)=>g.mons.map((m,mi)=>({...m,id:g.id+'_'+mi,gym:gi})));
+let BT={screen:'home',gym:null,round:0,enemy:null,hp:0,maxHp:0,combo:0,q:null,timer:null,tLeft:0,busy:false,arena:false,streak:0,recent:[],revealed:{},stats:{correct:0,wrong:0,dmg:0}};
+function btState(){
+  if(!S.battle) S.battle={exp:0,cleared:[],dex:[],potions:2,hints:2,bestStreak:0,wins:0,losses:0,answered:0,correct:0};
+  const b=S.battle; b.cleared=b.cleared||[]; b.dex=b.dex||[]; if(b.potions==null)b.potions=2; if(b.hints==null)b.hints=2;
+  return b;
+}
+function btLevel(){return Math.floor(Math.sqrt((btState().exp||0)/40))+1;}
+function btExpToNext(){const l=btLevel();return {cur:btState().exp-40*(l-1)*(l-1),need:40*l*l-40*(l-1)*(l-1)};}
+function btMaxHp(){return 90+btLevel()*10;}
+function btRank(){const l=btLevel();return l>=15?'傳說訓練家':l>=10?'大師訓練家':l>=6?'資深訓練家':l>=3?'見習訓練家':'新手訓練家';}
+function btBoppy(size,expr){const l=btLevel();return boppySVG(size,expr||'happy',l>=10?'👑':l>=5?'⭐':getActiveCostume().badge,l>=10);}
+/* ── 入口卡（主畫面）── */
+function renderBattleCard(){
+  const el=document.getElementById('battleEntryContent'); if(!el) return;
+  const b=btState(); const nextGym=BT_GYMS.find(g=>!b.cleared.includes(g.id));
+  el.innerHTML=`<div class="t">⚔️ 波比對戰學院 <span style="font-size:0.7rem;background:#fbbf24;color:#1e1b4b;border-radius:8px;padding:2px 7px;">NEW</span></div>
+    <div class="d">答對題目＝波比出招！找出每隻怪獸的弱點科目，打倒道館館主、收服怪獸、集滿九枚道館徽章！</div>
+    <div class="row"><span>Lv.${btLevel()} ${btRank()}</span><span>🏅 道館 ${b.cleared.length}/9</span><span>📖 圖鑑 ${b.dex.length}/${BT_ALL_MONS.length}</span><span>🔥 最高連勝 ${b.bestStreak||0}</span></div>
+    <button onclick="openBattle()">⚔️ ${nextGym?'挑戰 '+nextGym.emoji+' '+nextGym.name:'進入競技場'}</button>`;
+}
+function openBattle(screen){
+  sfxClick(); btState();
+  document.getElementById('battleOverlay').classList.remove('hidden');
+  document.getElementById('mainScreen').classList.add('hidden');
+  try{window.scrollTo(0,0);}catch(e){}
+  btGo(screen||'home');
+}
+function closeBattle(){
+  btStopTimer(); BT.busy=false;
+  document.getElementById('battleOverlay').classList.add('hidden');
+  document.getElementById('mainScreen').classList.remove('hidden');
+  save(); updateUI();
+}
+function btGo(screen){
+  btStopTimer(); BT.screen=screen;
+  const w=document.getElementById('battleWrap');
+  if(screen==='home') w.innerHTML=btHomeHTML();
+  else if(screen==='dex') w.innerHTML=btDexHTML();
+  try{document.getElementById('battleOverlay').scrollTo(0,0);}catch(e){}
+  const hero=document.getElementById('btHeroBoppy'); if(hero) hero.innerHTML=btBoppy(96,'happy');
+}
+function btTop(title,right){
+  return `<div class="bt-top"><button class="bt-back" onclick="${BT.screen==='home'?'closeBattle()':'btConfirmLeave()'}">← ${BT.screen==='home'?'回主畫面':'離開'}</button><div class="bt-title">${title}</div><div class="bt-chip">${right||''}</div></div>`;
+}
+function btHomeHTML(){
+  const b=btState(); const nx=btExpToNext(); const nextIdx=BT_GYMS.findIndex(g=>!b.cleared.includes(g.id));
+  const gyms=BT_GYMS.map((g,i)=>{
+    const cleared=b.cleared.includes(g.id); const locked=!cleared&&i!==nextIdx;
+    return `<div class="bt-gym ${cleared?'cleared':''} ${locked?'locked':''} ${i===nextIdx?'next':''}" onclick="${locked?'btLockedMsg('+i+')':'btStartGym('+i+')'}">
+      ${cleared?'<div class="g-badge">🏅</div>':''}
+      <div class="g-emoji">${locked?'🔒':g.emoji}</div><div class="g-name">${g.name}</div>
+      <div class="g-sub">${cleared?'已通關・可再戰':locked?'先打贏前一館':i===nextIdx?'▶ 下一關':''}</div></div>`;
+  }).join('');
+  return btTop('⚔️ 波比對戰學院',`Lv.${btLevel()}`)+`
+    <div class="bt-card bt-hero">
+      <div id="btHeroBoppy" style="display:flex;justify-content:center;"></div>
+      <h2>${S.name} 的波比</h2>
+      <p>Lv.${btLevel()} ${btRank()}　HP ${btMaxHp()}</p>
+      <div class="bt-hpbar" style="max-width:260px;margin:6px auto 0;"><div class="bt-hpfill" style="width:${Math.round(nx.cur/nx.need*100)}%;background:linear-gradient(90deg,#a78bfa,#f472b6);"></div></div>
+      <div class="bt-hptxt">經驗 ${nx.cur}/${nx.need}　再 ${nx.need-nx.cur} 點升級</div>
+      <div class="bt-stats"><div class="bt-stat"><b>${b.cleared.length}/9</b><span>道館徽章</span></div><div class="bt-stat"><b>${b.dex.length}/${BT_ALL_MONS.length}</b><span>圖鑑</span></div><div class="bt-stat"><b>${b.bestStreak||0}</b><span>最高連勝</span></div><div class="bt-stat"><b>${b.answered?Math.round(b.correct/b.answered*100):0}%</b><span>命中率</span></div></div>
+    </div>
+    <div class="bt-modes">
+      <button class="bt-mode" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="btStartGym(${nextIdx<0?0:nextIdx})">🏟️ 道館挑戰<small>${nextIdx<0?'全部通關！':'下一關：'+BT_GYMS[nextIdx].name}</small></button>
+      <button class="bt-mode" style="background:linear-gradient(135deg,#ec4899,#be185d);" onclick="btStartArena()">🔥 無限競技場<small>怪獸越來越強，拚連勝</small></button>
+      <button class="bt-mode" style="background:linear-gradient(135deg,#6366f1,#4338ca);" onclick="btGo('dex')">📖 怪獸圖鑑<small>收服了 ${b.dex.length} 隻</small></button>
+    </div>
+    <div class="bt-card"><div style="font-weight:900;margin-bottom:10px;">🗺️ 道館地圖</div><div class="bt-gyms">${gyms}</div>
+      <div style="font-size:0.76rem;color:#c7d2fe;font-weight:700;margin-top:10px;line-height:1.5;">🧪 藥水 ${b.potions}　💡 提示 ${b.hints}　（打贏道館各補 1 個）<br>每隻怪獸都有一個弱點科目，用對科目攻擊傷害加倍。答錯怪獸會反擊，HP 歸零就要重來這一館喔！</div></div>`;
+}
+function btLockedMsg(i){ sfxWrong(); const w=document.getElementById('battleWrap'); const el=w.querySelectorAll('.bt-gym')[i]; if(el){el.style.animation='shake 0.4s';setTimeout(()=>el.style.animation='',450);} }
+/* ── 圖鑑 ── */
+function btDexHTML(){
+  const b=btState();
+  const cards=BT_ALL_MONS.map(m=>{const c=b.dex.includes(m.id);return `<div class="bt-dexc ${c?'caught':'unknown'}"><div class="e">${m.e}</div><div class="n">${c?m.n:'？？？'}</div>${c?`<div style="font-size:0.6rem;color:#fde68a;font-weight:800;">弱點 ${BT_SUBJ[m.w].e}${BT_SUBJ[m.w].n}</div>`:`<div style="font-size:0.6rem;color:#64748b;">${BT_GYMS[m.gym].name}</div>`}</div>`;}).join('');
+  BT.screen='dex';
+  return `<div class="bt-top"><button class="bt-back" onclick="btGo('home')">← 返回</button><div class="bt-title">📖 怪獸圖鑑</div><div class="bt-chip">${b.dex.length}/${BT_ALL_MONS.length}</div></div>
+    <div class="bt-card"><div class="bt-dex">${cards}</div><div style="font-size:0.76rem;color:#c7d2fe;font-weight:700;margin-top:10px;">打倒怪獸就會收服進圖鑑，圖鑑會記住牠的弱點科目。</div></div>`;
+}
+/* ── 開始道館／競技場 ── */
+function btStartGym(i){
+  sfxStart(); const g=BT_GYMS[i]; if(!g) return;
+  BT.gym=g; BT.gymIdx=i; BT.arena=false; BT.round=0; BT.hp=btMaxHp(); BT.maxHp=BT.hp; BT.combo=0; BT.streak=0; BT.stats={correct:0,wrong:0,dmg:0}; BT.recent=[];
+  btSpawn();
+}
+function btStartArena(){
+  sfxStart(); BT.gym=null; BT.arena=true; BT.round=0; BT.hp=btMaxHp(); BT.maxHp=BT.hp; BT.combo=0; BT.streak=0; BT.stats={correct:0,wrong:0,dmg:0}; BT.recent=[];
+  btSpawn();
+}
+function btSpawn(){
+  let m,gi;
+  if(BT.arena){ const r=BT.round; gi=Math.min(8,Math.floor(r/2)); const pool=BT_ALL_MONS.filter(x=>x.gym<=gi); m=pool[Math.floor(Math.random()*pool.length)];
+    const hp=50+r*18; BT.enemy={...m,hp,maxHp:hp,atk:8+r*2,maxCh:Math.min(10,3+Math.floor(r/2))}; }
+  else { gi=BT.gymIdx; const base=BT.gym.mons[BT.round]; m={...base,id:BT.gym.id+'_'+BT.round,gym:gi};
+    const hp=base.boss?(120+gi*34):(72+gi*20); BT.enemy={...m,hp,maxHp:hp,atk:(base.boss?12:8)+gi*2,maxCh:BT.gym.maxCh}; }
+  BT.screen='battle'; BT.q=null; BT.busy=false;
+  btRenderBattle(`野生的 <span class="hl">${BT.enemy.n}</span> 出現了！${BT.enemy.boss?'這是館主，小心！':''}選一個科目攻擊吧！`);
+}
+/* ── 戰鬥畫面 ── */
+function btHpClass(p){return p<=0.25?'low':p<=0.55?'mid':'';}
+function btRenderBattle(msg){
+  const e=BT.enemy; const b=btState(); const known=b.dex.includes(e.id)||BT.revealed[e.id];
+  const title=BT.arena?`🔥 競技場 第 ${BT.round+1} 戰`:`${BT.gym.emoji} ${BT.gym.name} ${BT.round+1}/3`;
+  const w=document.getElementById('battleWrap');
+  w.innerHTML=`<div class="bt-top"><button class="bt-back" onclick="btConfirmLeave()">← 離開</button><div class="bt-title">${title}</div><div class="bt-chip">🔥 連擊 ${BT.combo}</div></div>
+    <div class="bt-arena" id="btArena" style="background:${BT.arena?'linear-gradient(160deg,#4a044e,#db2777)':BT.gym.bg};">
+      <div class="bt-fighter enemy"><div class="bt-sprite" id="btEnemySprite">${e.e}</div>
+        <div class="bt-info"><div class="bt-name">${e.boss?'👑 ':''}${e.n} <span class="bt-type">弱點 ${known?BT_SUBJ[e.w].e+BT_SUBJ[e.w].n:'❓'}</span></div>
+        <div class="bt-hpbar"><div class="bt-hpfill ${btHpClass(e.hp/e.maxHp)}" id="btEnemyHp" style="width:${Math.max(0,e.hp/e.maxHp*100)}%"></div></div><div class="bt-hptxt" id="btEnemyHpTxt">HP ${Math.max(0,e.hp)}/${e.maxHp}</div></div></div>
+      <div class="bt-vs">VS</div>
+      <div class="bt-fighter"><div class="bt-sprite" id="btBoppySprite">${btBoppy(76,BT.hp/BT.maxHp<0.3?'sad':'happy')}</div>
+        <div class="bt-info"><div class="bt-name">${S.name} 的波比 <span class="bt-type">Lv.${btLevel()}</span></div>
+        <div class="bt-hpbar"><div class="bt-hpfill ${btHpClass(BT.hp/BT.maxHp)}" id="btBoppyHp" style="width:${Math.max(0,BT.hp/BT.maxHp*100)}%"></div></div><div class="bt-hptxt" id="btBoppyHpTxt">HP ${Math.max(0,BT.hp)}/${BT.maxHp}</div></div></div>
+    </div>
+    <div class="bt-msg" id="btMsg">${msg}</div>
+    <div id="btAction"></div>`;
+  btRenderActions();
+}
+function btRenderActions(){
+  const e=BT.enemy; const b=btState(); const known=b.dex.includes(e.id)||BT.revealed[e.id];
+  const a=document.getElementById('btAction');
+  a.innerHTML=`<div class="bt-actions">${['chinese','english','math'].map(s=>`<button class="bt-atk ${s} ${known&&e.w===s?'super':''}" onclick="btAttack('${s}')">${BT_SUBJ[s].e} ${BT_SUBJ[s].n}攻擊<small>${known&&e.w===s?'傷害 ×2':'答對就出招'}</small></button>`).join('')}</div>
+    <div class="bt-items"><button class="bt-item" onclick="btUsePotion()" ${b.potions<=0||BT.hp>=BT.maxHp?'disabled':''}>🧪 藥水 ×${b.potions}<br><small style="font-weight:700;opacity:0.8;">回復 40 HP</small></button><button class="bt-item" disabled style="opacity:0.7;">💡 提示 ×${b.hints}<br><small style="font-weight:700;opacity:0.8;">答題時可用</small></button></div>`;
+}
+function btUsePotion(){ const b=btState(); if(b.potions<=0||BT.hp>=BT.maxHp||BT.busy) return; sfxLevelUp(); b.potions--; BT.hp=Math.min(BT.maxHp,BT.hp+40); save(); btFloat('btBoppySprite','+40','#4ade80'); btRenderBattle('波比喝了藥水，精神百倍！💪 繼續選科目攻擊！'); }
+/* ── 出題 ── */
+function btStrip(s){return String(s).replace(/\s*[✅❌✓✗]（也對！）/g,'').replace(/\s*[✅❌✓✗]/g,'').trim();}
+function btPickQuestion(subj,maxCh){
+  // 數學三成機率用隨機生成題（偵探室同一套）
+  if(subj==='math'&&Math.random()<0.3&&typeof DYNAMIC_GENERATORS!=='undefined'){
+    const gens=['math_word','fraction_compare','decimal_dyn','pattern_seq'].filter(k=>DYNAMIC_GENERATORS[k]);
+    const g=DYNAMIC_GENERATORS[gens[Math.floor(Math.random()*gens.length)]]();
+    if(g&&g.choices) return {q:g.q,opts:g.choices.slice(),ans:g.choices[g.ans],hint:'',explain:g.explain,key:'dyn'};
+  }
+  const chs=COURSES_ALL[subj].slice(0,maxCh); const pool=[];
+  chs.forEach((ch,ci)=>ch.units.forEach((u,ui)=>{
+    if(!u.opts||!['test','observe','practice','phonics_test','phonics_blend'].includes(u.type)) return;
+    const objs=u.opts.every(o=>typeof o==='object');
+    let opts,ans;
+    if(objs){ opts=u.opts.map(o=>btStrip(o.t!==undefined?o.t:o.txt)); const c=u.opts.find(o=>o.c===true||o.correct===true); if(!c) return; ans=btStrip(c.t!==undefined?c.t:c.txt); }
+    else { opts=u.opts.map(btStrip); ans=btStrip(u.ans); if(!opts.includes(ans)) return; }
+    if(new Set(opts).size!==opts.length) return;
+    const key=subj+ci+'_'+ui; if(BT.recent.includes(key)) return;
+    pool.push({q:u.q,opts,ans,hint:u.hint||'',explain:u.okMsg||'',key,audio:u.audio});
+  }));
+  if(!pool.length){ BT.recent=[]; return btPickQuestion(subj,maxCh); }
+  const q=pool[Math.floor(Math.random()*pool.length)];
+  BT.recent.push(q.key); if(BT.recent.length>40) BT.recent.shift();
+  return q;
+}
+function btAttack(subj){
+  if(BT.busy) return; BT.busy=true; sfxClick();
+  const q=btPickQuestion(subj,BT.enemy.maxCh); BT.q={...q,subj,start:Date.now()};
+  const opts=q.opts.slice().sort(()=>Math.random()-0.5);
+  const a=document.getElementById('btAction'); const b=btState();
+  document.getElementById('btMsg').innerHTML=`${BT_SUBJ[subj].e} ${BT_SUBJ[subj].n}攻擊！答對就命中，<span class="hl">25 秒</span>內答完還有速度加成！`;
+  a.innerHTML=`<div class="bt-q" id="btQ">
+    <span class="bt-q-tag" style="background:${BT_SUBJ[subj].c}">${BT_SUBJ[subj].e} ${BT_SUBJ[subj].n}題</span>
+    <button class="bt-item" style="float:right;padding:4px 10px;font-size:0.78rem;color:#1e1b4b;background:#fef3c7;border-color:#f59e0b;" onclick="btUseHint()" ${b.hints<=0?'disabled':''}>💡 提示 ×${b.hints}</button>
+    <div class="bt-q-text">${q.q}</div>
+    ${q.hint?`<div class="bt-q-hint">💡 ${q.hint}</div>`:''}
+    <div class="bt-timer"><div id="btTimerBar"></div></div>
+    <div class="bt-opts">${opts.map(o=>`<button class="bt-opt" onclick="btAnswer(this)" data-v="${o.replace(/"/g,'&quot;')}">${o}</button>`).join('')}</div>
+  </div>`;
+  BT.busy=false; btStartTimer(25);
+}
+function btUseHint(){ const b=btState(); if(b.hints<=0||!BT.q) return; const wrong=[...document.querySelectorAll('.bt-opt')].filter(x=>x.dataset.v!==BT.q.ans&&!x.classList.contains('dim')); if(wrong.length<2) return; sfxFlip(); b.hints--; save(); wrong.sort(()=>Math.random()-0.5).slice(0,2).forEach(x=>x.classList.add('dim')); const hb=document.querySelector('#btQ .bt-item'); if(hb){hb.disabled=true;hb.textContent='💡 提示 ×'+b.hints;} }
+function btStartTimer(sec){ btStopTimer(); BT.tLeft=sec; const bar=document.getElementById('btTimerBar'); BT.timer=setInterval(()=>{ BT.tLeft-=0.25; if(bar){bar.style.width=Math.max(0,BT.tLeft/sec*100)+'%';} if(BT.tLeft<=0){ btStopTimer(); btResolve(false,'⏰ 時間到！'); } },250); }
+function btStopTimer(){ if(BT.timer){clearInterval(BT.timer);BT.timer=null;} }
+function btAnswer(btn){
+  if(BT.busy||!BT.q) return; btStopTimer();
+  const ok=btn.dataset.v===BT.q.ans;
+  document.querySelectorAll('.bt-opt').forEach(x=>{x.disabled=true; if(x.dataset.v===BT.q.ans)x.classList.add('ok');});
+  if(!ok) btn.classList.add('bad');
+  btResolve(ok,'');
+}
+/* ── 結算一回合 ── */
+function btFloat(id,txt,color){ const sp=document.getElementById(id); const ar=document.getElementById('btArena'); if(!sp||!ar) return; const r=sp.getBoundingClientRect(), ra=ar.getBoundingClientRect(); const f=document.createElement('div'); f.className='bt-float'; f.textContent=txt; f.style.color=color; f.style.left=(r.left-ra.left+r.width/2-20)+'px'; f.style.top=(r.top-ra.top)+'px'; ar.appendChild(f); setTimeout(()=>f.remove(),950); }
+function btSetHp(){ const e=BT.enemy; const eh=document.getElementById('btEnemyHp'), et=document.getElementById('btEnemyHpTxt'), bh=document.getElementById('btBoppyHp'), bt=document.getElementById('btBoppyHpTxt'); if(eh){eh.style.width=Math.max(0,e.hp/e.maxHp*100)+'%';eh.className='bt-hpfill '+btHpClass(e.hp/e.maxHp);} if(et)et.textContent=`HP ${Math.max(0,e.hp)}/${e.maxHp}`; if(bh){bh.style.width=Math.max(0,BT.hp/BT.maxHp*100)+'%';bh.className='bt-hpfill '+btHpClass(BT.hp/BT.maxHp);} if(bt)bt.textContent=`HP ${Math.max(0,BT.hp)}/${BT.maxHp}`; }
+function btResolve(ok,prefix){
+  if(BT.busy) return; BT.busy=true; const q=BT.q; const e=BT.enemy; const b=btState(); const msg=document.getElementById('btMsg');
+  b.answered=(b.answered||0)+1;
+  document.querySelectorAll('.bt-opt').forEach(x=>{x.disabled=true; if(x.dataset.v===q.ans)x.classList.add('ok');});
+  if(ok){
+    sfxCorrect(); b.correct=(b.correct||0)+1; BT.combo++; BT.streak++; BT.stats.correct++;
+    const sec=(Date.now()-q.start)/1000; const superHit=q.subj===e.w;
+    let dmg=Math.round(16*(superHit?2:1)*(1+0.2*Math.min(BT.combo-1,4))+(sec<8?5:0)+Math.round(btLevel()*1.5));
+    if(superHit){ BT.revealed[e.id]=true; }
+    e.hp-=dmg; BT.stats.dmg+=dmg;
+    const sp=document.getElementById('btBoppySprite'), es=document.getElementById('btEnemySprite');
+    if(sp){sp.classList.add('attack');} setTimeout(()=>{ if(es){es.classList.remove('attack');es.classList.add('hit');} btFloat('btEnemySprite','-'+dmg,superHit?'#fde68a':'#fff'); btSetHp(); },300);
+    msg.innerHTML=`${prefix}🎯 命中！造成 <span class="hl">${dmg}</span> 傷害${superHit?'，<span class="hl">效果絕佳！</span>（'+BT_SUBJ[q.subj].n+'是牠的弱點）':''}${BT.combo>=2?'　🔥 '+BT.combo+' 連擊！':''}${sec<8?'　⚡ 速度加成':''}`;
+    if(e.hp<=0){ setTimeout(()=>btEnemyDown(),1100); return; }
+    setTimeout(()=>{ BT.busy=false; BT.q=null; document.getElementById('btMsg').innerHTML=`${e.n} 還有 ${e.hp} HP！${!BT.revealed[e.id]&&!b.dex.includes(e.id)?'再試試別的科目，找出牠的弱點！':'繼續用弱點科目攻擊！'}`; btRenderActions(); },1500);
+  } else {
+    sfxWrong(); BT.combo=0; BT.streak=0; BT.stats.wrong++;
+    const dmg=e.atk+Math.floor(Math.random()*6);
+    const es=document.getElementById('btEnemySprite'), sp=document.getElementById('btBoppySprite');
+    if(es){es.classList.add('enemy-attack');} setTimeout(()=>{ if(sp){sp.classList.add('hit');} BT.hp-=dmg; btFloat('btBoppySprite','-'+dmg,'#f87171'); btSetHp(); },300);
+    msg.innerHTML=`${prefix}💥 沒打中！${e.n} 反擊，波比受到 <span class="hl">${dmg}</span> 傷害。正確答案是「<span class="hl">${q.ans}</span>」${q.explain?'<br><span style="font-size:0.82rem;color:#c7d2fe;">'+String(q.explain).replace(/<[^>]+>/g,'')+'</span>':''}`;
+    setTimeout(()=>{ if(BT.hp<=0){ btLose(); return; } BT.busy=false; BT.q=null; btRenderActions(); const m=document.getElementById('btMsg'); m.innerHTML+='<br>記住這題，下次就打得中！選科目再攻擊！'; },2600);
+  }
+  save();
+}
+function btEnemyDown(){
+  const e=BT.enemy; const b=btState(); const es=document.getElementById('btEnemySprite'); if(es){es.classList.remove('hit');es.classList.add('faint');}
+  const newCatch=!b.dex.includes(e.id); if(newCatch) b.dex.push(e.id);
+  const exp=(e.boss?30:15)+e.gym*5+(BT.arena?BT.round*2:0); const before=btLevel(); b.exp=(b.exp||0)+exp; const lvUp=btLevel()>before;
+  if(BT.arena){ BT.streak=BT.round+1; if(BT.streak>(b.bestStreak||0)) b.bestStreak=BT.streak; }
+  save(); sfxLevelUp();
+  const msg=document.getElementById('btMsg'); msg.innerHTML=`🎉 打倒了 ${e.n}！${newCatch?'<span class="hl">收服成功，加入圖鑑！</span>':''} 經驗 +${exp}${lvUp?'　<span class="hl">⬆️ 升級！Lv.'+btLevel()+'</span>':''}`;
+  const a=document.getElementById('btAction');
+  a.innerHTML=`<div class="bt-result" style="padding:8px;"><div class="bt-capture">${e.e}</div>${lvUp?'<div class="bt-reward">⬆️ 波比升到 Lv.'+btLevel()+'，HP 上限 '+btMaxHp()+'</div>':''}</div>`;
+  if(lvUp){ BT.maxHp=btMaxHp(); BT.hp=Math.min(BT.maxHp,BT.hp+10); }
+  setTimeout(()=>{ BT.round++; if(BT.arena){ btSpawn(); } else if(BT.round>=BT.gym.mons.length){ btWinGym(); } else { btSpawn(); } },1600);
+}
+function btWinGym(){
+  const g=BT.gym; const b=btState(); const first=!b.cleared.includes(g.id);
+  if(first){ b.cleared.push(g.id); b.potions+=1; b.hints+=1; S.badges.mini=(S.badges.mini||0)+1; }
+  b.wins=(b.wins||0)+1; save(); sfxLevelUp();
+  const allDone=b.cleared.length>=BT_GYMS.length;
+  const w=document.getElementById('battleWrap'); BT.screen='result';
+  w.innerHTML=`<div class="bt-card bt-result" style="margin-top:30px;">
+    <div class="big">${allDone&&first?'🏆':'🏅'}</div>
+    <h3>${g.champion?'你是新的冠軍！':'拿到 '+g.name+'徽章！'}</h3>
+    <p>${first?(g.champion?'九枚徽章全部到手，波比成為冠軍訓練家！去跟爸爸媽媽說這件事吧！':'第一次通關！館主 '+g.mons[2].n+' 認輸了。'):'再一次漂亮通關！'}</p>
+    <div style="margin:10px 0;">${first?'<span class="bt-reward">🏅 道館徽章</span><span class="bt-reward">⭐ 迷你波 +1</span><span class="bt-reward">🧪 藥水 +1</span><span class="bt-reward">💡 提示 +1</span>':'<span class="bt-reward">經驗已累積</span>'}</div>
+    <p style="font-size:0.82rem;">這一館：答對 ${BT.stats.correct} 題、答錯 ${BT.stats.wrong} 題、總傷害 ${BT.stats.dmg}</p>
+    ${!allDone?`<button class="bt-btn green" onclick="btStartGym(${BT_GYMS.findIndex(x=>!b.cleared.includes(x.id))})">▶ 挑戰下一館</button>`:''}
+    <button class="bt-btn purple" onclick="btGo('home')">🗺️ 回道館地圖</button></div>`;
+  if(first) setTimeout(()=>{ try{showBadgePopup('mini');}catch(e){} },400);
+}
+function btLose(){
+  const b=btState(); b.losses=(b.losses||0)+1; if(BT.arena&&BT.round>(b.bestStreak||0)) b.bestStreak=BT.round; save(); sfxWrong();
+  const w=document.getElementById('battleWrap'); BT.screen='result';
+  w.innerHTML=`<div class="bt-card bt-result" style="margin-top:30px;">
+    <div class="big" style="filter:grayscale(0.4);">😵‍💫</div>
+    <h3>波比累了⋯⋯</h3>
+    <p>${BT.arena?'競技場連勝 '+BT.round+' 場！'+(BT.round>=(b.bestStreak||0)&&BT.round>0?'<br>🔥 追平或刷新最高紀錄！':''):BT.gym.name+'這次沒過，沒關係，再想一次！'}<br>這一場：答對 ${BT.stats.correct} 題、答錯 ${BT.stats.wrong} 題。</p>
+    <p style="font-size:0.84rem;color:#fde68a;">波比說：「答錯的那幾題，剛剛都告訴你答案了。記住它們，下一次牠就打不到你！」</p>
+    ${BT.arena?`<button class="bt-btn green" onclick="btStartArena()">🔥 再戰競技場</button>`:`<button class="bt-btn green" onclick="btStartGym(${BT.gymIdx})">🔁 再挑戰 ${BT.gym.name}</button>`}
+    <button class="bt-btn purple" onclick="btGo('home')">🗺️ 回道館地圖</button></div>`;
+}
+function btConfirmLeave(){
+  if(BT.screen!=='battle'){ btGo('home'); return; }
+  btStopTimer();
+  const a=document.getElementById('btAction'); if(!a) { btGo('home'); return; }
+  a.innerHTML=`<div class="bt-card" style="text-align:center;"><div style="font-weight:900;margin-bottom:8px;">現在離開，這一館要重新打喔！</div><button class="bt-btn gray" onclick="btGo('home')">還是要離開</button><button class="bt-btn green" onclick="BT.busy=false;BT.q=null;btRenderBattle('繼續戰鬥！選一個科目攻擊！')">⚔️ 繼續戰鬥</button></div>`;
+}
+
 /* 粒子背景 */
 function initParticles(){
   const c=document.getElementById('bgParticles');
@@ -6462,7 +6846,7 @@ function startApp(){
   S.name=name;
   S.hasVisited=true;
   if(!S.startDate){
-    S.startDate='2025-03-01';
+    S.startDate=today(); // 四年級版：從第一次按下開始的那一天起算
   }
   checkDay();save();
   document.getElementById('welcomeScreen').classList.add('hidden');
