@@ -6765,7 +6765,7 @@ const BT_ALL_MONS=BT_GYMS.flatMap((g,gi)=>g.mons.map((m,mi)=>({...m,id:g.id+'_'+
 let BT={screen:'home',gym:null,round:0,enemy:null,hp:0,maxHp:0,combo:0,q:null,timer:null,tLeft:0,busy:false,arena:false,streak:0,recent:[],revealed:{},stats:{correct:0,wrong:0,dmg:0}};
 function btState(){
   if(!S.battle) S.battle={exp:0,cleared:[],dex:[],potions:2,hints:2,bestStreak:0,wins:0,losses:0,answered:0,correct:0,coins:60,stones:{chinese:0,english:0,math:0},shields:0,books:0};
-  const b=S.battle; b.cleared=b.cleared||[]; b.dex=b.dex||[]; if(b.potions==null)b.potions=2; if(b.hints==null)b.hints=2; if(b.coins==null)b.coins=60; b.stones=b.stones||{chinese:0,english:0,math:0}; ['shields','books','hearts','clovers','boots','bigPotions','bombs','hourglasses','lenses','feathers','bracelets'].forEach(k=>{ if(b[k]==null) b[k]=0; }); b.hats=b.hats||[]; if(b.hat==null) b.hat=''; if(b.adventure==null) b.adventure=0; if(b.partner==null) b.partner=''; b.partnerStage=b.partnerStage||{}; ['moonStones','waterStones','thunderStones','rareCandies'].forEach(k=>{ if(b[k]==null) b[k]=0; }); if(b.partnerHits==null) b.partnerHits=0;
+  const b=S.battle; b.cleared=b.cleared||[]; b.dex=b.dex||[]; if(b.potions==null)b.potions=2; if(b.hints==null)b.hints=2; if(b.coins==null)b.coins=60; b.stones=b.stones||{chinese:0,english:0,math:0}; ['shields','books','hearts','clovers','boots','bigPotions','bombs','hourglasses','lenses','feathers','bracelets'].forEach(k=>{ if(b[k]==null) b[k]=0; }); b.hats=b.hats||[]; if(b.hat==null) b.hat=''; if(b.adventure==null) b.adventure=0; if(b.partner==null) b.partner=''; b.partnerStage=b.partnerStage||{}; ['moonStones','waterStones','thunderStones','rareCandies'].forEach(k=>{ if(b[k]==null) b[k]=0; }); if(b.partnerHits==null) b.partnerHits=0; b.wrongBank=b.wrongBank||[]; if(b.dojoExp==null) b.dojoExp=0; if(b.dojoDaily==null) b.dojoDaily=''; if(b.dojoSessions==null) b.dojoSessions=0;
   return b;
 }
 function btLevel(){return Math.floor(Math.sqrt((btState().exp||0)/40))+1;}
@@ -6835,13 +6835,100 @@ function btBuy(id){
   document.getElementById('battleWrap').innerHTML=btShopHTML(msg);
 }
 function btWearHat(id){ const b=btState(); if(!b.hats.includes(id)) return; b.hat=(b.hat===id?'':id); save(); sfxFlip(); document.getElementById('battleWrap').innerHTML=btShopHTML(b.hat?'戴上了！回主畫面也看得到。':'拿下來了。'); }
+/* ── 特訓道場：不扣血的練功房，錯題會自動收進錯題本 ── */
+const DJ_BELTS=[{n:'白帶',e:'⬜',exp:0},{n:'黃帶',e:'🟨',exp:60},{n:'綠帶',e:'🟩',exp:160},{n:'藍帶',e:'🟦',exp:320},{n:'紅帶',e:'🟥',exp:560},{n:'黑帶',e:'⬛',exp:900},{n:'金帶',e:'🟧',exp:1400}];
+function djBelt(){ const x=btState().dojoExp||0; let b=DJ_BELTS[0]; DJ_BELTS.forEach(k=>{ if(x>=k.exp) b=k; }); return b; }
+function djNextBelt(){ const x=btState().dojoExp||0; return DJ_BELTS.find(k=>k.exp>x)||null; }
+function btBankWrong(q){ if(!q||q.key==='dyn') return; const b=btState(); const k=q.subj+'|'+q.key; const hit=b.wrongBank.find(x=>x.k===k); if(hit){ hit.count++; hit.ok=0; } else b.wrongBank.push({k,subj:q.subj,q:q.q,opts:q.opts,ans:q.ans,hint:q.hint||'',explain:q.explain||'',count:1,ok:0}); if(b.wrongBank.length>60) b.wrongBank.shift(); }
+let DJ={mode:'',subj:'',list:[],idx:0,correct:0,streak:0,best:0,timer:null,tLeft:0,start:0,busy:false};
+function djHomeHTML(){
+  const b=btState(); const belt=djBelt(); const nb=djNextBelt(); const t=today(); const dailyDone=b.dojoDaily===t; const wrongN=b.wrongBank.length;
+  BT.screen='dojo';
+  return `<div class="bt-top"><button class="bt-back" onclick="btGo('home')">← 返回</button><div class="bt-title">🥋 特訓道場</div><div class="bt-chip">${belt.e} ${belt.n}</div></div>
+    <div class="bt-card" style="text-align:center;">
+      <div style="font-size:2.6rem;line-height:1.1;">🥋</div>
+      <div style="font-weight:900;font-size:1.1rem;margin-top:4px;">${S.name} ${belt.e} ${belt.n}</div>
+      <div class="bt-hpbar" style="max-width:240px;margin:8px auto 0;"><div class="bt-hpfill" style="width:${nb?Math.round((b.dojoExp-belt.exp)/(nb.exp-belt.exp)*100):100}%;background:linear-gradient(90deg,#fbbf24,#f97316);"></div></div>
+      <div class="bt-hptxt">道場修行值 ${b.dojoExp}${nb?'　再 '+(nb.exp-b.dojoExp)+' 升 '+nb.e+nb.n:'　已是最高段位'}　｜　特訓 ${b.dojoSessions} 次</div>
+      <div style="font-size:0.78rem;color:#c7d2fe;font-weight:700;margin-top:8px;line-height:1.5;">道場裡沒有怪獸、不會扣血，專心練題。答對給金幣和經驗，全對有加倍獎勵。戰鬥裡答錯的題目會自動收進錯題本，在這裡練會了就從錯題本消失。</div>
+    </div>
+    <div class="bt-card" style="border-color:${dailyDone?'rgba(255,255,255,0.16)':'#fde047'};">
+      <div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-weight:900;">📅 每日特訓</div><div class="bt-chip">${dailyDone?'✓ 今天完成':'🎁 今日未領'}</div></div>
+      <div style="font-size:0.78rem;color:#c7d2fe;font-weight:700;margin:6px 0 8px;line-height:1.5;">三科混合 12 題。每天第一次完成多送 🪙 100 和一件隨機道具。</div>
+      <button class="bt-btn ${dailyDone?'gray':'green'}" style="margin-top:0;" onclick="djStart('daily')">${dailyDone?'再練一次（沒有每日獎勵）':'⚔️ 開始每日特訓'}</button>
+    </div>
+    <div class="bt-card">
+      <div style="font-weight:900;margin-bottom:8px;">📚 科目特訓（各 10 題）</div>
+      <div class="bt-actions">${['chinese','english','math'].map(k=>`<button class="bt-atk ${k}" onclick="djStart('${k}')">${BT_SUBJ[k].e} ${BT_SUBJ[k].n}<small>10 題・20 秒一題</small></button>`).join('')}</div>
+    </div>
+    <div class="bt-card" style="border-color:${wrongN?'#f87171':'rgba(255,255,255,0.16)'};">
+      <div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-weight:900;">📕 錯題特訓</div><div class="bt-chip">錯題本 ${wrongN} 題</div></div>
+      <div style="font-size:0.78rem;color:#c7d2fe;font-weight:700;margin:6px 0 8px;line-height:1.5;">${wrongN?'這些是戰鬥裡答錯過的題目。同一題連續答對 2 次就會從錯題本移除，獎勵比一般特訓多一倍。':'錯題本是空的！戰鬥裡答錯的題目會自動收進來。'}</div>
+      ${wrongN?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">${b.wrongBank.slice(-8).reverse().map(x=>`<span style="background:rgba(248,113,113,0.15);border:1px solid rgba(248,113,113,0.4);border-radius:8px;padding:3px 8px;font-size:0.7rem;font-weight:800;">${BT_SUBJ[x.subj].e} ${String(x.q).replace(/<[^>]+>/g,'').slice(0,14)}… ×${x.count}</span>`).join('')}</div>`:''}
+      <button class="bt-btn ${wrongN?'green':'gray'}" style="margin-top:0;" onclick="djStart('wrong')" ${wrongN?'':'disabled'}>🎯 開始錯題特訓（${Math.min(10,wrongN)} 題）</button>
+    </div>`;
+}
+function djStart(mode){
+  const b=btState(); sfxStart(); DJ={mode,subj:mode,list:[],idx:0,correct:0,streak:0,best:0,timer:null,tLeft:0,start:0,busy:false,rewards:0};
+  BT.recent=[];
+  if(mode==='wrong'){ DJ.list=b.wrongBank.slice().sort(()=>Math.random()-0.5).slice(0,10).map(x=>({...x,fromBank:true})); }
+  else if(mode==='daily'){ ['chinese','english','math'].forEach(sj=>{ for(let i=0;i<4;i++) DJ.list.push({...btPickQuestion(sj,99),subj:sj}); }); DJ.list.sort(()=>Math.random()-0.5); }
+  else { const maxCh=Math.min(COURSES_ALL[mode].length, Math.max(3,(S.chapterProgress[mode]||0)+2)); for(let i=0;i<10;i++) DJ.list.push({...btPickQuestion(mode,maxCh),subj:mode}); }
+  if(!DJ.list.length){ btGo('dojo'); return; }
+  BT.screen='dojo_q'; djRenderQ();
+}
+function djRenderQ(){
+  const q=DJ.list[DJ.idx]; if(!q){ djFinish(); return; }
+  const opts=q.opts.slice().sort(()=>Math.random()-0.5); const w=document.getElementById('battleWrap'); DJ.busy=false; DJ.start=Date.now();
+  const title={daily:'📅 每日特訓',wrong:'📕 錯題特訓',chinese:'📚 國語特訓',english:'🔤 英文特訓',math:'🔢 數學特訓'}[DJ.mode];
+  w.innerHTML=`<div class="bt-top"><button class="bt-back" onclick="djQuit()">← 離開</button><div class="bt-title">${title}</div><div class="bt-chip">${DJ.idx+1}/${DJ.list.length}　✓${DJ.correct}</div></div>
+    <div class="bt-hpbar" style="margin-bottom:10px;"><div class="bt-hpfill" style="width:${Math.round(DJ.idx/DJ.list.length*100)}%;background:linear-gradient(90deg,#a78bfa,#f472b6);"></div></div>
+    <div class="bt-msg" id="djMsg">${DJ.streak>=2?'🔥 連續答對 '+DJ.streak+' 題！':q.fromBank?'這題你之前錯過 '+q.count+' 次，這次看仔細！':'專心看題目，20 秒內答完有加成！'}</div>
+    <div class="bt-q"><span class="bt-q-tag" style="background:${BT_SUBJ[q.subj].c}">${BT_SUBJ[q.subj].e} ${BT_SUBJ[q.subj].n}題</span>
+      <div class="bt-q-text">${q.q}</div>${q.hint?`<div class="bt-q-hint">💡 ${q.hint}</div>`:''}
+      <div class="bt-timer"><div id="djTimerBar"></div></div>
+      <div class="bt-opts">${opts.map(o=>`<button class="bt-opt" onclick="djAnswer(this)" data-v="${String(o).replace(/"/g,'&quot;')}">${o}</button>`).join('')}</div>
+      <div id="djNext"></div></div>`;
+  try{document.getElementById('battleOverlay').scrollTo(0,0);}catch(e){}
+  djStopTimer(); DJ.tLeft=20; const bar=document.getElementById('djTimerBar'); DJ.timer=setInterval(()=>{ DJ.tLeft-=0.25; if(bar) bar.style.width=Math.max(0,DJ.tLeft/20*100)+'%'; if(DJ.tLeft<=0){ djStopTimer(); djResolve(null); } },250);
+}
+function djStopTimer(){ if(DJ.timer){clearInterval(DJ.timer);DJ.timer=null;} }
+function djAnswer(btn){ if(DJ.busy) return; djStopTimer(); djResolve(btn); }
+function djResolve(btn){
+  if(DJ.busy) return; DJ.busy=true; const q=DJ.list[DJ.idx]; const b=btState(); const ok=btn&&btn.dataset.v===q.ans; const sec=(Date.now()-DJ.start)/1000;
+  document.querySelectorAll('.bt-opt').forEach(x=>{ x.disabled=true; if(x.dataset.v===q.ans) x.classList.add('ok'); }); if(btn&&!ok) btn.classList.add('bad');
+  const msg=document.getElementById('djMsg'); const mult=DJ.mode==='wrong'?2:1;
+  if(ok){ sfxCorrect(); DJ.correct++; DJ.streak++; DJ.best=Math.max(DJ.best,DJ.streak); const c=btCoin(2*mult+(sec<8?1:0)); const xp=3*mult; b.exp+=xp; b.dojoExp+=2*mult; DJ.rewards+=c;
+    msg.innerHTML=`✅ 答對！🪙 +${c}　經驗 +${xp}${sec<8?'　⚡ 快答加成':''}${DJ.streak>=3?'　🔥 '+DJ.streak+' 連對':''}`;
+    if(q.fromBank){ const hit=b.wrongBank.find(x=>x.k===q.k); if(hit){ hit.ok=(hit.ok||0)+1; if(hit.ok>=2){ b.wrongBank=b.wrongBank.filter(x=>x.k!==q.k); msg.innerHTML+='　🎉 這題從錯題本畢業了！'; } else msg.innerHTML+='　再答對一次就畢業'; } }
+  } else { sfxWrong(); DJ.streak=0; msg.innerHTML=`${btn?'❌ 答錯了':'⏰ 時間到'}。正確答案是「<span class="hl">${q.ans}</span>」${q.explain?'<br><span style="font-size:0.82rem;color:#c7d2fe;">'+String(q.explain).replace(/<[^>]+>/g,'')+'</span>':''}`;
+    if(q.fromBank){ const hit=b.wrongBank.find(x=>x.k===q.k); if(hit){ hit.count++; hit.ok=0; } } else if(DJ.mode!=='daily'||true){ btBankWrong({...q,key:(q.key||q.k||q.q).toString().replace(/^.*\|/,'')}); } }
+  save();
+  document.getElementById('djNext').innerHTML=`<button class="bt-btn green" onclick="DJ.idx++;djRenderQ()">${DJ.idx+1>=DJ.list.length?'看結果 ▶':'下一題 ▶'}</button>`;
+}
+function djQuit(){ djStopTimer(); DJ.busy=false; btGo('dojo'); }
+function djFinish(){
+  djStopTimer(); const b=btState(); const n=DJ.list.length; const perfect=DJ.correct===n; const t=today(); let bonus=[];
+  b.dojoSessions=(b.dojoSessions||0)+1;
+  if(perfect){ const c=btCoin(30); b.dojoExp+=10; bonus.push('💯 全對加碼 🪙 '+c+'、修行值 +10'); }
+  if(DJ.mode==='daily'&&b.dojoDaily!==t){ b.dojoDaily=t; const c=btCoin(100); const k=BT_ADV_DROPS[(new Date().getDate()*3+b.dojoSessions)%BT_ADV_DROPS.length]; b[k]=(b[k]||0)+1; bonus.push('📅 每日獎勵 🪙 '+c+'、'+BT_ADV_DROP_NAME[k]); }
+  const beltBefore=DJ.beltBefore; save(); sfxLevelUp();
+  const belt=djBelt(); const w=document.getElementById('battleWrap'); BT.screen='result';
+  w.innerHTML=`<div class="bt-card bt-result" style="margin-top:30px;"><div class="big">${perfect?'🏆':DJ.correct>=n*0.7?'🥋':'💪'}</div>
+    <h3>${perfect?'全對！太強了！':DJ.correct>=n*0.7?'練得不錯！':'再多練幾次就會了！'}</h3>
+    <p>答對 ${DJ.correct}/${n} 題　最長連對 ${DJ.best}　這次賺到 🪙 ${DJ.rewards}</p>
+    <div style="margin:10px 0;">${bonus.map(x=>'<span class="bt-reward">'+x+'</span>').join('')}<span class="bt-reward">${belt.e} ${belt.n}　修行值 ${b.dojoExp}</span></div>
+    ${b.wrongBank.length?`<p style="font-size:0.82rem;color:#fca5a5;">錯題本還有 ${b.wrongBank.length} 題等你來消滅。</p>`:''}
+    <button class="bt-btn green" onclick="djStart('${DJ.mode}')">🔁 再練一輪</button>
+    <button class="bt-btn purple" onclick="btGo('dojo')">🥋 回道場</button><button class="bt-btn gray" onclick="btGo('home')">🗺️ 回地圖</button></div>`;
+}
 /* ── 入口卡（主畫面）── */
 function renderBattleCard(){
   const el=document.getElementById('battleEntryContent'); if(!el) return;
   const b=btState(); const nextGym=BT_GYMS.find(g=>!b.cleared.includes(g.id));
   el.innerHTML=`<div class="t">⚔️ 波比對戰學院 <span style="font-size:0.7rem;background:#fbbf24;color:#1e1b4b;border-radius:8px;padding:2px 7px;">NEW</span></div>
     <div class="d">答對題目＝波比出招！找出每隻怪獸的弱點科目，打倒道館館主、收服怪獸、打遍六大章節四十座道館！</div>
-    <div class="row"><span>Lv.${btLevel()} ${btRank()}</span><span>🏅 道館 ${b.cleared.length}/${BT_GYMS.length}</span><span>📖 圖鑑 ${b.dex.length}/${BT_ALL_MONS.length}</span><span>🔥 最高連勝 ${b.bestStreak||0}</span><span>🗺️ 冒險 ${b.adventure||0} 關</span></div>
+    <div class="row"><span>Lv.${btLevel()} ${btRank()}</span><span>🏅 道館 ${b.cleared.length}/${BT_GYMS.length}</span><span>📖 圖鑑 ${b.dex.length}/${BT_ALL_MONS.length}</span><span>🔥 最高連勝 ${b.bestStreak||0}</span><span>🗺️ 冒險 ${b.adventure||0} 關</span><span>🥋 ${djBelt().n}</span></div>
     <button onclick="openBattle()">⚔️ ${nextGym?'挑戰 '+nextGym.emoji+' '+nextGym.name:'進入競技場'}</button>`;
 }
 function openBattle(screen){
@@ -6863,6 +6950,7 @@ function btGo(screen){
   if(screen==='home') w.innerHTML=btHomeHTML();
   else if(screen==='dex') w.innerHTML=btDexHTML();
   else if(screen==='shop') w.innerHTML=btShopHTML();
+  else if(screen==='dojo') w.innerHTML=djHomeHTML();
   try{document.getElementById('battleOverlay').scrollTo(0,0);}catch(e){}
   const hero=document.getElementById('btHeroBoppy'); if(hero) hero.innerHTML=btBoppy(96,'happy');
 }
@@ -6896,6 +6984,7 @@ function btHomeHTML(){
       <button class="bt-mode" style="background:linear-gradient(135deg,#ec4899,#be185d);" onclick="btStartArena()">🔥 無限競技場<small>怪獸越來越強，拚連勝</small></button>
       <button class="bt-mode" style="background:linear-gradient(135deg,#10b981,#047857);" onclick="btGo('shop')">🛒 道具商店<small>🪙 ${b.coins} 金幣</small></button>
       <button class="bt-mode" style="background:linear-gradient(135deg,#6366f1,#4338ca);" onclick="btGo('dex')">📖 圖鑑與夥伴<small>收服 ${b.dex.length} 隻${btPartner()?'・夥伴 '+btPartner().e:''}</small></button>
+      <button class="bt-mode" style="background:linear-gradient(135deg,#f97316,#b91c1c);grid-column:1 / -1;" onclick="btGo('dojo')">🥋 特訓道場 ${djBelt().e} ${djBelt().n}<small>不扣血練功・錯題本 ${b.wrongBank.length} 題${b.dojoDaily===today()?'・今日特訓已完成':'・📅 每日特訓有獎勵'}</small></button>
     </div>
     ${btAdventureHTML()}
     ${btTreasureHTML()}
@@ -7088,7 +7177,7 @@ function btResolve(ok,prefix){
     if(e.hp<=0){ setTimeout(()=>btEnemyDown(),1100); return; }
     setTimeout(()=>{ BT.busy=false; BT.q=null; document.getElementById('btMsg').innerHTML=`${e.n} 還有 ${e.hp} HP！${!BT.revealed[e.id]&&!b.dex.includes(e.id)?'再試試別的科目，找出牠的弱點！':'繼續用弱點科目攻擊！'}`; btRenderActions(); },1500);
   } else {
-    sfxWrong(); BT.combo=0; BT.streak=0; BT.stats.wrong++;
+    sfxWrong(); BT.combo=0; BT.streak=0; BT.stats.wrong++; btBankWrong(q);
     let dmg=e.atk+Math.floor(Math.random()*6); if(btHas('g35')) dmg=Math.ceil(dmg/2); let blocked=false;
     let blockBy='';
     if(BT.freeShield){ BT.freeShield=false; blocked=true; dmg=0; blockBy='🪵 森林盾牌擋下了！'; }
@@ -7149,6 +7238,7 @@ function btLose(){
     <button class="bt-btn purple" onclick="btGo('home')">🗺️ 回道館地圖</button></div>`;
 }
 function btConfirmLeave(){
+  if(BT.screen==='dojo_q'){ djQuit(); return; }
   if(BT.screen!=='battle'){ btGo('home'); return; }
   btStopTimer();
   const a=document.getElementById('btAction'); if(!a) { btGo('home'); return; }
